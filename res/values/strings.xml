@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="app_name">Mi primera App</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_my_first">Mi Primer App</string>
+    <string name="edit_message">Editame</string>
+    <string name="button_send">Enviar</string>
+    <string name="infor">Escribe lo que quieras, apreta el botón y aparecerá el mismo texto en grande</string>
+
+</resources>
