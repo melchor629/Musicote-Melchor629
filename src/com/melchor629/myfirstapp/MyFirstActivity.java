@@ -49,6 +49,4 @@ public class MyFirstActivity extends Activity {
     	intent.putExtra(EXTRA_MESSAGE, message);
     	startActivity(intent);
     }
-
-    
 }
