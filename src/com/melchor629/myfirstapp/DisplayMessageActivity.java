@@ -6,26 +6,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-@SuppressLint("ParserError")
+@SuppressLint({ "ParserError", "ParserError" })
 public class DisplayMessageActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         String message = intent.getStringExtra(MyFirstActivity.EXTRA_MESSAGE);
+        String last_str = intent.getStringExtra(MyFirstActivity.Last_STRING);
+        String mensaje = getString(R.string.infor)+"\n"+message+"\n"+last_str;
         
         // Create the text view
         TextView textView = new TextView(this);
-        textView.setTextSize(40);
-        textView.setText(message);
+        textView.setTextSize(15);
+        textView.setText(mensaje);
 
         setContentView(textView);
-        
-        /**TextView info = new TextView(this);
-        info.setTextSize(20);
-        CharSequence infor = "Escribe lo que quieras, apreta el botón y aparecerá el mismo texto en grande";
-		info.setText(infor);
-		
-        setContentView(info);**/
     }
 }

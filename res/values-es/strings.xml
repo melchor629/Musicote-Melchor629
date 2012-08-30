@@ -2,10 +2,10 @@
 
     <string name="app_name">Mi primera App</string>
     <string name="hello_world">¡Hola Mundo!</string>
-    <string name="menu_settings">Ajustes</string>
+    <string name="menu_settings">Cerrar</string>
     <string name="title_activity_my_first">Mi Primer App</string>
     <string name="edit_message">Editame</string>
     <string name="button_send">Enviar</string>
-    <string name="infor">Escribe lo que quieras, apreta el botón y aparecerá el mismo texto en grande</string>
+    <string name="infor">La APP ha recibido esto: </string>
 
 </resources>

@@ -6,6 +6,6 @@
     <string name="title_activity_my_first">My First App</string>
     <string name="edit_message">Edit me</string>
     <string name="button_send">Send</string>
-    <string name="infor">Write all that you want, press the button and it appears in big</string>
+    <string name="infor">This is the output</string>
 
 </resources>
