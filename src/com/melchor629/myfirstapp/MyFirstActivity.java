@@ -1,5 +1,7 @@
 package com.melchor629.myfirstapp;
 
+import java.util.Random;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -58,8 +60,40 @@ public class MyFirstActivity extends Activity {
     public void sendMessage(View view) {
         // Do something in response to button
     	Intent intent = new Intent(this, DisplayMessageActivity.class);
-    	EditText editText = (EditText) findViewById(R.id.editText1);
+    	EditText editText = (EditText) findViewById(R.id.edit_message);
     	String message = editText.getText().toString();
+    	intent.putExtra(EXTRA_MESSAGE, message);
+    	intent.putExtra(Last_STRING, Last_String);
+    	startActivity(intent);
+    }
+    
+    /** Called when the user selects the Send Random button **/
+    public void sendMessageRandom(View view) {
+        // Do something in response to button
+    	Intent intent = new Intent(this, DisplayMessageActivity.class);
+		Random rand = new Random();
+		int num = rand.nextInt(5-2)+1;
+    	String randText = "Error al enviar texto random...";
+		switch (num) {
+			case 1:
+				randText = "Una tortuga empieza con 5 metros de ventaja y el humano nunca alcanzará a la tortuga. ¿Por qué? Preguntaselo a la hdp de Filosofia...";
+				break;
+			case 2:
+				randText = "Los dinosarios d'Albert...";
+				break;
+			case 3:
+				randText = "If you love me, want let me know...";
+				break;
+			case 4:
+				randText = "Musicote: The 2nd Law de Muse";
+				break;
+			case 5:
+				randText = "Cutre Application by Melchor629...";
+				break;
+			default:
+				randText = "El número que ha tret el generador"+ rand +" es incorrect, cagon putes...";
+		}
+    	String message = randText;
     	intent.putExtra(EXTRA_MESSAGE, message);
     	intent.putExtra(Last_STRING, Last_String);
     	startActivity(intent);
