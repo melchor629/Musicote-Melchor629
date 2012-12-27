@@ -4,6 +4,82 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+ 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
+ 
+import android.util.Log;
+ 
+public class ParseJSON {
+ 
+    static InputStream is = null;
+    static JSONObject jObj = null;
+    static String json = "";
+ 
+    // constructor
+    public ParseJSON() {
+    	Log.i("com.melchor629.myfirstapp","Parseador JSON iniciado...");
+    }
+ 
+    public JSONObject getJSONFromUrl(String url) {
+ 
+        // Making HTTP request
+        try {
+            // defaultHttpClient
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(url);
+ 
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+            HttpEntity httpEntity = httpResponse.getEntity();
+            is = httpEntity.getContent();           
+ 
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+ 
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    is, "UTF8"), 8);
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            is.close();
+            json = sb.toString();
+        } catch (Exception e) {
+            Log.e("Buffer Error", "Error converting result " + e.toString());
+        }
+ 
+        // try parse the string to a JSON object
+        try {
+            jObj = new JSONObject(json);
+        } catch (JSONException e) {
+            Log.e("JSON Parser", "Error parsing data " + e.toString());
+        }
+ 
+        // return JSON String
+        return jObj;
+ 
+    }
+}
+
+
+/** PARTE ANTIGUA
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -27,8 +103,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 public class ParseJSON extends MyFirstActivity {
-/** Called when the activity is first created. */
-
+	JSONObject Cancion = null;
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -46,13 +121,9 @@ public class ParseJSON extends MyFirstActivity {
     	// Hashmap for ListView
         // TODO Si no funciona el sistema actual mira la siguiente linia y http://www.androidhive.info/2012/01/android-json-parsing-tutorial/
     	// ArrayList<HashMap<String, String>> musicoteList = new ArrayList<HashMap<String, String>>();
-      /*JSONArray jsonArray = new JSONArray(readTwitterFeed);
-      Log.i(ParseJSON.class.getName(),
-          "Number of entries " + jsonArray.length());
-      for (int i = 0; i < jsonArray.length(); i++) {
-        JSONObject jsonObject = jsonArray.getJSONObject(i);*/
     	JSONObject jsonObject = new JSONObject(readTwitterFeed);
 	for(int i = 0; i < jsonObject.length(); i++){
+		Cancion = jsonObject.getJSONObject(""+i+"");
         // Create a TableRow and give it an ID
         TableRow tr = new TableRow(this);
         tr.setId(100+i);
@@ -62,7 +133,7 @@ public class ParseJSON extends MyFirstActivity {
         // Create a TextView to house the name of the province
         TextView labelTV = new TextView(this);
         labelTV.setId(200+i);
-        labelTV.setText(jsonObject.getString("titulo"));
+        labelTV.setText(Cancion.getString("titulo"));
         labelTV.setTextColor(Color.BLACK);
         labelTV.setLayoutParams(new LayoutParams(
                 LayoutParams.WRAP_CONTENT,
@@ -121,4 +192,4 @@ public class ParseJSON extends MyFirstActivity {
     }
     return builder.toString();
   }
-} 
+} */

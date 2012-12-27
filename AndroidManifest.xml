@@ -23,12 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".DisplayMessageActivity" />
-        <activity android:name=".ParseJSON">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".SingleMenuItemActivity"
+            	  android:label="Single Item Selected"></activity>
     </application>
 
 </manifest>
