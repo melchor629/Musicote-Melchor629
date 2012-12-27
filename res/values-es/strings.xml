@@ -1,7 +1,7 @@
 <resources>
 
-    <string name="app_name">Mi primera App</string>
-    <string name="hello_world">¡Hola Mundo!</string>
+    <string name="app_name">Mi primer App</string>
+    <string name="tableTitle">Canciones</string>
     <string name="menu_settings">Cerrar</string>
     <string name="title_activity_my_first">Mi Primer App</string>
     <string name="edit_message">Editame</string>
