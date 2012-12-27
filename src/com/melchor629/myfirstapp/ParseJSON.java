@@ -31,6 +31,13 @@ public class ParseJSON {
         StrictMode.setThreadPolicy(policy);
     }
  
+    /**
+     * JSONObject
+     * Descarga y carga un JSON a JSONObject
+     * Download & load a JSON to JSONObetct
+     * @param url
+     * @return
+     */
     public JSONObject getJSONFromUrl(String url) {
  
         // Making HTTP request
@@ -45,10 +52,13 @@ public class ParseJSON {
  
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            Log.e("com.melchor629.myfirstactivity", "UnsupportedEncodingException "+e.toString());
         } catch (ClientProtocolException e) {
             e.printStackTrace();
+            Log.e("com.melchor629.myfirstactivity", "ClientProtocolException "+e.toString());
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e("com.melchor629.myfirstactivity", "IOException "+e.toString());
         }
  
         try {
@@ -76,7 +86,14 @@ public class ParseJSON {
         return jObj;
  
     }
-    
+    /**
+     * HostTest 
+     * Sirve para comprobar si está encendido el PC
+     * Nothing to see here...
+     * @param host
+     * @param port
+     * @return
+     */
     public boolean HostTest(String host, int port) {
         boolean i = false;
 

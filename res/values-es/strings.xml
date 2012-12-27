@@ -1,11 +1,12 @@
 <resources>
 
     <string name="app_name">Mi primer App</string>
-    <string name="tableTitle">Canciones</string>
     <string name="menu_settings">Cerrar</string>
     <string name="title_activity_my_first">Mi Primer App</string>
     <string name="edit_message">Editame</string>
     <string name="button_send">Enviar</string>
     <string name="infor">La APP ha recibido esto: </string>
+    <string name="vacio">Nada</string>
+    <string name="Play">¡Reproduce esta canción!</string>
 
 </resources>

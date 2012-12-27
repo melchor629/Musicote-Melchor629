@@ -31,6 +31,8 @@ public class MyFirstActivity extends ListActivity {
 	public final static String Last_STRING = "asdasda";
 
 	public static String Last_String = "";
+	public static int response = 0;
+	public static String url;
 	 
 	// contacts JSONArray
 	JSONArray contacts = null;
@@ -54,10 +56,8 @@ public class MyFirstActivity extends ListActivity {
         // Creating JSON Parser instance
         ParseJSON jParser = new ParseJSON();
 
-        String url = null;
-
     	// La app prueba en busca de la dirección correcta
-        if(jParser.HostTest("192.168.1.128",3306)){
+        if(jParser.HostTest("192.168.1.128",80)){
         	url = "192.168.1.128";
         }else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
         	url = "reinoslokos.no-ip.org";
@@ -65,96 +65,111 @@ public class MyFirstActivity extends ListActivity {
         	url = "melchor629.no-ip.org";
         }
         if(url!=null){
-        // getting JSON string from URL
-    	try{
-    		URL urlhttp = new URL("http://"+url+"/multimedia/musicoteApi.php");
-    		HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
-    		int response = http.getResponseCode();
-    		// ACABALO -> http://developer.android.com/reference/java/net/HttpURLConnection.html#getResponseMessage()
-    	} catch(Exception e){
-    		Log.e("com.melchor629.myfirstclass", "Excepción HTTPURL: "+e.toString());
-    	}
-        JSONObject json = jParser.getJSONFromUrl("http://"+url+"/multimedia/musicoteApi.php");
+        	// getting JSON string from URL
+        	try{
+        		URL urlhttp = new URL("http://"+url+"/multimedia/musicoteApi.php");
+        		HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
+        		response = http.getResponseCode();
+        	} catch(Exception e){
+        		Log.e("com.melchor629.myfirstclass", "Excepción HTTPURL: "+e.toString());
+    		}
+        	if(response==200){
+        		JSONObject json = jParser.getJSONFromUrl("http://"+url+"/multimedia/musicoteApi.php");
  
-        try {
-            // Getting Array of Songs
-            contacts = json.getJSONArray("canciones");
+        		try {
+        			// Getting Array of Songs
+        			contacts = json.getJSONArray("canciones");
  
-            // looping through All Songs
-            for(int i = 0; i < contacts.length(); i++){
-                JSONObject c = contacts.getJSONObject(i);
+        			// looping through All Songs
+        			for(int i = 0; i < contacts.length(); i++){
+        				JSONObject c = contacts.getJSONObject(i);
  
-                // Storing each json item in variable
-                String id = c.getString("id");
-                String archivo = c.getString("archivo");
-                String titulo = c.getString("titulo");
-                String artista = c.getString("artista");
-                String album = c.getString("album");
-                String duracion = c.getString("duracion");
+        				// Storing each json item in variable
+        				String id = c.getString("id");
+        				String archivo = c.getString("archivo");
+        				String titulo = c.getString("titulo");
+        				String artista = c.getString("artista");
+        				String album = c.getString("album");
+        				String duracion = c.getString("duracion");
  
-                // creating new HashMap
-                HashMap<String, String> map = new HashMap<String, String>();
+        				// creating new HashMap
+        				HashMap<String, String> map = new HashMap<String, String>();
  
-                // adding each child node to HashMap key => value
-                map.put("id", id);
-                map.put("titulo", titulo);
-                map.put("artista", artista);
-                map.put("album", album);
-                map.put("archivo", archivo);
-                map.put("duracion", duracion);
+        				// adding each child node to HashMap key => value
+        				map.put("id", id);
+        				map.put("titulo", titulo);
+        				map.put("artista", artista);
+        				map.put("album", album);
+        				map.put("archivo", archivo);
+        				map.put("duracion", duracion);
  
-                // adding HashList to ArrayList
-                contactList.add(map);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.i("com.melchor629.myfirstapp","Excepción encontrada: "+e.toString());
+        				// adding HashList to ArrayList
+        				contactList.add(map);
+        			}
+        		} catch (JSONException e) {
+        			e.printStackTrace();
+        			Log.i("com.melchor629.myfirstapp","Excepción encontrada: "+e.toString());
+        		}
+ 
+        		/**
+        		 * Updating parsed JSON data into ListView
+        		 * */
+        		ListAdapter adapter = new SimpleAdapter(this, contactList,
+        				R.layout.list_item,
+        				new String[] { "titulo", "artista", "album" }, new int[] {
+                        	R.id.name, R.id.email, R.id.mobile });
+ 
+				setListAdapter(adapter);
+ 
+				// selecting single ListView item
+				ListView lv = getListView();
+ 
+				// Launching new screen on Selecting Single ListItem
+				lv.setOnItemClickListener(new OnItemClickListener() {
+ 
+					//@Override
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						// getting values from selected ListItem
+						JSONObject tolcoño = null;
+						try{
+							tolcoño = contacts.getJSONObject(position);
+						}catch(Exception e){ Log.e("com.melchor629.myfirstactivity", "138<<"+e.toString()); e.printStackTrace(); }
+						String name = getString(R.string.vacio);
+						String cost = getString(R.string.vacio);
+						String description = getString(R.string.vacio);
+						String album = "-00:00";
+						String archivo = "http://"+url+"/multimedia/escucha.php";
+						try{ 
+							name = ((TextView) view.findViewById(R.id.name)).getText().toString();
+							cost = ((TextView) view.findViewById(R.id.email)).getText().toString();
+							description = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
+							album = tolcoño.getString("duracion");
+							archivo = tolcoño.getString("archivo");
+						} catch (Exception e)
+						{ Log.e("com.melchor629.myfirstactivity", e.toString()); }
+  
+						// Starting new intent
+						Intent in = new Intent(getApplicationContext(), SingleMenuItemActivity.class);
+						in.putExtra("titulo", name);
+						in.putExtra("artista", cost);
+						in.putExtra("album", description);
+						in.putExtra("duracion", album);
+						in.putExtra("archivo", archivo);
+						startActivity(in);
+					}
+				});
+        	}
+        }else{
+        	//TODO Convertir este soso mensaje en cargar por Caché el JSON, dura tarea xDD
+        	Log.i("com.melchor629.myfirstactivity","Er ordenata de mershor ta apagao...");
+	  	  	Intent intent = new Intent(this, DisplayMessageActivity.class);
+	  	  	String message = "El ordenador está apagado, no saldrá la lista";
+	  	  	intent.putExtra(EXTRA_MESSAGE, message);
+	  	  	intent.putExtra(Last_STRING, Last_String);
+	  	  	startActivity(intent);
         }
- 
-        /**
-         * Updating parsed JSON data into ListView
-         * */
-        ListAdapter adapter = new SimpleAdapter(this, contactList,
-                R.layout.list_item,
-                new String[] { "titulo", "artista", "album" }, new int[] {
-                        R.id.name, R.id.email, R.id.mobile });
- 
-        setListAdapter(adapter);
- 
-        // selecting single ListView item
-        ListView lv = getListView();
- 
-        // Launching new screen on Selecting Single ListItem
-        lv.setOnItemClickListener(new OnItemClickListener() {
- 
-            //@Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                    int position, long id) {
-                // getting values from selected ListItem
-                String name = ((TextView) view.findViewById(R.id.name)).getText().toString();
-                String cost = ((TextView) view.findViewById(R.id.email)).getText().toString();
-                String description = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
-                String album = (contactList.get(5).toString());
- 
-                // Starting new intent
-                Intent in = new Intent(getApplicationContext(), SingleMenuItemActivity.class);
-                in.putExtra("titulo", name);
-                in.putExtra("artista", cost);
-                in.putExtra("album", description);
-                in.putExtra("duracion", album);
-                startActivity(in);
-            }
-        });
-      }else{
-    	  //TODO Convertir este soso mensaje en cargar por Caché el JSON, dura tarea xDD
-    	  Log.i("com.melchor629.myfirstactivity","Er ordenata de mershor ta apagao...");
-	  	  Intent intent = new Intent(this, DisplayMessageActivity.class);
-  	  	  String message = "El ordenador está apagado, no saldrá la lista";
-      	  intent.putExtra(EXTRA_MESSAGE, message);
-      	  intent.putExtra(Last_STRING, Last_String);
-      	  startActivity(intent);
-      }
-    }
+	}
 
     @Override
     public void onPause() {

@@ -28,4 +28,13 @@
       		android:layout_width="fill_parent"
       		android:layout_height="wrap_content"
       		android:textStyle="italic"/>
+  <TextView android:id="@+id/Play"
+      		android:layout_width="fill_parent"
+      		android:layout_height="wrap_content"
+      		android:textStyle="bold"
+      		android:textColor="#cccccc"
+      		android:textColorHighlight="#555555"
+      		android:text="@string/Play"
+      		android:onClick="PlaySong"
+      		android:clickable="true"/>
 </LinearLayout>

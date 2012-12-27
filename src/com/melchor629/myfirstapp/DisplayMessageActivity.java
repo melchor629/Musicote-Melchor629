@@ -1,12 +1,10 @@
 package com.melchor629.myfirstapp;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-@SuppressLint({ "ParserError", "ParserError" })
 public class DisplayMessageActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
