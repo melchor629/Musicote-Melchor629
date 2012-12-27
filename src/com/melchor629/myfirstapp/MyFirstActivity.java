@@ -1,5 +1,7 @@
 package com.melchor629.myfirstapp;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -55,16 +57,24 @@ public class MyFirstActivity extends ListActivity {
         String url = null;
 
     	// La app prueba en busca de la dirección correcta
-        if(jParser.HostTest("192.168.1.128",21)){
+        if(jParser.HostTest("192.168.1.128",3306)){
         	url = "192.168.1.128";
-        }else if(jParser.HostTest("reinoslokos.no-ip.org",21)){
+        }else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
         	url = "reinoslokos.no-ip.org";
-        }else if(jParser.HostTest("melchor629.no-ip.org",21)){
+        }else if(jParser.HostTest("melchor629.no-ip.org",80)){
         	url = "melchor629.no-ip.org";
         }
         if(url!=null){
         // getting JSON string from URL
-        JSONObject json = jParser.getJSONFromUrl(url);
+    	try{
+    		URL urlhttp = new URL("http://"+url+"/multimedia/musicoteApi.php");
+    		HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
+    		int response = http.getResponseCode();
+    		// ACABALO -> http://developer.android.com/reference/java/net/HttpURLConnection.html#getResponseMessage()
+    	} catch(Exception e){
+    		Log.e("com.melchor629.myfirstclass", "Excepción HTTPURL: "+e.toString());
+    	}
+        JSONObject json = jParser.getJSONFromUrl("http://"+url+"/multimedia/musicoteApi.php");
  
         try {
             // Getting Array of Songs
@@ -135,6 +145,14 @@ public class MyFirstActivity extends ListActivity {
                 startActivity(in);
             }
         });
+      }else{
+    	  //TODO Convertir este soso mensaje en cargar por Caché el JSON, dura tarea xDD
+    	  Log.i("com.melchor629.myfirstactivity","Er ordenata de mershor ta apagao...");
+	  	  Intent intent = new Intent(this, DisplayMessageActivity.class);
+  	  	  String message = "El ordenador está apagado, no saldrá la lista";
+      	  intent.putExtra(EXTRA_MESSAGE, message);
+      	  intent.putExtra(Last_STRING, Last_String);
+      	  startActivity(intent);
       }
     }
 

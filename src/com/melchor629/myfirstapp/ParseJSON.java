@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
  
 import org.apache.http.HttpEntity;
@@ -79,28 +78,24 @@ public class ParseJSON {
     }
     
     public boolean HostTest(String host, int port) {
-        boolean toReturn = false;
+        boolean i = false;
 
         try {
-            Socket client1 = new Socket();
-            client1.setSoTimeout(10000);
-            client1.bind(new InetSocketAddress(host, port));
-            InputStream stream = client1.getInputStream();
-            byte[] response = new byte[4096];
-            int bytes = 0;
-            String serverReturnString = null;
-            bytes = stream.read(response, 0, response.length);
-            serverReturnString = String.valueOf(bytes);
-            System.out.println("TestAvailablility: serverReturnString = {0} " + serverReturnString);
-            /*if (serverReturnString.toLowerCase().startsWith(responseStartsWith.toLowerCase()))
-                toReturn = true;*/
+        	Socket connection = new Socket(host, port);
+        	if(connection.isConnected() == true){
+        		Log.e("com.melchor629.myfirstactivity","Conexión... conosco a tu padre ("+host+")");
+        		i = true;
+        	}else{
+        		Log.e("com.melchor629.myfirstactivity","Con esta dirección "+host+":"+port+" no hay na");
+        		i = false;
+        	}
+            
         } catch (Exception ex) // SocketException for connect, IOException for
         {
-            System.out.println("TestAvailable - Could not connect to VNC server.  Exception info: ");
             ex.printStackTrace();
-        	Log.i("com.melchor629.myfirstactivity", "Error al comprobar el host: "+host+":"+port);
+        	Log.e("com.melchor629.myfirstactivity", "Error al comprobar el host: "+host+":"+port+" | "+ex.toString());
         }
 
-        return toReturn;
+        return i;
     }
 }
