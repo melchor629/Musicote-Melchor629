@@ -4,7 +4,7 @@
   android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
-  <!-- Name Label -->
+  <!-- Titulo de la canción -->
   <TextView android:id="@+id/name_label"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -13,14 +13,19 @@
             android:paddingTop="10dip"
             android:paddingBottom="10dip"
             android:textColor="#43bd00"/>
-  <!-- Description Label -->
+  <!-- Artista de la canción -->
   <TextView android:id="@+id/email_label"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textColor="#acacac"/>
-  <!-- Price Label -->
+  <!-- Álbum de la cancion -->
   <TextView android:id="@+id/mobile_label"
       		android:layout_width="fill_parent"
       		android:layout_height="wrap_content"
       		android:textStyle="bold"/>
+  <!-- Duración de la canción -->
+  <TextView android:id="@+id/duracionS"
+      		android:layout_width="fill_parent"
+      		android:layout_height="wrap_content"
+      		android:textStyle="italic"/>
 </LinearLayout>

@@ -29,9 +29,6 @@ public class MyFirstActivity extends ListActivity {
 	public final static String Last_STRING = "asdasda";
 
 	public static String Last_String = "";
-	
-	// url to make request
-	private static String url = "http://192.168.1.128/multimedia/musicoteApi.php";
 	 
 	// contacts JSONArray
 	JSONArray contacts = null;
@@ -50,11 +47,22 @@ public class MyFirstActivity extends ListActivity {
         }
         
      // Hashmap for ListView
-        ArrayList<HashMap<String, String>> contactList = new ArrayList<HashMap<String, String>>();
+        final ArrayList<HashMap<String, String>> contactList = new ArrayList<HashMap<String, String>>();
  
         // Creating JSON Parser instance
         ParseJSON jParser = new ParseJSON();
- 
+
+        String url = null;
+
+    	// La app prueba en busca de la dirección correcta
+        if(jParser.HostTest("192.168.1.128",21)){
+        	url = "192.168.1.128";
+        }else if(jParser.HostTest("reinoslokos.no-ip.org",21)){
+        	url = "reinoslokos.no-ip.org";
+        }else if(jParser.HostTest("melchor629.no-ip.org",21)){
+        	url = "melchor629.no-ip.org";
+        }
+        if(url!=null){
         // getting JSON string from URL
         JSONObject json = jParser.getJSONFromUrl(url);
  
@@ -82,6 +90,8 @@ public class MyFirstActivity extends ListActivity {
                 map.put("titulo", titulo);
                 map.put("artista", artista);
                 map.put("album", album);
+                map.put("archivo", archivo);
+                map.put("duracion", duracion);
  
                 // adding HashList to ArrayList
                 contactList.add(map);
@@ -96,7 +106,7 @@ public class MyFirstActivity extends ListActivity {
          * */
         ListAdapter adapter = new SimpleAdapter(this, contactList,
                 R.layout.list_item,
-                new String[] { "id", "titulo", "artista" }, new int[] {
+                new String[] { "titulo", "artista", "album" }, new int[] {
                         R.id.name, R.id.email, R.id.mobile });
  
         setListAdapter(adapter);
@@ -114,16 +124,18 @@ public class MyFirstActivity extends ListActivity {
                 String name = ((TextView) view.findViewById(R.id.name)).getText().toString();
                 String cost = ((TextView) view.findViewById(R.id.email)).getText().toString();
                 String description = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
+                String album = (contactList.get(5).toString());
  
                 // Starting new intent
                 Intent in = new Intent(getApplicationContext(), SingleMenuItemActivity.class);
                 in.putExtra("titulo", name);
                 in.putExtra("artista", cost);
                 in.putExtra("album", description);
+                in.putExtra("duracion", album);
                 startActivity(in);
             }
         });
-        
+      }
     }
 
     @Override

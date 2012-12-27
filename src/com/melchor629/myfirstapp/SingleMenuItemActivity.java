@@ -11,6 +11,7 @@ public class SingleMenuItemActivity extends Activity {
 	private static final String TAG_NAME = "titulo";
 	private static final String TAG_EMAIL = "artista";
 	private static final String TAG_PHONE_MOBILE = "album";
+	private static final String TAG_DURACIONS = "duracion";
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,14 +24,17 @@ public class SingleMenuItemActivity extends Activity {
         String name = in.getStringExtra(TAG_NAME);
         String cost = in.getStringExtra(TAG_EMAIL);
         String description = in.getStringExtra(TAG_PHONE_MOBILE);
+        String duracion = in.getStringExtra(TAG_DURACIONS);
         
         // Displaying all values on the screen
         TextView lblName = (TextView) findViewById(R.id.name_label);
         TextView lblCost = (TextView) findViewById(R.id.email_label);
         TextView lblDesc = (TextView) findViewById(R.id.mobile_label);
+        TextView lblDura = (TextView) findViewById(R.id.duracionS);
         
         lblName.setText(name);
         lblCost.setText(cost);
         lblDesc.setText(description);
+        lblDura.setText(duracion);
     }
 }
