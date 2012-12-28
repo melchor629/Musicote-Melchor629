@@ -35,7 +35,7 @@ public class MyFirstActivity extends ListActivity {
 	public static String Last_String = "";
 	public static int response = 0;
 	public static String url;
-	 
+
 	// contacts JSONArray
 	JSONArray contacts = null;
 
@@ -51,10 +51,10 @@ public class MyFirstActivity extends ListActivity {
             // Restore value of members from saved state
             Last_String = savedInstanceState.getString(Last_STRING);
         }
-        
+
      // Hashmap for ListView
         final ArrayList<HashMap<String, String>> contactList = new ArrayList<HashMap<String, String>>();
- 
+
         // Creating JSON Parser instance
         ParseJSON jParser = new ParseJSON();
 
@@ -77,15 +77,15 @@ public class MyFirstActivity extends ListActivity {
     		}
         	if(response==200){
         		JSONObject json = jParser.getJSONFromUrl("http://"+url+"/multimedia/musicoteApi.php");
- 
+
         		try {
         			// Getting Array of Songs
         			contacts = json.getJSONArray("canciones");
- 
+
         			// looping through All Songs
         			for(int i = 0; i < contacts.length(); i++){
         				JSONObject c = contacts.getJSONObject(i);
- 
+
         				// Storing each json item in variable
         				String id = c.getString("id");
         				String archivo = c.getString("archivo");
@@ -93,10 +93,10 @@ public class MyFirstActivity extends ListActivity {
         				String artista = c.getString("artista");
         				String album = c.getString("album");
         				String duracion = c.getString("duracion");
- 
+
         				// creating new HashMap
         				HashMap<String, String> map = new HashMap<String, String>();
- 
+
         				// adding each child node to HashMap key => value
         				map.put("id", id);
         				map.put("titulo", titulo);
@@ -104,7 +104,7 @@ public class MyFirstActivity extends ListActivity {
         				map.put("album", album);
         				map.put("archivo", archivo);
         				map.put("duracion", duracion);
- 
+
         				// adding HashList to ArrayList
         				contactList.add(map);
         			}
@@ -112,7 +112,7 @@ public class MyFirstActivity extends ListActivity {
         			e.printStackTrace();
         			Log.i("com.melchor629.musicote","Excepción encontrada: "+e.toString());
         		}
- 
+
         		/**
         		 * Updating parsed JSON data into ListView
         		 * */
@@ -120,15 +120,15 @@ public class MyFirstActivity extends ListActivity {
         				R.layout.list_item,
         				new String[] { "titulo", "artista", "album" }, new int[] {
                         	R.id.name, R.id.email, R.id.mobile });
- 
+
 				setListAdapter(adapter);
- 
+
 				// selecting single ListView item
 				ListView lv = getListView();
- 
+
 				// Launching new screen on Selecting Single ListItem
 				lv.setOnItemClickListener(new OnItemClickListener() {
- 
+
 					//@Override
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
@@ -142,7 +142,7 @@ public class MyFirstActivity extends ListActivity {
 						String description = getString(R.string.vacio);
 						String album = "-00:00";
 						String archivo = "http://"+url+"/multimedia/escucha.php";
-						try{ 
+						try{
 							name = ((TextView) view.findViewById(R.id.name)).getText().toString();
 							cost = ((TextView) view.findViewById(R.id.email)).getText().toString();
 							description = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
@@ -150,7 +150,7 @@ public class MyFirstActivity extends ListActivity {
 							archivo = tolcoño.getString("archivo");
 						} catch (Exception e)
 						{ Log.e("com.melchor629.myfirstactivity", e.toString()); }
-  
+
 						// Starting new intent
 						Intent in = new Intent(getApplicationContext(), SingleMenuItemActivity.class);
 						in.putExtra("titulo", name);
@@ -189,7 +189,7 @@ public class MyFirstActivity extends ListActivity {
     public void finish() {
     	super.finish(); //Always call the superclass method first
     }
-    
+
     @Override
     public void onStop() {
     	super.onStop();

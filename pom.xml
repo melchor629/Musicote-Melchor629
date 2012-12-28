@@ -6,7 +6,7 @@
   <packaging>apk</packaging>
   <name>Musicote de Melchor629</name>
   <description>An app to listen PC music in your Smartphone</description>
-  
+
   <dependencies>
   	<dependency>
   		<groupId>com.google.android</groupId>
@@ -15,7 +15,7 @@
   		<scope>provided</scope>
   	</dependency>
   </dependencies>
-  
+
   <build>
     <sourceDirectory>src</sourceDirectory>
     <defaultGoal>com.jayway.maven.plugins.android.generation2:android-maven-plugin:3.5.0:deploy</defaultGoal>

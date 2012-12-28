@@ -15,7 +15,7 @@ public class DisplayMessageActivity extends Activity {
         String message = intent.getStringExtra(MyFirstActivity.EXTRA_MESSAGE);
         String last_str = intent.getStringExtra(MyFirstActivity.Last_STRING);
         String mensaje = getString(R.string.infor)+"\n"+message+"\n"+last_str;
-        
+
         // Create the text view
         TextView textView = new TextView(this);
         textView.setTextSize(15);
