@@ -1,5 +1,6 @@
 My First Android App
 ====================
+[![Build Status](https://travis-ci.org/melchor629/Musicote-Melchor629.png?branch=master)](https://travis-ci.org/melchor629/Musicote-Melchor629)
 Una sencilla aplicación para android 2.2, montado con el SDK 4.2
 Esta APP lo único que hace, por ahora, es descargar un archivo JSON y cargar la lista (ArrayList) que lleva dentro
 Para editar este projecto se recomienda usar Eclipse, con el ANT de Android instalado
