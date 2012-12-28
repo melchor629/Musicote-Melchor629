@@ -1,17 +1,36 @@
 # built application files
+##########################
 *.apk
 *.ap_
 
 # files for the dex VM
+#######################
 *.dex
 
 # Java class files
+###################
 *.class
 
 # generated files
+##################
 bin/
 gen/
 
 # Local configuration file (sdk path, etc)
+###########################################
 local.properties
 proguard-project.txt
+keystore
+
+# OS generated files
+#####################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-v100
+.Trashes
+.Trash*
+Icon?
+ethumbs.db
+Thumbs.db
+*~
