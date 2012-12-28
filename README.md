@@ -9,5 +9,4 @@ An app for android 2.2, writted with the SDK 4.2
 This APP only can do, for now, is download a JSON file and load the ArrayList from it...
 To edit this project, use Eclipse with the Android ANT installed
 Here I will save all my changes of this app
-DOWNLOAD APK: http://reinoslokos.no-ip.org/My-First-Android-App
-
+DOWNLOAD APK: http://reinoslokos.no-ip.org/My-First-Android-App.apk

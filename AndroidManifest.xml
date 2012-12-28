@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.melchor629.myfirstapp"
     android:versionCode="1"
-    android:versionName="1.0.beta.MusicoteApi.ArrayList" >
+    android:versionName="@string/Version" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -13,7 +13,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:allowBackup="true" >
+        android:allowBackup="true" android:description="@string/descripcion">
         <activity
             android:name=".MyFirstActivity"
             android:label="@string/title_activity_my_first" >
@@ -24,7 +24,7 @@
         </activity>
         <activity android:name=".DisplayMessageActivity" />
         <activity android:name=".SingleMenuItemActivity"
-            	  android:label="Single Item Selected"></activity>
+            	  android:label="Una simple canción..."></activity>
     </application>
 
 </manifest>

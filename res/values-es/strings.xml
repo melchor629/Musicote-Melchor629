@@ -1,8 +1,12 @@
 <resources>
 
-    <string name="app_name">Mi primer App</string>
+    <!-- Descripción de la App -->
+    <string name="app_name">Musicote de Melchor</string>
+    <string name="version">1.0.1.beta</string>
+    <string name="descripcion">Un App para Android para escuchar la música del ordenador de Melchor en tu Móvil</string>
+    
     <string name="menu_settings">Cerrar</string>
-    <string name="title_activity_my_first">Mi Primer App</string>
+    <string name="title_activity_my_first">Musicote</string>
     <string name="edit_message">Editame</string>
     <string name="button_send">Enviar</string>
     <string name="infor">La APP ha recibido esto: </string>
