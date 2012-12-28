@@ -1,4 +1,4 @@
-package com.melchor629.musicote;
+package com.melchor629.myfirstapp;
 
 import com.melchor629.myfirstapp.R;
 
