@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="button_send">Enviar</string>
+    <string name="edit_message">Editame</string>
+    <string name="button_send2">Random</string>
+    <string name="Play">¡Reproduce esta canción!</string>
+    <string name="infor">Mensaje recibido:</string>
+    <string name="vacio">Nada</string>
+    
+</resources>

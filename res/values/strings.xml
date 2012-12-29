@@ -1,16 +1,5 @@
 <resources>
 
-   	<!-- Descripción de la App -->
-    <string name="app_name">Melchor629\'s PC Music</string>
-    <string name="Version">1.0.1.beta</string>
-    <string name="descripcion">A single Android App to listen de Melchor629\' music in ypur Smartphone</string>
-    
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_my_first">Music</string>
-    <string name="edit_message">Edit me</string>
-    <string name="button_send">Send</string>
-    <string name="infor">This is the output</string>
-    <string name="vacio">Nothing here</string>
-    <string name="Play">Play this song!</string>
+    <string name="app_name">Musicote</string>
 
 </resources>

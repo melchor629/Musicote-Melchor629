@@ -17,12 +17,6 @@ bin/
 gen/
 target/
 
-# Maven things
-###############
-.classpath
-.project
-.settings
-
 # Local configuration file (sdk path, etc)
 ###########################################
 local.properties
