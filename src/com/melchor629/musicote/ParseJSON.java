@@ -75,13 +75,13 @@ public class ParseJSON {
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            Log.e("com.melchor629.myfirstactivity", "UnsupportedEncodingException "+e.toString());
+            Log.e("com.melchor629.musicote", "UnsupportedEncodingException "+e.toString());
         } catch (ClientProtocolException e) {
             e.printStackTrace();
-            Log.e("com.melchor629.myfirstactivity", "ClientProtocolException "+e.toString());
+            Log.e("com.melchor629.musicote", "ClientProtocolException "+e.toString());
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e("com.melchor629.myfirstactivity", "IOException "+e.toString());
+            Log.e("com.melchor629.musicote", "IOException "+e.toString());
         }
 
         try {
@@ -123,17 +123,17 @@ public class ParseJSON {
         try {
         	Socket connection = new Socket(host, port);
         	if(connection.isConnected() == true){
-        		Log.e("com.melchor629.myfirstactivity","Conexión... conosco a tu padre ("+host+")");
+        		Log.e("com.melchor629.musicote","Conexión... conosco a tu padre ("+host+")");
         		i = true;
         	}else{
-        		Log.e("com.melchor629.myfirstactivity","Con esta dirección "+host+":"+port+" no hay na");
+        		Log.e("com.melchor629.musicote","Con esta dirección "+host+":"+port+" no hay na");
         		i = false;
         	}
 
         } catch (Exception ex) // SocketException for connect, IOException for
         {
             ex.printStackTrace();
-        	Log.e("com.melchor629.myfirstactivity", "Error al comprobar el host: "+host+":"+port+" | "+ex.toString());
+        	Log.e("com.melchor629.musicote", "Error al comprobar el host: "+host+":"+port+" | "+ex.toString());
         }
 
         return i;

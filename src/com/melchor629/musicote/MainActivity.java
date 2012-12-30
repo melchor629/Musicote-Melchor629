@@ -99,7 +99,7 @@ public class MainActivity extends ListActivity{
         		HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
         		response = http.getResponseCode();
         	} catch(Exception e){
-        		Log.e("com.melchor629.myfirstclass", "Excepción HTTPURL: "+e.toString());
+        		Log.e("com.melchor629.musicote", "Excepción HTTPURL: "+e.toString());
     		}
         	if(response==200){
         		JSONObject json = jParser.getJSONFromUrl("http://"+url+"/multimedia/musicoteApi.php");
@@ -128,7 +128,7 @@ public class MainActivity extends ListActivity{
         				map.put("titulo", titulo);
         				map.put("artista", artista);
         				map.put("album", album);
-        				map.put("archivo", archivo);
+        				map.put("archivo", "http://"+url+"/"+archivo);
         				map.put("duracion", duracion);
 
         				// adding HashList to ArrayList
@@ -162,7 +162,7 @@ public class MainActivity extends ListActivity{
 						JSONObject tolcoño = null;
 						try{
 							tolcoño = contacts.getJSONObject(position);
-						}catch(Exception e){ Log.e("com.melchor629.myfirstactivity", "138<<"+e.toString()); e.printStackTrace(); }
+						}catch(Exception e){ Log.e("com.melchor629.musicote", "138<<"+e.toString()); e.printStackTrace(); }
 						String name = getString(R.string.vacio);
 						String cost = getString(R.string.vacio);
 						String description = getString(R.string.vacio);
@@ -175,7 +175,7 @@ public class MainActivity extends ListActivity{
 							album = tolcoño.getString("duracion");
 							archivo = tolcoño.getString("archivo");
 						} catch (Exception e)
-						{ Log.e("com.melchor629.myfirstactivity", e.toString()); }
+						{ Log.e("com.melchor629.musicote", e.toString()); }
 
 						// Starting new intent
 						Intent in = new Intent(getApplicationContext(), SingleMenuItemActivity.class);
@@ -183,7 +183,7 @@ public class MainActivity extends ListActivity{
 						in.putExtra("artista", cost);
 						in.putExtra("album", description);
 						in.putExtra("duracion", album);
-						in.putExtra("archivo", archivo);
+						in.putExtra("archivo", "http://"+url+"/"+archivo);
 						startActivity(in);
 					}
 				});

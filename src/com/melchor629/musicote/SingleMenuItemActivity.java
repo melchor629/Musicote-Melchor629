@@ -7,13 +7,25 @@ package com.melchor629.musicote;
  * @author melchor
  *
  */
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import com.melchor629.musicote.R;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 /**
@@ -87,8 +99,69 @@ public class SingleMenuItemActivity extends Activity {
 	 * @param v
 	 */
 	public void PlaySong(View v) {
-        Uri webpage = Uri.parse(archivo);
-    	Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
-    	startActivity(webIntent);
+		InputStream is=null;
+		boolean sierto=false;
+		try{
+			/*URLConnection cn = new URL(url).openConnection();
+			cn.connect();
+			is = cn.getInputStream();*/
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpGet httpPost = new HttpGet(archivo);
+
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+            HttpEntity httpEntity = httpResponse.getEntity();
+            is = httpEntity.getContent();
+		} catch(Exception e){
+			Log.e("cache","Error al descargar el archivo: "+e.toString());
+		}
+		
+		//File downloadingMediaFile = File.createTempFile(url.toString(), ".mp3");
+		FileOutputStream out;
+		byte buf[] = new byte[16384];
+		String file="";
+		try{
+			File downloadingMediaFile = new File(SingleMenuItemActivity.this.getCacheDir(), "musicote-temp.mp3");
+			out = new FileOutputStream(downloadingMediaFile);
+
+			int totalBytesRead = 0, incrementalBytesRead = 0;
+			do {
+				int numread = is.read(buf);
+				if (numread <= 0) {
+					// Nothing left to read so quit
+					break;
+				} else {
+					out.write(buf, 0, numread);
+					totalBytesRead += numread;
+					incrementalBytesRead += numread;
+					int totalKbRead = totalBytesRead/1000;
+					sierto = true;
+				}
+			} while (true);
+			file = "file:"+downloadingMediaFile.toString();
+			is.close();
+		} catch(Exception e){
+			Log.e("FileIO","Error: "+e.toString());
+		}
+		/*cache Cache = new cache();
+		String file = "";
+		boolean sierto=false;
+		try {
+			file = Cache.downloadTempFile(archivo);
+			sierto=true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.e("PlaySong",e.toString());
+			sierto=false;
+		}*/
+		if(sierto==true){
+			Uri fillet = Uri.parse(file);
+			Intent fileIntent = new Intent(Intent.ACTION_VIEW, fillet);
+			startActivity(fileIntent);
+		}else{
+			Log.e("PlaySong","Error al meter el archivo en caché...");
+			Uri webpage = Uri.parse(archivo);
+	    	Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+	    	startActivity(webIntent);
+		}
 	}
 }

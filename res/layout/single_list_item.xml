@@ -15,27 +15,44 @@
             android:paddingBottom="10dip"
             android:textColor="#43bd00"/>
   <!-- Artista de la canción -->
-  <TextView android:id="@+id/email_label"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#acacac"/>
+
+  <TextView
+      android:id="@+id/email_label"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:paddingLeft="20dp"
+      android:textColor="#1F893A" />
+
   <!-- Álbum de la cancion -->
-  <TextView android:id="@+id/mobile_label"
-      		android:layout_width="fill_parent"
-      		android:layout_height="wrap_content"
-      		android:textStyle="bold"/>
+
+  <TextView
+      android:id="@+id/mobile_label"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:paddingLeft="20dp"
+      android:textColor="#5F891F"
+      android:textStyle="bold" />
+
   <!-- Duración de la canción -->
-  <TextView android:id="@+id/duracionS"
-      		android:layout_width="fill_parent"
-      		android:layout_height="wrap_content"
-      		android:textStyle="italic"/>
-  <TextView android:id="@+id/Play"
-      		android:layout_width="fill_parent"
-      		android:layout_height="wrap_content"
-      		android:textStyle="bold"
-      		android:textColor="#cccccc"
-      		android:textColorHighlight="#555555"
-      		android:text="@string/Play"
-      		android:onClick="PlaySong"
-      		android:clickable="true"/>
+
+  <TextView
+      android:id="@+id/duracionS"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:paddingLeft="20dp"
+      android:textColor="#299F9B"
+      android:textStyle="italic" />
+
+  <TextView
+      android:id="@+id/Play"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:clickable="true"
+      android:onClick="PlaySong"
+      android:paddingLeft="10dp"
+      android:text="@string/Play"
+      android:textColor="#F0A61C"
+      android:textColorHighlight="#555555"
+      android:textStyle="bold" />
+
 </LinearLayout>

@@ -6,5 +6,6 @@
     <string name="Play">¡Reproduce esta canción!</string>
     <string name="infor">Mensaje recibido:</string>
     <string name="vacio">Nada</string>
+    <string name="menu_settings">Ajustes</string>
     
 </resources>
