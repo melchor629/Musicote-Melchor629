@@ -102,9 +102,6 @@ public class SingleMenuItemActivity extends Activity {
 		InputStream is=null;
 		boolean sierto=false;
 		try{
-			/*URLConnection cn = new URL(url).openConnection();
-			cn.connect();
-			is = cn.getInputStream();*/
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpGet httpPost = new HttpGet(archivo);
 
@@ -119,8 +116,9 @@ public class SingleMenuItemActivity extends Activity {
 		FileOutputStream out;
 		byte buf[] = new byte[16384];
 		String file="";
+		File downloadingMediaFile = null;
 		try{
-			File downloadingMediaFile = new File(SingleMenuItemActivity.this.getCacheDir(), "musicote-temp.mp3");
+			downloadingMediaFile = new File(SingleMenuItemActivity.this.getCacheDir(), "musicote-temp.mp3");
 			out = new FileOutputStream(downloadingMediaFile);
 
 			int totalBytesRead = 0, incrementalBytesRead = 0;
@@ -142,21 +140,14 @@ public class SingleMenuItemActivity extends Activity {
 		} catch(Exception e){
 			Log.e("FileIO","Error: "+e.toString());
 		}
-		/*cache Cache = new cache();
-		String file = "";
-		boolean sierto=false;
-		try {
-			file = Cache.downloadTempFile(archivo);
-			sierto=true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			Log.e("PlaySong",e.toString());
-			sierto=false;
-		}*/
 		if(sierto==true){
-			Uri fillet = Uri.parse(file);
+			/*Uri fillet = Uri.parse(file);
 			Intent fileIntent = new Intent(Intent.ACTION_VIEW, fillet);
-			startActivity(fileIntent);
+			startActivity(fileIntent);*/
+			Intent intent = new Intent();
+			intent.setAction(android.content.Intent.ACTION_VIEW); 
+			intent.setDataAndType(Uri.fromFile(downloadingMediaFile), "audio/*");
+			startActivity(intent);
 		}else{
 			Log.e("PlaySong","Error al meter el archivo en caché...");
 			Uri webpage = Uri.parse(archivo);
