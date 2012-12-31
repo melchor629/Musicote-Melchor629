@@ -15,7 +15,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="2dip"
-            android:paddingLeft="3dp"
+            android:paddingLeft="10dp"
             android:paddingTop="6dip"
             android:textColor="#43bd00"
             android:textSize="16sp"
@@ -26,8 +26,9 @@
             android:id="@+id/email"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textColor="#acacac"
-            android:paddingBottom="2dip">
+            android:paddingBottom="2dip"
+            android:paddingLeft="20dp"
+            android:textColor="#D28F2B" >
         </TextView>
         <!-- Linear layout for cost and price Cost: Rs.100 -->
         <LinearLayout
@@ -53,7 +54,8 @@
             android:layout_height="wrap_content"
             android:gravity="left"
             android:paddingTop="3dp"
-            android:textColor="#acacac"
+            android:paddingLeft="20dp"
+            android:textColor="#D28F2B"
             android:textStyle="bold" >
 
         </TextView>

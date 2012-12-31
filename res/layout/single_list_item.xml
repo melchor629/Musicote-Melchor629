@@ -6,14 +6,17 @@
     android:orientation="vertical" >
 
   <!-- Titulo de la canción -->
-  <TextView android:id="@+id/name_label"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:paddingTop="10dip"
-            android:paddingBottom="10dip"
-            android:textColor="#43bd00"/>
+  <TextView
+      android:id="@+id/name_label"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:paddingBottom="10dip"
+      android:paddingLeft="10dp"
+      android:paddingTop="10dip"
+      android:textColor="#43bd00"
+      android:textSize="25sp"
+      android:textStyle="bold" />
+
   <!-- Artista de la canción -->
 
   <TextView
@@ -54,5 +57,12 @@
       android:textColor="#F0A61C"
       android:textColorHighlight="#555555"
       android:textStyle="bold" />
+  
+  <TextView
+      android:id="@+id/textView1"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="30dp"
+      android:text="@string/PlayerDesc" />
 
 </LinearLayout>

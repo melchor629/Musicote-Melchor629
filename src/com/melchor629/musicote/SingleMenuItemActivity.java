@@ -1,15 +1,7 @@
-/**
- * 
- */
 package com.melchor629.musicote;
 
-/**
- * @author melchor
- *
- */
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.http.HttpEntity;
@@ -23,10 +15,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Musicote App
@@ -94,8 +87,8 @@ public class SingleMenuItemActivity extends Activity {
 	/**
 	 * PlaySong
 	 * Al apretar el enlace para reproducir canción aparece el menú "intent"
-	 * On clock the link to play the song appears the "intent" menu
-	 * TODO Cambiar esto al reproductor normal, y mas adelante a elegir en opciones
+	 * On click the link to play the song appears the "intent" menu
+	 * TODO Cambiar el "intent" por un reproductor de la misma APP y que se pueda minimizar
 	 * @param v
 	 */
 	public void PlaySong(View v) {
@@ -112,16 +105,28 @@ public class SingleMenuItemActivity extends Activity {
 			Log.e("cache","Error al descargar el archivo: "+e.toString());
 		}
 		
-		//File downloadingMediaFile = File.createTempFile(url.toString(), ".mp3");
+		String state = Environment.getExternalStorageState();
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+			Toast.makeText(getApplicationContext(), "La tarjeta externa no tiene permisos de escritura", Toast.LENGTH_SHORT).show();
+			sierto = false;
+		} else {
+			Toast.makeText(getApplicationContext(), "No se ha encontrado una Tarjeta Externa", Toast.LENGTH_SHORT).show();
+		}
+		File cachedir = new File(Environment.getExternalStorageDirectory()+"/.musicote/");
+		if(!cachedir.exists()){
+			if(!cachedir.mkdirs()){
+				sierto = false;
+				Log.e("DirectoryCreate", "Error al crear el directorio \"/sdcard/.musicote/\"...");
+			}
+		}
 		FileOutputStream out;
 		byte buf[] = new byte[16384];
-		String file="";
 		File downloadingMediaFile = null;
 		try{
-			downloadingMediaFile = new File(SingleMenuItemActivity.this.getCacheDir(), "musicote-temp.mp3");
+			downloadingMediaFile = new File(cachedir, "musicote-temp.mp3");
 			out = new FileOutputStream(downloadingMediaFile);
 
-			int totalBytesRead = 0, incrementalBytesRead = 0;
 			do {
 				int numread = is.read(buf);
 				if (numread <= 0) {
@@ -129,26 +134,20 @@ public class SingleMenuItemActivity extends Activity {
 					break;
 				} else {
 					out.write(buf, 0, numread);
-					totalBytesRead += numread;
-					incrementalBytesRead += numread;
-					int totalKbRead = totalBytesRead/1000;
 					sierto = true;
 				}
 			} while (true);
-			file = "file:"+downloadingMediaFile.toString();
 			is.close();
 		} catch(Exception e){
 			Log.e("FileIO","Error: "+e.toString());
 		}
 		if(sierto==true){
-			/*Uri fillet = Uri.parse(file);
-			Intent fileIntent = new Intent(Intent.ACTION_VIEW, fillet);
-			startActivity(fileIntent);*/
 			Intent intent = new Intent();
 			intent.setAction(android.content.Intent.ACTION_VIEW); 
 			intent.setDataAndType(Uri.fromFile(downloadingMediaFile), "audio/*");
 			startActivity(intent);
 		}else{
+			Toast.makeText(getApplicationContext(), "Usando el método malo, abriendo una URL...", Toast.LENGTH_SHORT).show();
 			Log.e("PlaySong","Error al meter el archivo en caché...");
 			Uri webpage = Uri.parse(archivo);
 	    	Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);

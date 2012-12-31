@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.melchor629.musicote;
 
 import java.net.HttpURLConnection;
@@ -28,6 +25,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.app.ListActivity;
 
 /**
@@ -50,6 +48,8 @@ import android.app.ListActivity;
 **/
 
 /**
+ * Actividad principal de la App
+ * TODO añadir la función de Inicio de sesión
  * @author melchor
  *
  */
@@ -189,13 +189,8 @@ public class MainActivity extends ListActivity{
 				});
         	}
         }else{
-        	//TODO Convertir este soso mensaje en cargar por Caché el JSON, dura tarea xDD
-        	Log.i("com.melchor629.myfirstactivity","Er ordenata de mershor ta apagao...");
-	  	  	Intent intent = new Intent(this, DisplayMessageActivity.class);
-	  	  	String message = "El ordenador está apagado, no saldrá la lista";
-	  	  	intent.putExtra(EXTRA_MESSAGE, message);
-	  	  	intent.putExtra(Last_STRING, Last_String);
-	  	  	startActivity(intent);
+        	Log.i("ServerHostDetector","Er ordenata de mershor ta apagao...");
+    		Toast.makeText(getApplicationContext(), "Ningún servidor activo...", Toast.LENGTH_SHORT).show();
         }
 	}
 
