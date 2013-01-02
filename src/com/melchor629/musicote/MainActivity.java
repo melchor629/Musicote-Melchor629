@@ -56,7 +56,8 @@ import android.app.ProgressDialog;
  * @author melchor
  *
  */
-public class MainActivity extends ListActivity{
+
+public class MainActivity extends ListActivity {
 
 	public final static String EXTRA_MESSAGE = "com.melchor629.musicote.MESSAGE";
 	public final static String Last_STRING = "asdasda";
@@ -64,8 +65,8 @@ public class MainActivity extends ListActivity{
 	public static String Last_String = "";
 	public static int response = 0;
 	public static String url;
-	
-	private ProgressDialog progressDialog;  
+
+	private ProgressDialog progressDialog;
 
 	// contacts JSONArray
 	JSONArray contacts = null;
@@ -143,6 +144,7 @@ public class MainActivity extends ListActivity{
 				in.putExtra("album", description);
 				in.putExtra("duracion", album);
 				in.putExtra("archivo", "http://"+url+"/"+archivo);
+
 				startActivity(in);
 			}
 		});
@@ -172,10 +174,10 @@ public class MainActivity extends ListActivity{
     	values.put(Last_STRING, Last_String);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
     }
 
     /** Called when the user selects the Send button **/
@@ -228,6 +230,7 @@ public class MainActivity extends ListActivity{
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
+ 
     /**
      * Clase AsyncTask para descargar el JSON y parsearlo y no desesperar a la peña
      * @author melchor
@@ -269,13 +272,15 @@ public class MainActivity extends ListActivity{
             ParseJSON jParser = new ParseJSON();
 
             synchronized (this){
+            	publishProgress(1);
+                try{
+                    Thread.sleep(1000);
+                } catch (Exception e) {}
             	// La app prueba en busca de la dirección correcta
             	if(jParser.HostTest("192.168.1.128",80)){
             		url = "192.168.1.128";
             	}else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
             		url = "reinoslokos.no-ip.org";
-            	}else if(jParser.HostTest("melchor629.no-ip.org",80)){
-            		url = "melchor629.no-ip.org";
             	}
             	publishProgress(10);
             	if(url!=null){
@@ -285,8 +290,8 @@ public class MainActivity extends ListActivity{
             			HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
             			response = http.getResponseCode();
             		} catch(Exception e){
-            			Log.e("com.melchor629.musicote", "Excepción HTTPURL: "+e.toString());
-            		}
+            			Log.e("Comrobando", "Excepción HTTPURL: "+e.toString());
+            		} //TODO meter esto en el parseador de JSON, ya que esto forma parte de él
             		publishProgress(25);
             		if(response==200){
             			JSONObject json = jParser.getJSONFromUrl("http://"+url+"/multimedia/musicoteApi.php");
@@ -299,7 +304,7 @@ public class MainActivity extends ListActivity{
             				// looping through All Songs
             				for(int i = 0; i < contacts.length(); i++){
             					JSONObject c = contacts.getJSONObject(i);
-            				
+
             					int counter = 40 + ((i/contacts.length())/2);
             					publishProgress(counter);
             					// Storing each json item in variable
@@ -340,7 +345,7 @@ public class MainActivity extends ListActivity{
             	}
         	}
         }
-    	
+
     	protected void onProgressUpdate(Integer... progress){
     		progressDialog.setProgress(progress[0]);
     	}
