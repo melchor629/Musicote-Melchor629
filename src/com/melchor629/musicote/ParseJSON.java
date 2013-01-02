@@ -109,6 +109,7 @@ public class ParseJSON {
         return jObj;
 
     }
+
     /**
      * HostTest
      * Sirve para comprobar si está encendido el PC
