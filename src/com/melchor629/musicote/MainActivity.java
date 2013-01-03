@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 
@@ -67,9 +68,10 @@ public class MainActivity extends ListActivity {
 	public static String url;
 
 	private ProgressDialog progressDialog;
+	private Toast tostado;
 
 	// contacts JSONArray
-	JSONArray contacts = null;
+	private static JSONArray contacts = null;
 
 	TextView mTextView; // Member variable for text view in the layout
     @Override
@@ -105,7 +107,13 @@ public class MainActivity extends ListActivity {
 				new String[] { "titulo", "artista", "album" }, new int[] {
 					R.id.name, R.id.email, R.id.mobile });
 
-		setListAdapter(adapter);
+		try {
+			setListAdapter(adapter);
+		}catch (Exception e){
+    		Log.e("ServerHostDetector","Er ordenata de mershor ta apagao...");
+			tostado = Toast.makeText(getApplicationContext(), "Ningún servidor activo...", Toast.LENGTH_SHORT);
+    		tostado.show();
+		}
 
 		// selecting single ListView item
 		ListView lv = getListView();
@@ -120,7 +128,7 @@ public class MainActivity extends ListActivity {
 				try{
 					tolcoño = contacts.getJSONObject(position);
 				}catch(Exception e){
-					Log.e("com.melchor629.musicote", "138<<"+e.toString()); e.printStackTrace();
+					Log.e("com.melchor629.musicote", "121<<"+e.toString()); e.printStackTrace();
 				}
 				String name = getString(R.string.vacio);
 				String cost = getString(R.string.vacio);
@@ -240,8 +248,8 @@ public class MainActivity extends ListActivity {
 
     	public String url;
     	public int response;
-    	public JSONArray contacts;
 
+		@SuppressLint("ShowToast")
 		protected void onPreExecute()
 		{
 			//Create a new progress dialog
@@ -251,7 +259,7 @@ public class MainActivity extends ListActivity {
 			//Set the dialog title to 'Loading...'
 			progressDialog.setTitle("Musicote en camino...");
 			//Set the dialog message to 'Loading application View, please wait...'
-			progressDialog.setMessage("Cargando datos del servidor.\nEspere...");
+			progressDialog.setMessage("Cargando datos del servidor, espere...");
 			//This dialog can't be canceled by pressing the back key
 			progressDialog.setCancelable(false);
 			//This dialog isn't indeterminate
@@ -275,18 +283,19 @@ public class MainActivity extends ListActivity {
             	publishProgress(1);
                 try{
                     Thread.sleep(1000);
+                    publishProgress(5);
                 } catch (Exception e) {}
             	// La app prueba en busca de la dirección correcta
             	if(jParser.HostTest("192.168.1.128",80)){
-            		url = "192.168.1.128";
+            		MainActivity.url = "192.168.1.128";
             	}else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
-            		url = "reinoslokos.no-ip.org";
+            		MainActivity.url = "reinoslokos.no-ip.org";
             	}
             	publishProgress(10);
-            	if(url!=null){
+            	if(MainActivity.url!=null){
             		// getting JSON string from URL
             		try{
-            			URL urlhttp = new URL("http://"+url+"/multimedia/musicoteApi.php");
+            			URL urlhttp = new URL("http://"+MainActivity.url+"/multimedia/musicoteApi.php");
             			HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
             			response = http.getResponseCode();
             		} catch(Exception e){
@@ -294,18 +303,18 @@ public class MainActivity extends ListActivity {
             		} //TODO meter esto en el parseador de JSON, ya que esto forma parte de él
             		publishProgress(25);
             		if(response==200){
-            			JSONObject json = jParser.getJSONFromUrl("http://"+url+"/multimedia/musicoteApi.php");
+            			JSONObject json = jParser.getJSONFromUrl("http://"+MainActivity.url+"/multimedia/musicoteApi.php");
             			publishProgress(30);
             			try {
             				// Getting Array of Songs
-            				contacts = json.getJSONArray("canciones");
+            				MainActivity.contacts = json.getJSONArray("canciones");
             				publishProgress(40);
 
             				// looping through All Songs
-            				for(int i = 0; i < contacts.length(); i++){
-            					JSONObject c = contacts.getJSONObject(i);
+            				for(int i = 0; i < MainActivity.contacts.length(); i++){
+            					JSONObject c = MainActivity.contacts.getJSONObject(i);
 
-            					int counter = 40 + ((i/contacts.length())/2);
+            					int counter = 40 + ((i/MainActivity.contacts.length())/2);
             					publishProgress(counter);
             					// Storing each json item in variable
             					String id = c.getString("id");
@@ -323,7 +332,7 @@ public class MainActivity extends ListActivity {
             					map.put("titulo", titulo);
             					map.put("artista", artista);
             					map.put("album", album);
-            					map.put("archivo", "http://"+url+"/"+archivo);
+            					map.put("archivo", "http://"+MainActivity.url+"/"+archivo);
             					map.put("duracion", duracion);
 
             					// adding HashList to ArrayList
@@ -339,8 +348,6 @@ public class MainActivity extends ListActivity {
         			publishProgress(100);
         			return contactList;
             	}else{
-            		Log.i("ServerHostDetector","Er ordenata de mershor ta apagao...");
-            		Toast.makeText(getApplicationContext(), "Ningún servidor activo...", Toast.LENGTH_SHORT).show();
             		return null;
             	}
         	}
