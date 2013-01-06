@@ -51,6 +51,10 @@ public class SingleMenuItemActivity extends Activity {
 	private static final String TAG_PHONE_MOBILE = "album";
 	private static final String TAG_DURACIONS = "duracion";
 	private static final String TAG_FILE = "archivo";
+	
+	public static String url;
+	public static String name;
+	public static String cost;
 
 	private static String archivo;
 	@Override
@@ -62,8 +66,8 @@ public class SingleMenuItemActivity extends Activity {
         Intent in = getIntent();
 
         // Get JSON values from previous intent
-        String name = in.getStringExtra(TAG_NAME);
-        String cost = in.getStringExtra(TAG_EMAIL);
+        name = in.getStringExtra(TAG_NAME);
+        cost = in.getStringExtra(TAG_EMAIL);
         String description = in.getStringExtra(TAG_PHONE_MOBILE);
         String duracion = in.getStringExtra(TAG_DURACIONS);
         archivo = in.getStringExtra(TAG_FILE);
@@ -94,7 +98,15 @@ public class SingleMenuItemActivity extends Activity {
 	public void PlaySong(View v) {
 		InputStream is=null;
 		boolean sierto=false;
-		try{
+		url = archivo;
+		// Starting new intent
+		Intent in = new Intent(getApplicationContext(), Reproductor.class);
+		in.putExtra("titulo", name);
+		in.putExtra("artista", cost);
+		in.putExtra("archivo", url);
+
+		startService(in);
+		/*try{
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpGet httpPost = new HttpGet(archivo);
 
@@ -152,6 +164,6 @@ public class SingleMenuItemActivity extends Activity {
 			Uri webpage = Uri.parse(archivo);
 	    	Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
 	    	startActivity(webIntent);
-		}
+		}*/
 	}
 }

@@ -246,7 +246,6 @@ public class MainActivity extends ListActivity {
      */
     private class JSONParseDialog extends AsyncTask<Void, Integer, ArrayList<HashMap<String,String>>> {
 
-    	public String url;
     	public int response;
 
 		@SuppressLint("ShowToast")
