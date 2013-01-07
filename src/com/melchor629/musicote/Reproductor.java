@@ -13,25 +13,27 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
- * Reproductor del Musicote InDEV
+ * Reproductor del Musicote 0.1
+ * TODO Mejorar con nuevas cosas el servicio inlcuyendo una interfaz gráfica y Last.FM
+ * TODO Averiguar si en versiones antiguas funciona la notificación
+ * TODO Cambiar el icono por uno mejor y con tamaños para que el Lint no se queje xD
  * @author melchor
  * http://developer.android.com/guide/topics/media/mediaplayer.html
  */
 public class Reproductor extends Service implements MediaPlayer.OnPreparedListener {
-	
-	private static final String ACTION_PLAY = "com.melchor629.musicote.Reproductor";
+
 	MediaPlayer reproductor = new MediaPlayer();
 	
 	public int onStartCommand (Intent intent, int flags, int StartID){
-		if (intent.getAction().equals(ACTION_PLAY)) {
-			String url = intent.getStringExtra("url");
-			String tit = intent.getStringExtra("titulo");
-			String art = intent.getStringExtra("artista");
-			initMediaPlayer(url, tit, art);
-        }
-		return 1;
+		Toast.makeText(this, "Reproductor de musicote abierto", Toast.LENGTH_LONG).show();
+		String url = intent.getStringExtra("archivo");
+		String tit = intent.getStringExtra("titulo");
+		String art = intent.getStringExtra("artista");
+		initMediaPlayer(url, tit, art);
+		return START_STICKY;
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -93,5 +95,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
    	@Override
    	public void onDestroy() {
    		if (reproductor != null) reproductor.release();
+   		Toast.makeText(this, "Reproductor de musicote cerrado", Toast.LENGTH_LONG).show();
     }
 }

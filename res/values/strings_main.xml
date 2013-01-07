@@ -8,7 +8,7 @@
     <string name="vacio">Nada</string>
     <string name="menu_settings">Ajustes</string>
     <string name="PlayerDesc"><b>Aprete el texto de arriba y empezará a reproducir la canción.</b>\n
-        Para funcionar bien, el reproductor necesita una tarjeta externa con un espacio libre mínimo de 10Mb. En caso contrario, el reproductor se verá forzado a reproducir el archivo sin descargarlo (para ello se recomienda usar VLC)
+        Esta aplicación usa un reproductor propio que está en fase experimental, pruebalo y cuentale al creador ;)
         \nEste reproductor está en pruebas</string>
     
 </resources>

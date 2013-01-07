@@ -111,7 +111,7 @@ public class MainActivity extends ListActivity {
 			setListAdapter(adapter);
 		}catch (Exception e){
     		Log.e("ServerHostDetector","Er ordenata de mershor ta apagao...");
-			tostado = Toast.makeText(getApplicationContext(), "Ningún servidor activo...", Toast.LENGTH_SHORT);
+			tostado = Toast.makeText(getApplicationContext(), "Ningún servidor activo...", Toast.LENGTH_LONG);
     		tostado.show();
 		}
 
@@ -298,7 +298,7 @@ public class MainActivity extends ListActivity {
             			HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
             			response = http.getResponseCode();
             		} catch(Exception e){
-            			Log.e("Comrobando", "Excepción HTTPURL: "+e.toString());
+            			Log.e("Comprobando", "Excepción HTTPURL: "+e.toString());
             		} //TODO meter esto en el parseador de JSON, ya que esto forma parte de él
             		publishProgress(25);
             		if(response==200){

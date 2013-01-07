@@ -30,7 +30,9 @@
         <activity android:name="com.melchor629.musicote.DisplayMessageActivity" />
         <activity android:name="com.melchor629.musicote.SingleMenuItemActivity"
             	  android:label="Una simple canción..."></activity>
-        <activity android:name="com.melchor629.musicote.Reproductor"></activity>
+        
+        <service android:name="com.melchor629.musicote.Reproductor"
+            	 android:enabled="true"></service>
     </application>
 
 </manifest>
