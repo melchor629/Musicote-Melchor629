@@ -43,6 +43,8 @@ public class SingleMenuItemActivity extends Activity {
 	public static String url;
 	public static String name;
 	public static String cost;
+	public static String description;
+	public static String duracion;
 
 	private static String archivo;
 	@Override
@@ -56,8 +58,8 @@ public class SingleMenuItemActivity extends Activity {
         // Get JSON values from previous intent
         name = in.getStringExtra(TAG_NAME);
         cost = in.getStringExtra(TAG_EMAIL);
-        String description = in.getStringExtra(TAG_PHONE_MOBILE);
-        String duracion = in.getStringExtra(TAG_DURACIONS);
+        description = in.getStringExtra(TAG_PHONE_MOBILE);
+        duracion = in.getStringExtra(TAG_DURACIONS);
         archivo = in.getStringExtra(TAG_FILE);
 
         // Displaying all values on the screen
@@ -91,5 +93,15 @@ public class SingleMenuItemActivity extends Activity {
 		in.putExtra("archivo", url); Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
 
 		startService(in);
+	}
+	
+	/**
+	 * StopSong
+	 * Para el servicio del reproductor
+	 * @param v
+	 */
+	public void StopSong(View v) {
+		Intent in = new Intent(getApplicationContext(), Reproductor.class);
+		stopService(in);
 	}
 }
