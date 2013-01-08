@@ -12,7 +12,6 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -68,7 +67,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         	notification.setLatestEventInfo(getApplicationContext(), "Musicote",
                 "Playing: " + titulo+" - "+artista, pi);
         }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-        	notification = new NotificationCompat.Builder(this)
+        	notification = new Notification.Builder(this)
     			.setContentTitle("Musicote")
     			.setContentText("Reproduciendo: "+titulo+" - "+artista)
     			.setSmallIcon(R.drawable.altavoz)
