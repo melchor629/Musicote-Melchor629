@@ -2,6 +2,8 @@ package com.melchor629.musicote;
 
 import java.io.IOException;
 
+import com.melchor629.musicote.scrobbler.Auth;
+
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -27,11 +29,15 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
 	MediaPlayer reproductor = new MediaPlayer();
 	
+	private String url;
+	private String tit;
+	private String art;
+	
 	public int onStartCommand (Intent intent, int flags, int StartID){
 		Toast.makeText(this, "Reproductor de musicote abierto", Toast.LENGTH_LONG).show();
-		String url = intent.getStringExtra("archivo");
-		String tit = intent.getStringExtra("titulo");
-		String art = intent.getStringExtra("artista");
+		url = intent.getStringExtra("archivo");
+		tit = intent.getStringExtra("titulo");
+		art = intent.getStringExtra("artista");
 		initMediaPlayer(url, tit, art);
 		return START_STICKY;
 	}
@@ -80,7 +86,9 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * Se llama cuando el reproductor está listo
      */
     public void onPrepared(MediaPlayer player) {
-        player.start();
+        player.start(); //TODO Crear un Last.FM Scrobbler...
+        Auth authFM = new Auth();
+        authFM.getSK();
     }
 
 	/* (non-Javadoc)
