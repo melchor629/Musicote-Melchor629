@@ -23,7 +23,6 @@ import android.widget.Toast;
  * TODO Averiguar si en versiones antiguas funciona la notificación
  * TODO Cambiar el icono por uno mejor y con tamaños para que el Lint no se queje xD
  * @author melchor
- * http://developer.android.com/guide/topics/media/mediaplayer.html
  */
 public class Reproductor extends Service implements MediaPlayer.OnPreparedListener {
 
