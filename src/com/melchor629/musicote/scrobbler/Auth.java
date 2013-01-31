@@ -18,8 +18,13 @@ public class Auth {
 	private static final String username = "melchor629"; //TODO Poner menu de ajustes y cojerlo de alli
 	private static final String password = "andurriales"; //TODO lo que dise arriva
 	
+	public static String SK = null;
+	
 	public Auth(){
-		
+		Log.d(TAG, "Llamado");
+		if(SK==null) {
+			SK = getSK();
+		}
 	}
 	
 	/**

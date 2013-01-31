@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -33,6 +34,7 @@ public class Peticiones {
 	
 	public static final String APIkey   = "201a5fdd42fd8cc5577fd0646b3e8ba7";
 	public static final String url      = "https://ws.audioscrobbler.com/2.0/";
+	public static final String uRl		= "http://ws.audioscrobbler.com/2.0/";
 	
 	private static final String TAG		= "Scrobbler->Peticiones";
 	private static final String Secret   = "8a5b2c73afdd9f1a585754d52449f0cd";
@@ -101,7 +103,71 @@ public class Peticiones {
 	}
 	
 	/**
-	 * Crea la <i>api_sig</i> y el texto a enviar 
+	 * Envia una petición a Last.FM por HTTP y POST
+	 * @param request Petición creada a través de {@link sign}
+	 * @return out String con el xml/json de la petición
+	 */
+	public static String HTTPpost(String request){
+		String out = null;
+		InputStream is = null;
+		HttpURLConnection conn = null;
+    	try {
+    		request += "&format=json";
+			java.net.URL Url = new URL(null, url);
+			HttpURLConnection.setFollowRedirects(true);
+			conn = (HttpURLConnection) Url.openConnection();
+			conn.setReadTimeout(10000);
+			conn.setConnectTimeout(15000);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Accept-Charset","utf-8");
+			conn.setRequestProperty("Content-type","application/x-www-form-urlencoded");
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			
+			DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+			os.writeBytes(request);
+			os.flush();
+			os.close();
+			
+			Log.e(TAG, "os = "+conn.getOutputStream().toString());
+			
+			conn.connect();
+			int response = conn.getResponseCode();
+			Log.e(TAG, "Respuesta de Last.FM: "+response);
+			if(response==200){
+				is = conn.getInputStream();
+			}
+
+			if(is != null){
+				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+				String line;
+				out = "";
+				while((line = reader.readLine()) != null){
+					out += "\n"+line;
+				}
+				reader.close();
+			}else{
+				Log.e(TAG,"Last.FM: is a venido vacio (null)");
+				out = "nulo";
+			}
+		} catch (MalformedURLException e) {
+			Log.e(TAG,"Error autenticando: "+ e.toString());
+		} catch (IOException e) {
+			Log.e(TAG,"Error autenticando: "+ e.toString());
+		} finally {
+			if(conn != null){
+				conn.disconnect();
+			}
+		}
+		
+		Log.e(TAG,out);
+		return out;
+	}
+	
+	/**
+	 * Crea la <i>api_sig</i> y el texto a enviar. Tienes que ponerlo del en un <code>Map&lt;String,
+	 *  String></code> con todo lo necesario menos la api_key y el secret (<b>IMPORTANTE</b> SK no
+	 * incluido)
 	 * @param Map<String,String> s
 	 * @return String
 	 */
