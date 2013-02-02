@@ -11,5 +11,10 @@ before_install:
   # only update the sdk for the tools and platform-tools (1,2) and whatever api level
   # you are building for android (run "android list sdk" to get the full list.  9 = 2.3.3 or API level 10
   - ${ANDROID_HOME}/tools/android update sdk --filter 1,2,3 --no-ui --force
+  - cd ${ANDROID_HOME}
+  - ls
+  - cd platform-tools
+  - ls
+  - dirs
   - chmod 777 ${ANDROID_HOME}/platform-tools/aapt
   - ${ANDROID_HOME}/platform-tools/aapt
