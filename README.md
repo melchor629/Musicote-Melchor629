@@ -13,5 +13,5 @@ To edit this project, use Eclipse with the Android ANT installed
 Here I will save all my changes of this app
 
 ##DOWNLOAD APK
-http://reinoslokos.no-ip.org/com.melchor629.musicote.apk
-If you cannot download the APK, wait, the server host could have the PC off or with Windows...
+Aptoide:
+http://melchor629.store.aptoide.com/app/market/com.melchor629.musicote/1/2445047/Musicote
