@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -156,12 +157,12 @@ public class MainActivity extends ListActivity {
 				startActivity(in);
 			}
 		});
+		
     }
 
     @Override
     public void onPause() {
         super.onPause();  // Always call the superclass method first
-        android.os.Debug.stopMethodTracing();
     }
 
     @Override
@@ -187,6 +188,19 @@ public class MainActivity extends ListActivity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
     }
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		switch(item.getItemId()){
+			case R.id.ajustesm:
+				Intent intent = new Intent(MainActivity.this, Ajustes.class);
+				startActivity(intent);
+				break;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+		return true;
+	}
 
     /** Called when the user selects the Send button **/
     public void sendMessage(View view) {
@@ -280,10 +294,6 @@ public class MainActivity extends ListActivity {
 
             synchronized (this){
             	publishProgress(1);
-                try{
-                    Thread.sleep(1000);
-                    publishProgress(5);
-                } catch (Exception e) {}
             	// La app prueba en busca de la dirección correcta
             	if(jParser.HostTest("192.168.1.128",80)){
             		MainActivity.url = "192.168.1.128";
@@ -358,6 +368,10 @@ public class MainActivity extends ListActivity {
     	
     	protected void onPostExecute(ArrayList<HashMap<String, String>> result){
     		super.onPostExecute(result);
+            try{
+                Thread.sleep(1000);
+                publishProgress(5);
+            } catch (Exception e) {}
     		progressDialog.dismiss();
     	}
     }

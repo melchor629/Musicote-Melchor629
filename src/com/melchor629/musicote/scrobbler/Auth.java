@@ -2,7 +2,6 @@ package com.melchor629.musicote.scrobbler;
 
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.util.Log;
@@ -14,26 +13,30 @@ import android.util.Log;
  */
 public class Auth {
 
-	private static final String TAG      = "Scrobbler->Auth";
-	private static final String username = "melchor629"; //TODO Poner menu de ajustes y cojerlo de alli
-	private static final String password = "andurriales"; //TODO lo que dise arriva
+	private static final String TAG = "Scrobbler->Auth";
+	private static String username 	= null;
+	private static String password 	= null;
 	
 	public static String SK = null;
 	
-	public Auth(){
+	public Auth(String user, String pass){
 		Log.d(TAG, "Llamado");
-		if(SK==null) {
-			SK = getSK();
+		if(user != null && pass != null){
+			username = user;
+			password = pass;
 		}
 	}
 	
 	/**
 	 * Hace todo lo que tiene dentro este java y te saca el SK de la sesión
-	 * @return 
+	 * @return SK el código de sesión
 	 */
 	public String getSK(){
 		Log.e(TAG, "Last.FM sesión iniciada");
-		return AuthParser(Peticiones.HTTPSpost(sign()));
+		if(SK==null) {
+			SK = AuthParser(Peticiones.HTTPSpost(sign()));
+		}
+		return SK;
 	}
 	
 	/**
@@ -55,11 +58,11 @@ public class Auth {
 		String SK = null;
 		try {
 			JSONObject autho = new JSONObject(json);
-			JSONArray auth = autho.getJSONArray("session");
+			JSONObject auth = autho.getJSONObject("session");
 			String[] sk = new String[auth.length()];
 			
 			for(int i=0; i<auth.length(); i++){
-				JSONObject obj = auth.getJSONObject(i);
+				JSONObject obj = auth;
 				
 				String key = obj.getString("key");
 				

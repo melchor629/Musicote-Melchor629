@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+   				android:title="Ajustes del musicote"
+   				android:key="Musicote">
+    <PreferenceCategory android:title="Last.FM" android:key="last.fm">
+        <CheckBoxPreference android:selectable="true"
+            				android:title="¿Hacer Scrobblings?"
+       						android:summary="Si quieres hacer scrobblings, activa esta casilla"
+       						android:key="lastact"/>
+        <EditTextPreference android:summary="Usuario de Last.FM"
+            				android:title="Usuario"
+            				android:key="usuario"/>
+        <EditTextPreference android:summary="Contraseña de Last.FM"
+            				android:title="Contraseña"
+            				android:key="contraseña"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Sobre la App" android:key="about">
+        <Preference android:key="aboutapp"
+            		android:summary="@string/version"
+            		android:title="Versión"/>
+        <Preference android:summary="Melchor Garau" android:title="Autor" android:key="aboutauthor"/>
+    </PreferenceCategory>
+</PreferenceScreen>

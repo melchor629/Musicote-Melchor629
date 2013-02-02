@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -77,6 +79,25 @@ public class SingleMenuItemActivity extends Activity {
 
         //TODO Hacer que el titulo de la actividad cambia dependiendo de la canción
     }
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+    }
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		switch(item.getItemId()){
+			case R.id.ajustesm:
+				Intent intent = new Intent(SingleMenuItemActivity.this, Ajustes.class);
+				startActivity(intent);
+				break;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+		return true;
+	}
 
 	/**
 	 * PlaySong

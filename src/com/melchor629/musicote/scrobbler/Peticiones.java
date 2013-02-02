@@ -23,6 +23,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import android.os.StrictMode;
 import android.util.Log;
 
 /**
@@ -45,6 +46,9 @@ public class Peticiones {
 	 * @return out String con el xml/json de la petición
 	 */
 	public static String HTTPSpost(String request){
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+		
 		String out = null;
 		InputStream is = null;
 		HttpsURLConnection conn = null;
@@ -108,6 +112,9 @@ public class Peticiones {
 	 * @return out String con el xml/json de la petición
 	 */
 	public static String HTTPpost(String request){
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+		
 		String out = null;
 		InputStream is = null;
 		HttpURLConnection conn = null;
