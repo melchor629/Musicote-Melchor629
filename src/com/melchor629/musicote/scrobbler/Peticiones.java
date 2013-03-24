@@ -71,11 +71,9 @@ public class Peticiones {
 			os.flush();
 			os.close();
 			
-			Log.e(TAG, "os = "+conn.getOutputStream().toString());
-			
 			conn.connect();
 			int response = conn.getResponseCode();
-			Log.e(TAG, "Respuesta de Last.FM: "+response);
+			Log.d(TAG, "Respuesta de Last.FM: "+response);
 			if(response==200){
 				is = conn.getInputStream();
 			}
@@ -136,11 +134,9 @@ public class Peticiones {
 			os.flush();
 			os.close();
 			
-			Log.e(TAG, "os = "+conn.getOutputStream().toString());
-			
 			conn.connect();
 			int response = conn.getResponseCode();
-			Log.e(TAG, "Respuesta de Last.FM: "+response);
+			Log.d(TAG, "Respuesta de Last.FM: "+response);
 			if(response==200){
 				is = conn.getInputStream();
 			}
@@ -167,7 +163,7 @@ public class Peticiones {
 			}
 		}
 		
-		Log.e(TAG,out);
+		Log.d(TAG,out);
 		return out;
 	}
 	
@@ -188,7 +184,6 @@ public class Peticiones {
 		}
 		b.append(Secret);
 		String c = b.toString();
-		Log.e("", c);
 		MessageDigest md = null;
 		try {
 			md = MessageDigest.getInstance("md5");

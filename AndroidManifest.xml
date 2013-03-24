@@ -37,15 +37,6 @@
         
         <service android:name="com.melchor629.musicote.Reproductor"
             	 android:enabled="true"></service>
-        <service android:name="com.melchor629.actualizador.servicio"
-            	 android:enabled="true"></service>
-        
-        <receiver android:name="com.melchor629.actualizador.Actualizador"
-                  android:label="@string/app_name">
-        	<intent-filter>
-              	<action android:name="android.intent.action.BOOT_COMPLETED" />
-        	</intent-filter>
-    	</receiver>
     </application>
 
 </manifest>

@@ -32,7 +32,7 @@ public class Auth {
 	 * @return SK el código de sesión
 	 */
 	public String getSK(){
-		Log.e(TAG, "Last.FM sesión iniciada");
+		Log.d(TAG, "Last.FM sesión iniciada");
 		if(SK==null) {
 			SK = AuthParser(Peticiones.HTTPSpost(sign()));
 		}

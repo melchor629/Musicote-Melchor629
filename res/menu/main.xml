@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/ajustesm" android:title="@string/menu_settings"></item>
-    
+    <item android:id="@+id/parar" android:title="@string/menu_parar"></item>
 
 </menu>

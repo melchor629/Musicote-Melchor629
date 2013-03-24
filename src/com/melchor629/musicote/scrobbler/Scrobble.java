@@ -2,8 +2,6 @@ package com.melchor629.musicote.scrobbler;
 
 import java.util.Map;
 
-import android.util.Log;
-
 /**
  * Envia scrobblings
  * TODO enviar el now playing
@@ -31,7 +29,8 @@ public class Scrobble {
 		int status = 0;
 		long timestamp = System.currentTimeMillis()/1000;
 		String sign = sign(titulo, artista, timestamp);
-		Log.e(TAG, Peticiones.HTTPpost(sign));
+		if(Peticiones.HTTPpost(sign) != null)
+			status = 1;
 		//Make this variables again null for other uses
 		titulo = null;
 		artista = null;
@@ -45,7 +44,8 @@ public class Scrobble {
 	public int nowPlaying(){
 		int status = 0;
 		String sign = sign(titulo, artista);
-		Log.e(TAG, Peticiones.HTTPpost(sign));
+		if(Peticiones.HTTPpost(sign) != null)
+			status = 1;
 		return status;
 	}
 	

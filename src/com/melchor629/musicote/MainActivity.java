@@ -196,6 +196,9 @@ public class MainActivity extends ListActivity {
 				Intent intent = new Intent(MainActivity.this, Ajustes.class);
 				startActivity(intent);
 				break;
+			case R.id.parar:
+				Intent intento = new Intent(MainActivity.this, Reproductor.class);
+				stopService(intento);
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -295,8 +298,8 @@ public class MainActivity extends ListActivity {
             synchronized (this){
             	publishProgress(1);
             	// La app prueba en busca de la dirección correcta
-            	if(jParser.HostTest("192.168.1.128",80)){
-            		MainActivity.url = "192.168.1.128";
+            	if(jParser.HostTest("192.168.1.133",80)){
+            		MainActivity.url = "192.168.1.133";
             	}else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
             		MainActivity.url = "reinoslokos.no-ip.org";
             	}
@@ -304,7 +307,7 @@ public class MainActivity extends ListActivity {
             	if(MainActivity.url!=null){
             		// getting JSON string from URL
             		try{
-            			URL urlhttp = new URL("http://"+MainActivity.url+"/multimedia/musicoteApi.php");
+            			URL urlhttp = new URL("http://"+MainActivity.url+"/cgi-bin/archivos.py");
             			HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
             			response = http.getResponseCode();
             		} catch(Exception e){
@@ -312,7 +315,7 @@ public class MainActivity extends ListActivity {
             		} //TODO meter esto en el parseador de JSON, ya que esto forma parte de él
             		publishProgress(25);
             		if(response==200){
-            			JSONObject json = jParser.getJSONFromUrl("http://"+MainActivity.url+"/multimedia/musicoteApi.php");
+            			JSONObject json = jParser.getJSONFromUrl("http://"+MainActivity.url+"/cgi-bin/archivos.py");
             			publishProgress(30);
             			try {
             				// Getting Array of Songs

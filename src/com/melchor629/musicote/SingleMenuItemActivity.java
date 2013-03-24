@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
@@ -114,6 +115,19 @@ public class SingleMenuItemActivity extends Activity {
 		in.putExtra("archivo", url); Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
 
 		startService(in);
+		
+		final ProgressBar barra = (ProgressBar) findViewById(R.id.progressBar1);
+		new Thread(
+			new Runnable(){
+				@Override
+				public void run(){
+					while(Reproductor.a <100){
+						Log.e("Single", "Reproductor.a = "+Reproductor.a);
+						barra.setProgress(Reproductor.a);
+					}
+				}
+			}
+		);
 	}
 	
 	/**

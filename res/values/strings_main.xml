@@ -10,5 +10,6 @@
     <string name="PlayerDesc"><b>Aprete el texto de arriba y empezará a reproducir la canción.</b>\n
         Esta aplicación usa un reproductor propio que está en fase experimental, pruebalo y cuentale al creador ;)
         \nEste reproductor está en pruebas</string>
+    <string name="menu_parar">Parar música…</string>
     
 </resources>
