@@ -36,6 +36,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 	private String tit;
 	private String art;
 	private coso cosa;
+	private NotificationManager nm;
 	
 	public static int a;
 	
@@ -89,7 +90,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         		.setSmallIcon(R.drawable.altavoz)
         		.setContentTitle("Musicote")
         		.setContentText("Reproduciendo "+titulo+" de "+artista)
-        		;//TODO poner que sea fijo y que se cierre automáticamente
+        		;//TODO poner que sea fijo
        
         Intent resultIntent = new Intent(this, MainActivity.class);
         
@@ -98,7 +99,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         notification.setContentIntent(resultPendingIntent);
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nm.notify(mID, notification.build());
         
     	//startForeground(1, notification);
@@ -122,34 +123,8 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 		
 		final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
 		
-		/**new Thread(
-			new Runnable(){
-				@Override
-				public void run(){
-					player.start();
-					for(int i = 0; i < player.getDuration(); i+=1000){
-						try{
-							if((int)(i/1000) == (int)((player.getDuration()/1000)/2)){
-						   		if(pref.getBoolean("lastact", false) == true){
-						   			Scrobble scr = new Scrobble(tit, art);
-						   			scr.scrobble();
-						   		}
-							}
-							Log.d("FOR", "Tiempo "+i+" de "+player.getDuration());
-							Thread.sleep(1000);
-						}catch (Exception e){
-							Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...");
-						}
-					}
-					player.stop(); Log.d("FOR", "Se tendria que serrar...");
-					Intent in = new Intent(getApplicationContext(), Reproductor.class);
-					stopService(in);
-				}
-			}
-		, "Musicote").start();**/
-		
 		new Thread(new Runnable(){@Override public void run(){ cosa = new coso();
-		cosa.run(player, pref);
+		cosa.run(player, pref, nm);
 		}}).start();
     }
 
@@ -170,7 +145,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     }
    	
 	class coso extends Thread {
-		public void run(MediaPlayer player, SharedPreferences pref){
+		public void run(MediaPlayer player, SharedPreferences pref, NotificationManager nm){
 			player.start();
 			try{
 				for(int i = 0; player.isPlaying() & i < player.getDuration(); i+=1000){
@@ -190,9 +165,11 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 				}
 			
 				player.stop(); Log.d("FOR", "Se tendria que serrar...");
+				nm.cancelAll();
 				Intent in = new Intent(getApplicationContext(), Reproductor.class);
 				stopService(in);
 			}catch (IllegalStateException e){
+				nm.cancelAll();
 				this.interrupt();
 				Log.d("Reproductor", "Se ha detectado que el reproductor se ha cerrado, esto tambien se cierra");
 			}catch (Exception e){
