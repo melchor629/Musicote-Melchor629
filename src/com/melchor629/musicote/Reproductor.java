@@ -38,7 +38,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 	private coso cosa;
 	private NotificationManager nm;
 	
-	public static int a;
+	public static long a;
 	
 	public int onStartCommand (Intent intent, int flags, int StartID){
 		Toast.makeText(this, "Reproductor de musicote abierto", Toast.LENGTH_LONG).show();
@@ -156,8 +156,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 					   			scr.scrobble();
 					   		}
 						}
-						Log.d("FOR", "Tiempo "+i+" de "+player.getDuration());
-						a = (int)(i/(player.getDuration())); Log.e("Reproductor", "a = "+a+"\n"+(long)(i/(player.getDuration())));
+						a = (long)(i/(long)(player.getDuration()/100)); Log.e("Reproductor", "a = "+a+"-"+i+"-"+player.getDuration());
 						Thread.sleep(1000);
 					}catch (Exception e){
 						Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...");
@@ -166,10 +165,12 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 			
 				player.stop(); Log.d("FOR", "Se tendria que serrar...");
 				nm.cancelAll();
+				a = -1;
 				Intent in = new Intent(getApplicationContext(), Reproductor.class);
 				stopService(in);
 			}catch (IllegalStateException e){
 				nm.cancelAll();
+				a = -1;
 				this.interrupt();
 				Log.d("Reproductor", "Se ha detectado que el reproductor se ha cerrado, esto tambien se cierra");
 			}catch (Exception e){

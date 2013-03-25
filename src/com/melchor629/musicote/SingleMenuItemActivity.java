@@ -121,13 +121,13 @@ public class SingleMenuItemActivity extends Activity {
 			new Runnable(){
 				@Override
 				public void run(){
-					while(Reproductor.a <100){
-						Log.e("Single", "Reproductor.a = "+Reproductor.a);
-						barra.setProgress(Reproductor.a);
+					while(Reproductor.a <100 && Reproductor.a != -1){
+						try{Thread.sleep(100);}catch(Exception e){}
+						barra.setProgress((int)Reproductor.a);
 					}
 				}
 			}
-		);
+		).start();
 	}
 	
 	/**
