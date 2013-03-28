@@ -33,8 +33,8 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 	MediaPlayer reproductor = new MediaPlayer();
 	
 	private String url;
-	public String tit;
-	public String art;
+	public static String tit;
+	public static String art;
 	private coso cosa;
 	private NotificationManager nm;
 	
