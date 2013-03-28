@@ -14,4 +14,5 @@ before_install:
   # you are building for android (run "android list sdk" to get the full list.  9 = 2.3.3 or API level 10
   - android update sdk --filter platform-tools,android-17,extra-android-support,android-17,sysimg-17 --no-ui --force
   - echo no
+  - mvn install:install-file -Dfile=$PWD/libs/android-support-v4.jar -DgroupId=com.google.android -DartifactId=support-v5 -Dversion=r7 -Dpackagin=jar
   - mvn -X package

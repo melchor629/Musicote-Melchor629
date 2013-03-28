@@ -33,8 +33,8 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 	MediaPlayer reproductor = new MediaPlayer();
 	
 	private String url;
-	private String tit;
-	private String art;
+	public String tit;
+	public String art;
 	private coso cosa;
 	private NotificationManager nm;
 	
@@ -89,8 +89,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
         		.setSmallIcon(R.drawable.altavoz)
         		.setContentTitle("Musicote")
-        		.setContentText("Reproduciendo "+titulo+" de "+artista)
-        		;//TODO poner que sea fijo
+        		.setContentText("Reproduciendo "+titulo+" de "+artista); //TODO poner que sea fijo
        
         Intent resultIntent = new Intent(this, MainActivity.class);
         

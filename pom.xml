@@ -16,7 +16,7 @@
   	</dependency>
     <dependency>
         <groupId>com.google.android</groupId>
-        <artifactId>support-v4</artifactId>
+        <artifactId>support-v5</artifactId>
         <version>r7</version>
     </dependency>
     <dependency>
