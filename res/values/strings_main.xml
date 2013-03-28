@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="button_send">Enviar</string>
-    <string name="edit_message">Editame</string>
+    <string name="button_send">Send</string>
+    <string name="edit_message">Edit me</string>
     <string name="button_send2">Random</string>
-    <string name="Play">¡Reproduce esta canción!</string>
-    <string name="infor">Mensaje recibido:</string>
-    <string name="vacio">Nada</string>
-    <string name="menu_settings">Ajustes</string>
-    <string name="PlayerDesc"><b>Aprete el texto de arriba y empezará a reproducir la canción.</b>\n
-        Esta aplicación usa un reproductor propio que está en fase experimental, pruebalo y cuentale al creador ;)
-        \nEste reproductor está en pruebas</string>
-    <string name="menu_parar">Parar música…</string>
+    <string name="Play">Play this song!</string>
+    <string name="infor">Recived message:</string>
+    <string name="vacio">Nothing</string>
+    <string name="menu_settings">Settings</string>
+    <string name="PlayerDesc"><b>Press the above text and the song will start.</b>\n
+        Soon will be a better player</string>
+    <string name="menu_parar">Stop music…</string>
     
 </resources>

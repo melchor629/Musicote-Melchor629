@@ -112,11 +112,13 @@ public class SingleMenuItemActivity extends Activity {
 		Intent in = new Intent(getApplicationContext(), Reproductor.class);
 		in.putExtra("titulo", name);
 		in.putExtra("artista", cost);
-		in.putExtra("archivo", url); Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
+		in.putExtra("archivo", url);
+      	Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
 
 		startService(in);
 		
 		final ProgressBar barra = (ProgressBar) findViewById(R.id.progressBar1);
+      	final TextView texto = (TextView) findViewById(R.id.playingNow);
 		new Thread(
 			new Runnable(){
 				@Override
@@ -124,6 +126,7 @@ public class SingleMenuItemActivity extends Activity {
 					while(Reproductor.a <100 && Reproductor.a != -1){
 						try{Thread.sleep(100);}catch(Exception e){}
 						barra.setProgress((int)Reproductor.a);
+                      	texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
 					}
 				}
 			}
