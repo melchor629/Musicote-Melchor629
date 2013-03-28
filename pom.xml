@@ -19,6 +19,11 @@
         <artifactId>support-v4</artifactId>
         <version>r7</version>
     </dependency>
+    <dependency>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.0</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -33,18 +38,26 @@
           <target/>
         </configuration>
       </plugin>
-         <plugin>
-         	<groupId>com.jayway.maven.plugins.android.generation2</groupId>
-         	<artifactId>android-maven-plugin</artifactId>
-            <configuration>
-                <sdk>
-                    <path>${env.ANDROID_HOME}</path>
-                    <platform>17</platform>
-                </sdk>
-            </configuration>
-            <extensions>true</extensions>
-         	<version>3.5.0</version>
-         </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.0</version>
+        <configuration>
+            <compilerArgument>-verbose</compilerArgument>
+      	</configuration>
+      </plugin>
+      <plugin>
+          <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+          <artifactId>android-maven-plugin</artifactId>
+          <configuration>
+              <sdk>
+                  <path>${env.ANDROID_HOME}</path>
+                  <platform>17</platform>
+              </sdk>
+          </configuration>
+          <extensions>true</extensions>
+          <version>3.5.0</version>
+      </plugin>
     </plugins>
   </build>
 </project>
