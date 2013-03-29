@@ -10,12 +10,12 @@ import android.preference.PreferenceActivity;
  *
  */
 public class Ajustes extends PreferenceActivity {
-    
+
     @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstancedState){
         super.onCreate(savedInstancedState);
-        
+
         addPreferencesFromResource(R.xml.ajustes);
     }
 }

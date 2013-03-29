@@ -9,16 +9,16 @@ import android.util.Log;
 /**
  * Autentificador de Last.FM para el musicote
  * @author melchor
- * @TODO <code>username</code> y <code>password</code> cojerlos de los datos de la app 
+ * @TODO <code>username</code> y <code>password</code> cojerlos de los datos de la app
  */
 public class Auth {
 
     private static final String TAG = "Scrobbler->Auth";
     private static String username     = null;
     private static String password     = null;
-    
+
     public static String SK = null;
-    
+
     public Auth(String user, String pass){
         Log.d(TAG, "Llamado");
         if(user != null && pass != null){
@@ -26,7 +26,7 @@ public class Auth {
             password = pass;
         }
     }
-    
+
     /**
      * Hace todo lo que tiene dentro este java y te saca el SK de la sesión
      * @return SK el código de sesión
@@ -38,7 +38,7 @@ public class Auth {
         }
         return SK;
     }
-    
+
     /**
      * Crea la petición para hacer la petición de autenticación
      * @return out Petición creada
@@ -48,7 +48,7 @@ public class Auth {
         String request = Peticiones.request(datos);
         return request;
     }
-    
+
     /**
      * Obtiene el código de la sesión
      * @param json
@@ -60,12 +60,12 @@ public class Auth {
             JSONObject autho = new JSONObject(json);
             JSONObject auth = autho.getJSONObject("session");
             String[] sk = new String[auth.length()];
-            
+
             for(int i=0; i<auth.length(); i++){
                 JSONObject obj = auth;
-                
+
                 String key = obj.getString("key");
-                
+
                 sk[i] = key;
             }
             SK = sk[1];

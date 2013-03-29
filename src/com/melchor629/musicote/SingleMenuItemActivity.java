@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 /**
  * Musicote App
- * Melchor629 2012 
+ * Melchor629 2012
  *
  *    Copyright 2012 Melchor629
  *
@@ -42,7 +42,7 @@ public class SingleMenuItemActivity extends Activity {
     private static final String TAG_PHONE_MOBILE = "album";
     private static final String TAG_DURACIONS = "duracion";
     private static final String TAG_FILE = "archivo";
-    
+
     public static String url;
     public static String name;
     public static String cost;
@@ -80,13 +80,13 @@ public class SingleMenuItemActivity extends Activity {
 
         //TODO Hacer que el titulo de la actividad cambia dependiendo de la canción
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
@@ -120,7 +120,7 @@ public class SingleMenuItemActivity extends Activity {
           Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
 
         startService(in);
-        
+
         final ProgressBar barra = (ProgressBar) findViewById(R.id.progressBar1);
           final TextView texto = (TextView) findViewById(R.id.playingNow);
         new Thread(
@@ -136,7 +136,7 @@ public class SingleMenuItemActivity extends Activity {
             }
         ).start();
     }
-    
+
     /**
      * StopSong
      * Para el servicio del reproductor

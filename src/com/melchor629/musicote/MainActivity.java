@@ -157,7 +157,7 @@ public class MainActivity extends ListActivity {
                 startActivity(in);
             }
         });
-        
+
     }
 
     @Override
@@ -188,7 +188,7 @@ public class MainActivity extends ListActivity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
@@ -255,7 +255,7 @@ public class MainActivity extends ListActivity {
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
- 
+
     /**
      * Clase AsyncTask para descargar el JSON y parsearlo y no desesperar a la peña
      * @author melchor
@@ -368,7 +368,7 @@ public class MainActivity extends ListActivity {
         protected void onProgressUpdate(Integer... progress){
             progressDialog.setProgress(progress[0]);
         }
-        
+
         protected void onPostExecute(ArrayList<HashMap<String, String>> result){
             super.onPostExecute(result);
             try{
@@ -378,5 +378,5 @@ public class MainActivity extends ListActivity {
             progressDialog.dismiss();
         }
     }
-    
+
 }

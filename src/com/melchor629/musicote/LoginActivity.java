@@ -113,7 +113,7 @@ public class LoginActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_login, menu);
         return true;
     }
-    
+
     @Override
     public void finish(){
         super.finish();

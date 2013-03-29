@@ -39,7 +39,7 @@ import android.util.Log;
 /**
  * Una clase que descarga un JSON y lo prepara para poderse usar
  * @author melchor
- * 
+ *
  */
 public class ParseJSON {
 
