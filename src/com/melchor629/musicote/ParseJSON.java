@@ -49,8 +49,8 @@ public class ParseJSON {
 
     // constructor
     public ParseJSON() {
-    	Log.i("com.melchor629.musicote","Parseador JSON iniciado...");
-    	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        Log.i("com.melchor629.musicote","Parseador JSON iniciado...");
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
     }
 
@@ -122,19 +122,19 @@ public class ParseJSON {
         boolean i = false;
 
         try {
-        	Socket connection = new Socket(host, port);
-        	if(connection.isConnected() == true){
-        		Log.e("com.melchor629.musicote","Conexión... conosco a tu padre ("+host+")");
-        		i = true;
-        	}else{
-        		Log.e("com.melchor629.musicote","Con esta dirección "+host+":"+port+" no hay na");
-        		i = false;
-        	}
+            Socket connection = new Socket(host, port);
+            if(connection.isConnected() == true){
+                Log.e("com.melchor629.musicote","Conexión... conosco a tu padre ("+host+")");
+                i = true;
+            }else{
+                Log.e("com.melchor629.musicote","Con esta dirección "+host+":"+port+" no hay na");
+                i = false;
+            }
 
         } catch (Exception ex) // SocketException for connect, IOException for
         {
             ex.printStackTrace();
-        	Log.e("com.melchor629.musicote", "Error al comprobar el host: "+host+":"+port+" | "+ex.toString());
+            Log.e("com.melchor629.musicote", "Error al comprobar el host: "+host+":"+port+" | "+ex.toString());
         }
 
         return i;

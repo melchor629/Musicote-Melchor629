@@ -36,21 +36,21 @@ import android.widget.TextView;
  */
 public class SingleMenuItemActivity extends Activity {
 
-	// JSON node keys
-	private static final String TAG_NAME = "titulo";
-	private static final String TAG_EMAIL = "artista";
-	private static final String TAG_PHONE_MOBILE = "album";
-	private static final String TAG_DURACIONS = "duracion";
-	private static final String TAG_FILE = "archivo";
-	
-	public static String url;
-	public static String name;
-	public static String cost;
-	public static String description;
-	public static String duracion;
+    // JSON node keys
+    private static final String TAG_NAME = "titulo";
+    private static final String TAG_EMAIL = "artista";
+    private static final String TAG_PHONE_MOBILE = "album";
+    private static final String TAG_DURACIONS = "duracion";
+    private static final String TAG_FILE = "archivo";
+    
+    public static String url;
+    public static String name;
+    public static String cost;
+    public static String description;
+    public static String duracion;
 
-	private static String archivo;
-	@Override
+    private static String archivo;
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_list_item);
@@ -80,70 +80,70 @@ public class SingleMenuItemActivity extends Activity {
 
         //TODO Hacer que el titulo de la actividad cambia dependiendo de la canción
     }
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item){
-		switch(item.getItemId()){
-			case R.id.ajustesm:
-				Intent intent = new Intent(SingleMenuItemActivity.this, Ajustes.class);
-				startActivity(intent);
-				break;
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.ajustesm:
+                Intent intent = new Intent(SingleMenuItemActivity.this, Ajustes.class);
+                startActivity(intent);
+                break;
                         case R.id.parar:
                                 Intent intento = new Intent(MainActivity.this, Reproductor.class);
                                 stopService(intento);
                                 break;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-		return true;
-	}
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
 
-	/**
-	 * PlaySong
-	 * Al apretar el enlace para reproducir canción aparece un servicio dificil de manejar
-	 * TODO Añadir una interfaz al servicio...
-	 * @param v
-	 */
-	public void PlaySong(View v) {
-		url = archivo;
-		// Starting new intent
-		Intent in = new Intent(getApplicationContext(), Reproductor.class);
-		in.putExtra("titulo", name);
-		in.putExtra("artista", cost);
-		in.putExtra("archivo", url);
-      	Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
+    /**
+     * PlaySong
+     * Al apretar el enlace para reproducir canción aparece un servicio dificil de manejar
+     * TODO Añadir una interfaz al servicio...
+     * @param v
+     */
+    public void PlaySong(View v) {
+        url = archivo;
+        // Starting new intent
+        Intent in = new Intent(getApplicationContext(), Reproductor.class);
+        in.putExtra("titulo", name);
+        in.putExtra("artista", cost);
+        in.putExtra("archivo", url);
+          Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
 
-		startService(in);
-		
-		final ProgressBar barra = (ProgressBar) findViewById(R.id.progressBar1);
-      	final TextView texto = (TextView) findViewById(R.id.playingNow);
-		new Thread(
-			new Runnable(){
-				@Override
-				public void run(){
-					while(Reproductor.a <100 && Reproductor.a != -1){
-						try{Thread.sleep(100);}catch(Exception e){}
-						barra.setProgress((int)Reproductor.a);
-                      	texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
-					}
-				}
-			}
-		).start();
-	}
-	
-	/**
-	 * StopSong
-	 * Para el servicio del reproductor
-	 * @param v
-	 */
-	public void StopSong(View v) {
-		Intent in = new Intent(getApplicationContext(), Reproductor.class);
-		stopService(in);
-	}
+        startService(in);
+        
+        final ProgressBar barra = (ProgressBar) findViewById(R.id.progressBar1);
+          final TextView texto = (TextView) findViewById(R.id.playingNow);
+        new Thread(
+            new Runnable(){
+                @Override
+                public void run(){
+                    while(Reproductor.a <100 && Reproductor.a != -1){
+                        try{Thread.sleep(100);}catch(Exception e){}
+                        barra.setProgress((int)Reproductor.a);
+                          texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
+                    }
+                }
+            }
+        ).start();
+    }
+    
+    /**
+     * StopSong
+     * Para el servicio del reproductor
+     * @param v
+     */
+    public void StopSong(View v) {
+        Intent in = new Intent(getApplicationContext(), Reproductor.class);
+        stopService(in);
+    }
 }

@@ -30,39 +30,39 @@ import android.widget.Toast;
  */
 public class Reproductor extends Service implements MediaPlayer.OnPreparedListener {
 
-	MediaPlayer reproductor = new MediaPlayer();
-	
-	private String url;
-	public static String tit;
-	public static String art;
-	private coso cosa;
-	private NotificationManager nm;
-	
-	public static long a;
-	
-	public int onStartCommand (Intent intent, int flags, int StartID){
-		Toast.makeText(this, "Reproductor de musicote abierto", Toast.LENGTH_LONG).show();
-		url = intent.getStringExtra("archivo");
-		tit = intent.getStringExtra("titulo");
-		art = intent.getStringExtra("artista");
-		initMediaPlayer(url, tit, art);
-		return START_STICKY;
-	}
-	
-	public void initMediaPlayer(String url, String titulo, String artista){
+    MediaPlayer reproductor = new MediaPlayer();
+    
+    private String url;
+    public static String tit;
+    public static String art;
+    private coso cosa;
+    private NotificationManager nm;
+    
+    public static long a;
+    
+    public int onStartCommand (Intent intent, int flags, int StartID){
+        Toast.makeText(this, "Reproductor de musicote abierto", Toast.LENGTH_LONG).show();
+        url = intent.getStringExtra("archivo");
+        tit = intent.getStringExtra("titulo");
+        art = intent.getStringExtra("artista");
+        initMediaPlayer(url, tit, art);
+        return START_STICKY;
+    }
+    
+    public void initMediaPlayer(String url, String titulo, String artista){
         reproductor = new MediaPlayer(); // initialize it here
         reproductor.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-			reproductor.setDataSource(url);
-		} catch (IllegalArgumentException e) {
-			Log.e("Reproductor.Descarga","Error: "+ e.toString());
-		} catch (SecurityException e) {
-			Log.e("Reproductor.Descarga","Error: "+ e.toString());
-		} catch (IllegalStateException e) {
-			Log.e("Reproductor.Descarga","Error: "+ e.toString());
-		} catch (IOException e) {
-			Log.e("Reproductor.Descarga","Error: "+ e.toString());
-		}
+            reproductor.setDataSource(url);
+        } catch (IllegalArgumentException e) {
+            Log.e("Reproductor.Descarga","Error: "+ e.toString());
+        } catch (SecurityException e) {
+            Log.e("Reproductor.Descarga","Error: "+ e.toString());
+        } catch (IllegalStateException e) {
+            Log.e("Reproductor.Descarga","Error: "+ e.toString());
+        } catch (IOException e) {
+            Log.e("Reproductor.Descarga","Error: "+ e.toString());
+        }
         reproductor.setOnPreparedListener(this);
         reproductor.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         reproductor.prepareAsync(); // prepare async to not block main thread
@@ -71,25 +71,25 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                 PendingIntent.FLAG_UPDATE_CURRENT);
         Notification notification = null;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-        	notification = new Notification();
-        	notification.tickerText = titulo+" - "+artista;
-        	notification.icon = R.drawable.altavoz;
-        	notification.flags = Notification.FLAG_ONGOING_EVENT;
-        	notification.setLatestEventInfo(getApplicationContext(), "Musicote",
+            notification = new Notification();
+            notification.tickerText = titulo+" - "+artista;
+            notification.icon = R.drawable.altavoz;
+            notification.flags = Notification.FLAG_ONGOING_EVENT;
+            notification.setLatestEventInfo(getApplicationContext(), "Musicote",
                 "Playing: " + titulo+" - "+artista, pi);
         }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-        	notification = new Notification.Builder(this)
-    			.setContentTitle("Musicote")
-    			.setContentText("Reproduciendo: "+titulo+" - "+artista)
-    			.setSmallIcon(R.drawable.altavoz)
-    			.build();
+            notification = new Notification.Builder(this)
+                .setContentTitle("Musicote")
+                .setContentText("Reproduciendo: "+titulo+" - "+artista)
+                .setSmallIcon(R.drawable.altavoz)
+                .build();
         }**/
         int mID = 1;
         
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
-        		.setSmallIcon(R.drawable.altavoz)
-        		.setContentTitle("Musicote")
-        		.setContentText("Reproduciendo "+titulo+" de "+artista); //TODO poner que sea fijo
+                .setSmallIcon(R.drawable.altavoz)
+                .setContentTitle("Musicote")
+                .setContentText("Reproduciendo "+titulo+" de "+artista); //TODO poner que sea fijo
        
         Intent resultIntent = new Intent(this, MainActivity.class);
         
@@ -101,9 +101,9 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nm.notify(mID, notification.build());
         
-    	//startForeground(1, notification);
-	}
-	
+        //startForeground(1, notification);
+    }
+    
     /**
      * Se llama cuando el reproductor está listo
      */
@@ -111,70 +111,70 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         //player.start();
 
         SharedPreferences get = PreferenceManager.getDefaultSharedPreferences(this);
-		if(get.getBoolean("lastact", false)==true){
-			Auth auth = new Auth(get.getString("usuario", null), get.getString("contraseña", null));
-			auth.getSK();
-			Scrobble scr = new Scrobble(tit, art);
-			scr.nowPlaying();
-		}else{
-			Log.d("Scrobbler", "Nada de Scrobblings...");
-		}
-		
-		final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-		
-		new Thread(new Runnable(){@Override public void run(){ cosa = new coso();
-		cosa.run(player, pref, nm);
-		}}).start();
+        if(get.getBoolean("lastact", false)==true){
+            Auth auth = new Auth(get.getString("usuario", null), get.getString("contraseña", null));
+            auth.getSK();
+            Scrobble scr = new Scrobble(tit, art);
+            scr.nowPlaying();
+        }else{
+            Log.d("Scrobbler", "Nada de Scrobblings...");
+        }
+        
+        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        
+        new Thread(new Runnable(){@Override public void run(){ cosa = new coso();
+        cosa.run(player, pref, nm);
+        }}).start();
     }
 
-	/* (non-Javadoc)
-	 * @see android.app.Service#onBind(android.content.Intent)
-	 */
-	@Override
-	public IBinder onBind(Intent intent) {
-		return null;
-	}
-	
-   	@Override
-   	public void onDestroy() {
-   		cosa.interrupt();
-   		if (reproductor != null)
-   			reproductor.release();
-   		Toast.makeText(this, "Reproductor de musicote cerrado", Toast.LENGTH_LONG).show();
+    /* (non-Javadoc)
+     * @see android.app.Service#onBind(android.content.Intent)
+     */
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
-   	
-	class coso extends Thread {
-		public void run(MediaPlayer player, SharedPreferences pref, NotificationManager nm){
-			player.start();
-			try{
-				for(int i = 0; player.isPlaying() & i < player.getDuration(); i+=1000){
-					try{
-						if((int)(i/1000) == (int)((player.getDuration()/1000)/2)){
-					   		if(pref.getBoolean("lastact", false) == true){
-					   			Scrobble scr = new Scrobble(tit, art);
-					   			scr.scrobble();
-					   		}
-						}
-						a = (long)(i/(long)(player.getDuration()/100)); Log.e("Reproductor", "a = "+a+"-"+i+"-"+player.getDuration());
-						Thread.sleep(1000);
-					}catch (Exception e){
-						Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...");
-					}
-				}
-			
-				player.stop(); Log.d("FOR", "Se tendria que serrar...");
-				nm.cancelAll();
-				a = -1;
-				Intent in = new Intent(getApplicationContext(), Reproductor.class);
-				stopService(in);
-			}catch (IllegalStateException e){
-				nm.cancelAll();
-				a = -1;
-				this.interrupt();
-				Log.d("Reproductor", "Se ha detectado que el reproductor se ha cerrado, esto tambien se cierra");
-			}catch (Exception e){
-				Log.e("Reproductor", "Ha habido un error en el \"coso\": "+e.toString());
-			}
-		}
-	}
+    
+       @Override
+       public void onDestroy() {
+           cosa.interrupt();
+           if (reproductor != null)
+               reproductor.release();
+           Toast.makeText(this, "Reproductor de musicote cerrado", Toast.LENGTH_LONG).show();
+    }
+       
+    class coso extends Thread {
+        public void run(MediaPlayer player, SharedPreferences pref, NotificationManager nm){
+            player.start();
+            try{
+                for(int i = 0; player.isPlaying() & i < player.getDuration(); i+=1000){
+                    try{
+                        if((int)(i/1000) == (int)((player.getDuration()/1000)/2)){
+                               if(pref.getBoolean("lastact", false) == true){
+                                   Scrobble scr = new Scrobble(tit, art);
+                                   scr.scrobble();
+                               }
+                        }
+                        a = (long)(i/(long)(player.getDuration()/100)); Log.e("Reproductor", "a = "+a+"-"+i+"-"+player.getDuration());
+                        Thread.sleep(1000);
+                    }catch (Exception e){
+                        Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...");
+                    }
+                }
+            
+                player.stop(); Log.d("FOR", "Se tendria que serrar...");
+                nm.cancelAll();
+                a = -1;
+                Intent in = new Intent(getApplicationContext(), Reproductor.class);
+                stopService(in);
+            }catch (IllegalStateException e){
+                nm.cancelAll();
+                a = -1;
+                this.interrupt();
+                Log.d("Reproductor", "Se ha detectado que el reproductor se ha cerrado, esto tambien se cierra");
+            }catch (Exception e){
+                Log.e("Reproductor", "Ha habido un error en el \"coso\": "+e.toString());
+            }
+        }
+    }
 }

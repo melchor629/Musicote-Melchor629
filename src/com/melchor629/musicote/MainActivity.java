@@ -61,23 +61,23 @@ import android.app.ProgressDialog;
 
 public class MainActivity extends ListActivity {
 
-	public final static String EXTRA_MESSAGE = "com.melchor629.musicote.MESSAGE";
-	public final static String Last_STRING = "asdasda";
+    public final static String EXTRA_MESSAGE = "com.melchor629.musicote.MESSAGE";
+    public final static String Last_STRING = "asdasda";
 
-	public static String Last_String = "";
-	public static int response = 0;
-	public static String url;
+    public static String Last_String = "";
+    public static int response = 0;
+    public static String url;
 
-	private ProgressDialog progressDialog;
-	private Toast tostado;
+    private ProgressDialog progressDialog;
+    private Toast tostado;
 
-	// contacts JSONArray
-	private static JSONArray contacts = null;
+    // contacts JSONArray
+    private static JSONArray contacts = null;
 
-	TextView mTextView; // Member variable for text view in the layout
+    TextView mTextView; // Member variable for text view in the layout
     @Override
     public void onCreate(Bundle savedInstanceState) {
-    	// Set the user interface layout for this Activity
+        // Set the user interface layout for this Activity
         // The layout file is defined in the project res/layout/main.xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -90,74 +90,74 @@ public class MainActivity extends ListActivity {
         // Hashmap for ListView
         ArrayList<HashMap<String, String>> contactList = new ArrayList<HashMap<String, String>>();
 
-		AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
-		try {
-			contactList = asd.get();
-		} catch (InterruptedException e) {
-			Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
-			e.printStackTrace();
-		}
-		/**
-		 * Updating parsed JSON data into ListView
-		 * */
-		ListAdapter adapter = new SimpleAdapter(this, contactList,
-				R.layout.list_item,
-				new String[] { "titulo", "artista", "album" }, new int[] {
-					R.id.name, R.id.email, R.id.mobile });
+        AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
+        try {
+            contactList = asd.get();
+        } catch (InterruptedException e) {
+            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
+            e.printStackTrace();
+        }
+        /**
+         * Updating parsed JSON data into ListView
+         * */
+        ListAdapter adapter = new SimpleAdapter(this, contactList,
+                R.layout.list_item,
+                new String[] { "titulo", "artista", "album" }, new int[] {
+                    R.id.name, R.id.email, R.id.mobile });
 
-		try {
-			setListAdapter(adapter);
-		}catch (Exception e){
-    		Log.e("ServerHostDetector","Er ordenata de mershor ta apagao...");
-			tostado = Toast.makeText(getApplicationContext(), "Ningún servidor activo...", Toast.LENGTH_LONG);
-    		tostado.show();
-		}
+        try {
+            setListAdapter(adapter);
+        }catch (Exception e){
+            Log.e("ServerHostDetector","Er ordenata de mershor ta apagao...");
+            tostado = Toast.makeText(getApplicationContext(), "Ningún servidor activo...", Toast.LENGTH_LONG);
+            tostado.show();
+        }
 
-		// selecting single ListView item
-		ListView lv = getListView();
+        // selecting single ListView item
+        ListView lv = getListView();
 
-		// Launching new screen on Selecting Single ListItem
-		lv.setOnItemClickListener(new OnItemClickListener() {
+        // Launching new screen on Selecting Single ListItem
+        lv.setOnItemClickListener(new OnItemClickListener() {
 
-			public void onItemClick(AdapterView<?> parent, View view,
-				int position, long id) {
-			// getting values from selected ListItem
-				JSONObject tolcoño = null;
-				try{
-					tolcoño = contacts.getJSONObject(position);
-				}catch(Exception e){
-					Log.e("com.melchor629.musicote", "121<<"+e.toString()); e.printStackTrace();
-				}
-				String name = getString(R.string.vacio);
-				String cost = getString(R.string.vacio);
-				String description = getString(R.string.vacio);
-				String album = "-00:00";
-				String archivo = "http://"+url+"/multimedia/escucha.php";
-				try{
-					name = ((TextView) view.findViewById(R.id.name)).getText().toString();
-					cost = ((TextView) view.findViewById(R.id.email)).getText().toString();
-					description = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
-					album = tolcoño.getString("duracion");
-					archivo = tolcoño.getString("archivo");
-				} catch (Exception e){
-					Log.e("com.melchor629.musicote", e.toString());
-				}
+            public void onItemClick(AdapterView<?> parent, View view,
+                int position, long id) {
+            // getting values from selected ListItem
+                JSONObject tolcoño = null;
+                try{
+                    tolcoño = contacts.getJSONObject(position);
+                }catch(Exception e){
+                    Log.e("com.melchor629.musicote", "121<<"+e.toString()); e.printStackTrace();
+                }
+                String name = getString(R.string.vacio);
+                String cost = getString(R.string.vacio);
+                String description = getString(R.string.vacio);
+                String album = "-00:00";
+                String archivo = "http://"+url+"/multimedia/escucha.php";
+                try{
+                    name = ((TextView) view.findViewById(R.id.name)).getText().toString();
+                    cost = ((TextView) view.findViewById(R.id.email)).getText().toString();
+                    description = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
+                    album = tolcoño.getString("duracion");
+                    archivo = tolcoño.getString("archivo");
+                } catch (Exception e){
+                    Log.e("com.melchor629.musicote", e.toString());
+                }
 
-				// Starting new intent
-				Intent in = new Intent(getApplicationContext(), SingleMenuItemActivity.class);
-				in.putExtra("titulo", name);
-				in.putExtra("artista", cost);
-				in.putExtra("album", description);
-				in.putExtra("duracion", album);
-				in.putExtra("archivo", "http://"+url+"/"+archivo);
+                // Starting new intent
+                Intent in = new Intent(getApplicationContext(), SingleMenuItemActivity.class);
+                in.putExtra("titulo", name);
+                in.putExtra("artista", cost);
+                in.putExtra("album", description);
+                in.putExtra("duracion", album);
+                in.putExtra("archivo", "http://"+url+"/"+archivo);
 
-				startActivity(in);
-			}
-		});
-		
+                startActivity(in);
+            }
+        });
+        
     }
 
     @Override
@@ -173,79 +173,79 @@ public class MainActivity extends ListActivity {
 
     @Override
     public void finish() {
-    	super.finish(); //Always call the superclass method first
+        super.finish(); //Always call the superclass method first
     }
 
     @Override
     public void onStop() {
-    	super.onStop();
-    	ContentValues values = new ContentValues();
-    	values.put(Last_STRING, Last_String);
+        super.onStop();
+        ContentValues values = new ContentValues();
+        values.put(Last_STRING, Last_String);
     }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item){
-		switch(item.getItemId()){
-			case R.id.ajustesm:
-				Intent intent = new Intent(MainActivity.this, Ajustes.class);
-				startActivity(intent);
-				break;
-			case R.id.parar:
-				Intent intento = new Intent(MainActivity.this, Reproductor.class);
-				stopService(intento);
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-		return true;
-	}
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.ajustesm:
+                Intent intent = new Intent(MainActivity.this, Ajustes.class);
+                startActivity(intent);
+                break;
+            case R.id.parar:
+                Intent intento = new Intent(MainActivity.this, Reproductor.class);
+                stopService(intento);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
 
     /** Called when the user selects the Send button **/
     public void sendMessage(View view) {
         // Do something in response to button
-    	Intent intent = new Intent(this, DisplayMessageActivity.class);
-    	EditText editText = (EditText) findViewById(R.id.edit_message);
-    	String message = editText.getText().toString();
-    	intent.putExtra(EXTRA_MESSAGE, message);
-    	intent.putExtra(Last_STRING, Last_String);
-    	startActivity(intent);
+        Intent intent = new Intent(this, DisplayMessageActivity.class);
+        EditText editText = (EditText) findViewById(R.id.edit_message);
+        String message = editText.getText().toString();
+        intent.putExtra(EXTRA_MESSAGE, message);
+        intent.putExtra(Last_STRING, Last_String);
+        startActivity(intent);
     }
 
     /** Called when the user selects the Send Random button **/
     public void sendMessageRandom(View view) {
         // Do something in response to button
-    	Intent intent = new Intent(this, DisplayMessageActivity.class);
-		Random rand = new Random();
-		int num = rand.nextInt(5-0)+1;
-    	String randText = "Error al enviar texto random...";
-		switch (num) {
-			case 1:
-				randText = "Una tortuga empieza con 5 metros de ventaja y el humano nunca alcanzará a la tortuga. ¿Por qué? Preguntaselo a la hdp de Filosofia...";
-				break;
-			case 2:
-				randText = "Los dinosarios d'Albert...";
-				break;
-			case 3:
-				randText = "If you love me, want let me know...";
-				break;
-			case 4:
-				randText = "Musicote: The 2nd Law de Muse";
-				break;
-			case 5:
-				randText = "Cutre Application by Melchor629...";
-				break;
-			default:
-				randText = "El número que ha tret el generador"+ rand +" es incorrect, cagon putes...";
-		}
-    	String message = randText;
-    	intent.putExtra(EXTRA_MESSAGE, message);
-    	intent.putExtra(Last_STRING, Last_String);
-    	startActivity(intent);
+        Intent intent = new Intent(this, DisplayMessageActivity.class);
+        Random rand = new Random();
+        int num = rand.nextInt(5-0)+1;
+        String randText = "Error al enviar texto random...";
+        switch (num) {
+            case 1:
+                randText = "Una tortuga empieza con 5 metros de ventaja y el humano nunca alcanzará a la tortuga. ¿Por qué? Preguntaselo a la hdp de Filosofia...";
+                break;
+            case 2:
+                randText = "Los dinosarios d'Albert...";
+                break;
+            case 3:
+                randText = "If you love me, want let me know...";
+                break;
+            case 4:
+                randText = "Musicote: The 2nd Law de Muse";
+                break;
+            case 5:
+                randText = "Cutre Application by Melchor629...";
+                break;
+            default:
+                randText = "El número que ha tret el generador"+ rand +" es incorrect, cagon putes...";
+        }
+        String message = randText;
+        intent.putExtra(EXTRA_MESSAGE, message);
+        intent.putExtra(Last_STRING, Last_String);
+        startActivity(intent);
     }
     // Intento de guardar lo ultimo enviado al otro .class
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -263,120 +263,120 @@ public class MainActivity extends ListActivity {
      */
     private class JSONParseDialog extends AsyncTask<Void, Integer, ArrayList<HashMap<String,String>>> {
 
-    	public int response;
+        public int response;
 
-		@SuppressLint("ShowToast")
-		protected void onPreExecute()
-		{
-			//Create a new progress dialog
-			progressDialog = new ProgressDialog(MainActivity.this);
-			//Set the progress dialog to display a horizontal progress bar
-			progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			//Set the dialog title to 'Loading...'
-			progressDialog.setTitle("Musicote en camino...");
-			//Set the dialog message to 'Loading application View, please wait...'
-			progressDialog.setMessage("Cargando datos del servidor, espere...");
-			//This dialog can't be canceled by pressing the back key
-			progressDialog.setCancelable(false);
-			//This dialog isn't indeterminate
-			progressDialog.setIndeterminate(false);
-			//The maximum number of items is 100
-			progressDialog.setMax(100);
-			//Set the current progress to zero
-			progressDialog.setProgress(0);
-			//Display the progress dialog
-			progressDialog.show();
-		}
+        @SuppressLint("ShowToast")
+        protected void onPreExecute()
+        {
+            //Create a new progress dialog
+            progressDialog = new ProgressDialog(MainActivity.this);
+            //Set the progress dialog to display a horizontal progress bar
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            //Set the dialog title to 'Loading...'
+            progressDialog.setTitle("Musicote en camino...");
+            //Set the dialog message to 'Loading application View, please wait...'
+            progressDialog.setMessage("Cargando datos del servidor, espere...");
+            //This dialog can't be canceled by pressing the back key
+            progressDialog.setCancelable(false);
+            //This dialog isn't indeterminate
+            progressDialog.setIndeterminate(false);
+            //The maximum number of items is 100
+            progressDialog.setMax(100);
+            //Set the current progress to zero
+            progressDialog.setProgress(0);
+            //Display the progress dialog
+            progressDialog.show();
+        }
 
-    	protected ArrayList<HashMap<String, String>> doInBackground(Void... params){
-    		// Hashmap for ListView
+        protected ArrayList<HashMap<String, String>> doInBackground(Void... params){
+            // Hashmap for ListView
             final ArrayList<HashMap<String, String>> contactList = new ArrayList<HashMap<String, String>>();
 
             // Creating JSON Parser instance
             ParseJSON jParser = new ParseJSON();
 
             synchronized (this){
-            	publishProgress(1);
-            	// La app prueba en busca de la dirección correcta
-            	if(jParser.HostTest("192.168.1.133",80)){
-            		MainActivity.url = "192.168.1.133";
-            	}else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
-            		MainActivity.url = "reinoslokos.no-ip.org";
-            	}
-            	publishProgress(10);
-            	if(MainActivity.url!=null){
-            		// getting JSON string from URL
-            		try{
-            			URL urlhttp = new URL("http://"+MainActivity.url+"/cgi-bin/archivos.py");
-            			HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
-            			response = http.getResponseCode();
-            		} catch(Exception e){
-            			Log.e("Comprobando", "Excepción HTTPURL: "+e.toString());
-            		} //TODO meter esto en el parseador de JSON, ya que esto forma parte de él
-            		publishProgress(25);
-            		if(response==200){
-            			JSONObject json = jParser.getJSONFromUrl("http://"+MainActivity.url+"/cgi-bin/archivos.py");
-            			publishProgress(30);
-            			try {
-            				// Getting Array of Songs
-            				MainActivity.contacts = json.getJSONArray("canciones");
-            				publishProgress(40);
+                publishProgress(1);
+                // La app prueba en busca de la dirección correcta
+                if(jParser.HostTest("192.168.1.133",80)){
+                    MainActivity.url = "192.168.1.133";
+                }else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
+                    MainActivity.url = "reinoslokos.no-ip.org";
+                }
+                publishProgress(10);
+                if(MainActivity.url!=null){
+                    // getting JSON string from URL
+                    try{
+                        URL urlhttp = new URL("http://"+MainActivity.url+"/cgi-bin/archivos.py");
+                        HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
+                        response = http.getResponseCode();
+                    } catch(Exception e){
+                        Log.e("Comprobando", "Excepción HTTPURL: "+e.toString());
+                    } //TODO meter esto en el parseador de JSON, ya que esto forma parte de él
+                    publishProgress(25);
+                    if(response==200){
+                        JSONObject json = jParser.getJSONFromUrl("http://"+MainActivity.url+"/cgi-bin/archivos.py");
+                        publishProgress(30);
+                        try {
+                            // Getting Array of Songs
+                            MainActivity.contacts = json.getJSONArray("canciones");
+                            publishProgress(40);
 
-            				// looping through All Songs
-            				for(int i = 0; i < MainActivity.contacts.length(); i++){
-            					JSONObject c = MainActivity.contacts.getJSONObject(i);
+                            // looping through All Songs
+                            for(int i = 0; i < MainActivity.contacts.length(); i++){
+                                JSONObject c = MainActivity.contacts.getJSONObject(i);
 
-            					int counter = 40 + ((i/MainActivity.contacts.length())/2);
-            					publishProgress(counter);
-            					// Storing each json item in variable
-            					String id = c.getString("id");
-            					String archivo = c.getString("archivo");
-            					String titulo = c.getString("titulo");
-            					String artista = c.getString("artista");
-            					String album = c.getString("album");
-            					String duracion = c.getString("duracion");
+                                int counter = 40 + ((i/MainActivity.contacts.length())/2);
+                                publishProgress(counter);
+                                // Storing each json item in variable
+                                String id = c.getString("id");
+                                String archivo = c.getString("archivo");
+                                String titulo = c.getString("titulo");
+                                String artista = c.getString("artista");
+                                String album = c.getString("album");
+                                String duracion = c.getString("duracion");
 
-            					// creating new HashMap
-            					HashMap<String, String> map = new HashMap<String, String>();
+                                // creating new HashMap
+                                HashMap<String, String> map = new HashMap<String, String>();
 
-            					// adding each child node to HashMap key => value
-            					map.put("id", id);
-            					map.put("titulo", titulo);
-            					map.put("artista", artista);
-            					map.put("album", album);
-            					map.put("archivo", "http://"+MainActivity.url+"/"+archivo);
-            					map.put("duracion", duracion);
+                                // adding each child node to HashMap key => value
+                                map.put("id", id);
+                                map.put("titulo", titulo);
+                                map.put("artista", artista);
+                                map.put("album", album);
+                                map.put("archivo", "http://"+MainActivity.url+"/"+archivo);
+                                map.put("duracion", duracion);
 
-            					// adding HashList to ArrayList
-            					contactList.add(map);
-            				}
-            			} catch (JSONException e) {
-            				e.printStackTrace();
-            				Log.i("com.melchor629.musicote","Excepción encontrada: "+e.toString());
-            			}
-            			publishProgress(90);
-        			}
+                                // adding HashList to ArrayList
+                                contactList.add(map);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.i("com.melchor629.musicote","Excepción encontrada: "+e.toString());
+                        }
+                        publishProgress(90);
+                    }
 
-        			publishProgress(100);
-        			return contactList;
-            	}else{
-            		return null;
-            	}
-        	}
+                    publishProgress(100);
+                    return contactList;
+                }else{
+                    return null;
+                }
+            }
         }
 
-    	protected void onProgressUpdate(Integer... progress){
-    		progressDialog.setProgress(progress[0]);
-    	}
-    	
-    	protected void onPostExecute(ArrayList<HashMap<String, String>> result){
-    		super.onPostExecute(result);
+        protected void onProgressUpdate(Integer... progress){
+            progressDialog.setProgress(progress[0]);
+        }
+        
+        protected void onPostExecute(ArrayList<HashMap<String, String>> result){
+            super.onPostExecute(result);
             try{
                 Thread.sleep(1000);
                 publishProgress(5);
             } catch (Exception e) {}
-    		progressDialog.dismiss();
-    	}
+            progressDialog.dismiss();
+        }
     }
     
 }
