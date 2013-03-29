@@ -94,6 +94,9 @@ public class SingleMenuItemActivity extends Activity {
 				Intent intent = new Intent(SingleMenuItemActivity.this, Ajustes.class);
 				startActivity(intent);
 				break;
+                        case R.id.parar:
+                                Intent intento = new Intent(MainActivity.this, Reproductor.class);
+                                stopService(intento);
 			default:
 				return super.onOptionsItemSelected(item);
 		}
