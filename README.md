@@ -3,13 +3,13 @@ Musicote App
 [![Build Status](https://travis-ci.org/melchor629/Musicote-Melchor629.png?branch=master)](https://travis-ci.org/melchor629/Musicote-Melchor629)
 
 Una sencilla aplicación para android 2.3, montado con el SDK de android 17 (platform 17)
-Esta APP lo único que hace, por ahora, es descargar un archivo JSON y cargar la lista (ArrayList) que lleva dentro
+Descarga el contenido emitido por un servidor web del archivo "api.py", lo procesa y carga en una lista en el que puedes apretar una canción, ver su información básica y reproducir. También incluye Scrobbler para Last.FM, disponible en el menú de ajustes.
 Para editar este projecto se recomienda usar Eclipse, con el plugin de Android instalado
 Aqui guardaré todo lo avanzado sobre esta app
 
-An app for android 2.2, writted with the SDK 4.2
-This APP only can do, for now, is download a JSON file and load the ArrayList from it...
-To edit this project, use Eclipse with the Android ANT installed
+An app for android 2.3, writted with the android SDK 17
+It downloads the content created by the "api.py" and a web server then it process the content and loads it in a list. You can touch a song in the list and see some basic information and listen to it. Also it includes a Last.FM Scrobbler available in the settings menu.
+To edit this project, use Eclipse with android's plugin or maven
 Here I will save all my changes of this app
 
 ##How to compile
@@ -25,4 +25,4 @@ This file is the pseudo-json file that a webserver creates for the app. You need
 
 ##DOWNLOAD APK
 Aptoide:
-[http://melchor629.store.aptoide.com/cat/Music%20&%20Audio](http://melchor629.store.aptoide.com/cat/Music%20&%20Audio)
+[http://melchor629.store.aptoide.com/cat/Music & Audio](http://melchor629.store.aptoide.com/cat/Music%20&%20Audio)
