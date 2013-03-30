@@ -1,7 +1,5 @@
 package com.melchor629.musicote;
 
-import java.io.IOException;
-
 import com.melchor629.musicote.scrobbler.Auth;
 import com.melchor629.musicote.scrobbler.Scrobble;
 
@@ -52,38 +50,18 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     public void initMediaPlayer(String url, String titulo, String artista){
         reproductor = new MediaPlayer(); // initialize it here
         reproductor.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try {
-            reproductor.setDataSource(url);
-        } catch (IllegalArgumentException e) {
+        try { Log.e("Retraso mental", url.replace(" ", "%20"));
+            reproductor.setDataSource(url.replace(" ", "%20"));
+        } catch (Exception e) {
             Log.e("Reproductor.Descarga","Error: "+ e.toString());
-        } catch (SecurityException e) {
-            Log.e("Reproductor.Descarga","Error: "+ e.toString());
-        } catch (IllegalStateException e) {
-            Log.e("Reproductor.Descarga","Error: "+ e.toString());
-        } catch (IOException e) {
-            Log.e("Reproductor.Descarga","Error: "+ e.toString());
+            if(e.toString().equals("(1, -1004"))
+            	Toast.makeText(this, "No se ha podido descargar la canción", Toast.LENGTH_LONG).show();
+            Intent in = new Intent(getApplicationContext(), Reproductor.class);
+            stopService(in);
         }
         reproductor.setOnPreparedListener(this);
         reproductor.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         reproductor.prepareAsync(); // prepare async to not block main thread
-        /**PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0,
-                new Intent(getApplicationContext(), MainActivity.class),
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification notification = null;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            notification = new Notification();
-            notification.tickerText = titulo+" - "+artista;
-            notification.icon = R.drawable.altavoz;
-            notification.flags = Notification.FLAG_ONGOING_EVENT;
-            notification.setLatestEventInfo(getApplicationContext(), "Musicote",
-                "Playing: " + titulo+" - "+artista, pi);
-        }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            notification = new Notification.Builder(this)
-                .setContentTitle("Musicote")
-                .setContentText("Reproduciendo: "+titulo+" - "+artista)
-                .setSmallIcon(R.drawable.altavoz)
-                .build();
-        }**/
         int mID = 1;
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
@@ -100,8 +78,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         notification.setContentIntent(resultPendingIntent);
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nm.notify(mID, notification.build());
-
-        //startForeground(1, notification);
     }
 
     /**
@@ -135,12 +111,14 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         return null;
     }
 
-       @Override
-       public void onDestroy() {
-           cosa.interrupt();
-           if (reproductor != null)
-               reproductor.release();
-           Toast.makeText(this, "Reproductor de musicote cerrado", Toast.LENGTH_LONG).show();
+   @Override
+   public void onDestroy() {
+	   if(!cosa.getState().toString().equals("NEW"))
+		   cosa.interrupt();
+       if (reproductor != null)
+           reproductor.release();
+       nm.cancelAll();
+       Toast.makeText(this, "Reproductor de musicote cerrado", Toast.LENGTH_LONG).show();
     }
 
     class coso extends Thread {
@@ -155,7 +133,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                                    scr.scrobble();
                                }
                         }
-                        a = (long)(i/(long)(player.getDuration()/100)); Log.e("Reproductor", "a = "+a+"-"+i+"-"+player.getDuration());
+                        a = (long)(i/(long)(player.getDuration()/100)); Log.d("Reproductor", "a = "+a+"-"+i+"-"+player.getDuration());
                         Thread.sleep(1000);
                     }catch (Exception e){
                         Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...");

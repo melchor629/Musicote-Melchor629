@@ -4,6 +4,7 @@ import com.melchor629.musicote.R;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -42,6 +43,9 @@ public class SingleMenuItemActivity extends Activity {
     private static final String TAG_PHONE_MOBILE = "album";
     private static final String TAG_DURACIONS = "duracion";
     private static final String TAG_FILE = "archivo";
+    
+    private TextView texto;
+    private ProgressBar barra;
 
     public static String url;
     public static String name;
@@ -94,10 +98,10 @@ public class SingleMenuItemActivity extends Activity {
                 Intent intent = new Intent(SingleMenuItemActivity.this, Ajustes.class);
                 startActivity(intent);
                 break;
-                case R.id.parar:
-                    Intent intento = new Intent(SingleMenuItemActivity.this, Reproductor.class);
-                    stopService(intento);
-                    break;
+             case R.id.parar:
+                Intent intento = new Intent(SingleMenuItemActivity.this, Reproductor.class);
+                stopService(intento);
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -110,7 +114,7 @@ public class SingleMenuItemActivity extends Activity {
      * TODO Añadir una interfaz al servicio...
      * @param v
      */
-    public void PlaySong(View v) {
+    public void PlaySong(final View v) {
         url = archivo;
         // Starting new intent
         Intent in = new Intent(getApplicationContext(), Reproductor.class);
@@ -120,21 +124,11 @@ public class SingleMenuItemActivity extends Activity {
           Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
 
         startService(in);
-
-        final ProgressBar barra = (ProgressBar) findViewById(R.id.progressBar1);
-          final TextView texto = (TextView) findViewById(R.id.playingNow);
-        new Thread(
-            new Runnable(){
-                @Override
-                public void run(){
-                    while(Reproductor.a <100 && Reproductor.a != -1){
-                        try{Thread.sleep(100);}catch(Exception e){}
-                        barra.setProgress((int)Reproductor.a);
-                          texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
-                    }
-                }
-            }
-        ).start();
+        
+        texto = (TextView) findViewById(R.id.playingNow);
+        barra = (ProgressBar) findViewById(R.id.progressBar1);
+        barra.setMax(100);
+        new p().execute();
     }
 
     /**
@@ -145,5 +139,27 @@ public class SingleMenuItemActivity extends Activity {
     public void StopSong(View v) {
         Intent in = new Intent(getApplicationContext(), Reproductor.class);
         stopService(in);
+        new p().cancel(true);
+    }
+    
+    class p extends AsyncTask<Void, Void, Void>{
+    	@Override
+    	protected void onPostExecute(Void i){
+    		texto.setText("No está reproduciendo nada");
+    	}
+    	
+		@Override
+		protected Void doInBackground(Void... i) {
+			while(Reproductor.a < 100 && Reproductor.a != -1){
+				try{Thread.sleep(100); publishProgress();}catch(Exception e){}
+			}
+			return null;
+		}
+		
+		@Override
+		protected void onProgressUpdate(Void... i){
+			barra.setProgress((int)Reproductor.a);
+			texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
+		}
     }
 }

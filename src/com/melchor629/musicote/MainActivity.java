@@ -29,7 +29,6 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 
@@ -73,6 +72,7 @@ public class MainActivity extends ListActivity {
 
     // contacts JSONArray
     private static JSONArray contacts = null;
+    private ArrayList<HashMap<String, String>> contactList = null;
 
     TextView mTextView; // Member variable for text view in the layout
     @Override
@@ -86,19 +86,38 @@ public class MainActivity extends ListActivity {
             // Restore value of members from saved state
             Last_String = savedInstanceState.getString(Last_STRING);
         }
-
-        // Hashmap for ListView
-        ArrayList<HashMap<String, String>> contactList = new ArrayList<HashMap<String, String>>();
-
-        AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
-        try {
-            contactList = asd.get();
-        } catch (InterruptedException e) {
-            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
-            e.printStackTrace();
+        
+        //Create a new progress dialog
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setTitle("Musicote en camino...");
+        progressDialog.setMessage("Cargando datos del servidor, espere...");
+        progressDialog.setCancelable(false);
+        progressDialog.setIndeterminate(false);
+        progressDialog.setMax(100);
+        progressDialog.setProgress(0);
+        progressDialog.show();
+        
+        new Thread(new Runnable(){
+			@Override
+			public void run() {
+				AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
+		        try {
+		            contactList = asd.get();
+		        } catch (InterruptedException e) {
+		            Log.e("AsyncTask","AsyncTask not finished: "+e.toString()); 
+		            e.printStackTrace();
+		        } catch (ExecutionException e) {
+		            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
+		            e.printStackTrace();
+		        } MainActivity.this.runOnUiThread(new Runnable(){@Override public void run(){sis();}});
+			}}).start();
+    }
+    
+    private void sis(){
+        if(contactList == null){
+        	Log.e("MainActivity", "contactList viene vacío...");
+        	return;
         }
         /**
          * Updating parsed JSON data into ListView
@@ -111,8 +130,8 @@ public class MainActivity extends ListActivity {
         try {
             setListAdapter(adapter);
         }catch (Exception e){
-            Log.e("ServerHostDetector","Er ordenata de mershor ta apagao...");
-            tostado = Toast.makeText(getApplicationContext(), "Ningún servidor activo...", Toast.LENGTH_LONG);
+            Log.e("ServerHostDetector","Er ordenata de mershor ta apagao... "+e.toString());
+            tostado = Toast.makeText(MainActivity.this, "Ningún servidor activo...", Toast.LENGTH_LONG);
             tostado.show();
         }
 
@@ -152,12 +171,11 @@ public class MainActivity extends ListActivity {
                 in.putExtra("artista", cost);
                 in.putExtra("album", description);
                 in.putExtra("duracion", album);
-                in.putExtra("archivo", "http://"+url+"/"+archivo);
+                in.putExtra("archivo", "http://"+url+""+archivo);
 
                 startActivity(in);
             }
         });
-
     }
 
     @Override
@@ -265,27 +283,9 @@ public class MainActivity extends ListActivity {
 
         public int response;
 
-        @SuppressLint("ShowToast")
         protected void onPreExecute()
         {
-            //Create a new progress dialog
-            progressDialog = new ProgressDialog(MainActivity.this);
-            //Set the progress dialog to display a horizontal progress bar
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            //Set the dialog title to 'Loading...'
-            progressDialog.setTitle("Musicote en camino...");
-            //Set the dialog message to 'Loading application View, please wait...'
-            progressDialog.setMessage("Cargando datos del servidor, espere...");
-            //This dialog can't be canceled by pressing the back key
-            progressDialog.setCancelable(false);
-            //This dialog isn't indeterminate
-            progressDialog.setIndeterminate(false);
-            //The maximum number of items is 100
-            progressDialog.setMax(100);
-            //Set the current progress to zero
-            progressDialog.setProgress(0);
-            //Display the progress dialog
-            progressDialog.show();
+
         }
 
         protected ArrayList<HashMap<String, String>> doInBackground(Void... params){
@@ -299,7 +299,7 @@ public class MainActivity extends ListActivity {
                 publishProgress(1);
                 // La app prueba en busca de la dirección correcta
                 if(jParser.HostTest("192.168.1.133",80)){
-                    MainActivity.url = "192.168.1.133";
+                    MainActivity.url = "192.168.1.133";publishProgress(5);
                 }else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
                     MainActivity.url = "reinoslokos.no-ip.org";
                 }
@@ -308,11 +308,14 @@ public class MainActivity extends ListActivity {
                     // getting JSON string from URL
                     try{
                         URL urlhttp = new URL("http://"+MainActivity.url+"/cgi-bin/archivos.py");
+                        publishProgress(13);
                         HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
+                        publishProgress(17);
                         response = http.getResponseCode();
+                        publishProgress(21);
                     } catch(Exception e){
                         Log.e("Comprobando", "Excepción HTTPURL: "+e.toString());
-                    } //TODO meter esto en el parseador de JSON, ya que esto forma parte de él
+                    }
                     publishProgress(25);
                     if(response==200){
                         JSONObject json = jParser.getJSONFromUrl("http://"+MainActivity.url+"/cgi-bin/archivos.py");
@@ -320,13 +323,14 @@ public class MainActivity extends ListActivity {
                         try {
                             // Getting Array of Songs
                             MainActivity.contacts = json.getJSONArray("canciones");
-                            publishProgress(40);
+                            publishProgress(35);
 
                             // looping through All Songs
+                            publishProgress(37);
                             for(int i = 0; i < MainActivity.contacts.length(); i++){
                                 JSONObject c = MainActivity.contacts.getJSONObject(i);
 
-                                int counter = 40 + ((i/MainActivity.contacts.length())/2);
+                                int counter = 40 + ((i*100/MainActivity.contacts.length())/2);
                                 publishProgress(counter);
                                 // Storing each json item in variable
                                 String id = c.getString("id");
@@ -344,7 +348,7 @@ public class MainActivity extends ListActivity {
                                 map.put("titulo", titulo);
                                 map.put("artista", artista);
                                 map.put("album", album);
-                                map.put("archivo", "http://"+MainActivity.url+"/"+archivo);
+                                map.put("archivo", "http://"+MainActivity.url+""+archivo);
                                 map.put("duracion", duracion);
 
                                 // adding HashList to ArrayList
@@ -357,7 +361,7 @@ public class MainActivity extends ListActivity {
                         publishProgress(90);
                     }
 
-                    publishProgress(100);
+                    publishProgress(95);
                     return contactList;
                 }else{
                     return null;
@@ -373,7 +377,7 @@ public class MainActivity extends ListActivity {
             super.onPostExecute(result);
             try{
                 Thread.sleep(1000);
-                publishProgress(5);
+                publishProgress(99);
             } catch (Exception e) {}
             progressDialog.dismiss();
         }

@@ -9,25 +9,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.TextView;
 
-/**
- * Musicote App
- * Melchor629 2012
- *
- *    Copyright 2012 Melchor629
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
-**/
-
 public class DisplayMessageActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,12 +18,12 @@ public class DisplayMessageActivity extends Activity {
         String last_str = intent.getStringExtra(MainActivity.Last_STRING);
         SharedPreferences get = PreferenceManager.getDefaultSharedPreferences(this);
         String mensaje = getString(R.string.infor)+"\n"+message+"\n"+last_str+"\n"+get.getString("usuario", "null");
-
+  
         // Create the text view
         TextView textView = new TextView(this);
         textView.setTextSize(15);
         textView.setText(mensaje);
-
+  
         setContentView(textView);
     }
 }
