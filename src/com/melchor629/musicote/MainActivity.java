@@ -16,7 +16,10 @@ import com.melchor629.musicote.R;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -88,6 +91,7 @@ public class MainActivity extends ListActivity {
         }
         
         //Create a new progress dialog
+        if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB){
         progressDialog = new ProgressDialog(MainActivity.this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setTitle("Musicote en camino...");
@@ -96,18 +100,19 @@ public class MainActivity extends ListActivity {
         progressDialog.setIndeterminate(false);
         progressDialog.setMax(100);
         progressDialog.setProgress(0);
-        progressDialog.show();
+        progressDialog.show();}
         
         new Thread(new Runnable(){
 			@Override
 			public void run() {
-				AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
+				Looper.prepare();
 		        try {
+		        	AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
 		            contactList = asd.get();
 		        } catch (InterruptedException e) {
 		            Log.e("AsyncTask","AsyncTask not finished: "+e.toString()); 
 		            e.printStackTrace();
-		        } catch (ExecutionException e) {
+		        } catch (Exception e) {
 		            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
 		            e.printStackTrace();
 		        } MainActivity.this.runOnUiThread(new Runnable(){@Override public void run(){sis();}});
@@ -283,11 +288,6 @@ public class MainActivity extends ListActivity {
 
         public int response;
 
-        protected void onPreExecute()
-        {
-
-        }
-
         protected ArrayList<HashMap<String, String>> doInBackground(Void... params){
             // Hashmap for ListView
             final ArrayList<HashMap<String, String>> contactList = new ArrayList<HashMap<String, String>>();
@@ -370,7 +370,9 @@ public class MainActivity extends ListActivity {
         }
 
         protected void onProgressUpdate(Integer... progress){
-            progressDialog.setProgress(progress[0]);
+        	if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB)
+        		progressDialog.setProgress(progress[0]);
+            Log.d("Looper", ""+progress[0]);
         }
 
         protected void onPostExecute(ArrayList<HashMap<String, String>> result){
@@ -379,7 +381,8 @@ public class MainActivity extends ListActivity {
                 Thread.sleep(1000);
                 publishProgress(99);
             } catch (Exception e) {}
-            progressDialog.dismiss();
+            if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB)
+            	progressDialog.dismiss();
         }
     }
 
