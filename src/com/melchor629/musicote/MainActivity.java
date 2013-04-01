@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -115,7 +114,13 @@ public class MainActivity extends ListActivity {
 		        } catch (Exception e) {
 		            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
 		            e.printStackTrace();
-		        } MainActivity.this.runOnUiThread(new Runnable(){@Override public void run(){sis();}});
+		        } 
+		        MainActivity.this.runOnUiThread(new Runnable(){@Override public void run(){sis();}});
+		        try {
+					this.finalize();
+				} catch (Throwable e) {
+					Log.e("UIUpdate" ,"Error: "+ e.toString());
+				}
 			}}).start();
     }
     

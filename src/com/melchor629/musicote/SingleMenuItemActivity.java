@@ -153,6 +153,11 @@ public class SingleMenuItemActivity extends Activity {
 			while(Reproductor.a < 100 && Reproductor.a != -1){
 				try{Thread.sleep(100); publishProgress();}catch(Exception e){}
 			}
+			try {
+				this.finalize();
+			} catch (Throwable e) {
+				Log.e("Class p" ,"Error: "+ e.toString());
+			}
 			return null;
 		}
 		
