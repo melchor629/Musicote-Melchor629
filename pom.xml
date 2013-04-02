@@ -33,14 +33,14 @@
           <target/>
         </configuration>
       </plugin>
-      <plugin>
+      <!--<plugin> Only in case of error
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.0</version>
         <configuration>
             <compilerArgument>-verbose</compilerArgument>
       	</configuration>
-      </plugin>
+      </plugin>-->
       <plugin>
           <groupId>com.jayway.maven.plugins.android.generation2</groupId>
           <artifactId>android-maven-plugin</artifactId>
