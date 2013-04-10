@@ -29,7 +29,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
     static MediaPlayer reproductor = new MediaPlayer();
 
-    private String url;
+    public static String url;
     private static boolean paused;
     public static String tit;
     public static String art;
@@ -40,10 +40,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
     public int onStartCommand (Intent intent, int flags, int StartID){
         Toast.makeText(this, "Reproductor de musicote abierto", Toast.LENGTH_LONG).show();
-        url = intent.getStringExtra("archivo");
-        tit = intent.getStringExtra("titulo");
-        art = intent.getStringExtra("artista");
-        initMediaPlayer(url, tit, art);
         return START_STICKY;
     }
 
@@ -56,11 +52,9 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             Log.e("Reproductor.Descarga","Error: "+ e.toString());
             if(e.toString().equals("(1, -1004"))
             	Toast.makeText(this, "No se ha podido descargar la canción", Toast.LENGTH_LONG).show();
-            Intent in = new Intent(getApplicationContext(), Reproductor.class);
-            stopService(in);
         }
         reproductor.setOnPreparedListener(this);
-        reproductor.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        reproductor.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
         reproductor.prepareAsync(); // prepare async to not block main thread
         int mID = 1;
 
@@ -112,6 +106,24 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     		paused = false;
     	}
     }
+    
+    public void play(String tity, String arty, String arch){
+    	if(!reproductor.isPlaying()){
+	    	tit = tity;
+	    	art = arty;
+	    	url = arch;
+	    	initMediaPlayer(arch, tity, arty);
+    	}else{
+    		//TODO Si ya se está reproduciendo argo, añadirlo a la cola de reproducción
+    	}
+    }
+    
+    public void stop(){
+    	if(reproductor.isPlaying()){
+    		reproductor.stop();
+    		nm.cancelAll();
+    	}
+    }
 
     /* (non-Javadoc)
      * @see android.app.Service#onBind(android.content.Intent)
@@ -154,8 +166,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                 player.stop(); Log.d("FOR", "Se tendria que serrar...");
                 nm.cancelAll();
                 a = -1;
-                Intent in = new Intent(getApplicationContext(), Reproductor.class);
-                stopService(in);
             }catch (IllegalStateException e){
                 nm.cancelAll();
                 a = -1;

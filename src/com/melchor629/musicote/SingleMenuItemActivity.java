@@ -116,14 +116,9 @@ public class SingleMenuItemActivity extends Activity {
      */
     public void PlaySong(final View v) {
         url = archivo;
-        // Starting new intent
-        Intent in = new Intent(getApplicationContext(), Reproductor.class);
-        in.putExtra("titulo", name);
-        in.putExtra("artista", cost);
-        in.putExtra("archivo", url);
-        Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
-
-        startService(in);
+        
+        Reproductor rep = new Reproductor();
+        rep.play(name, cost, url);
         
         texto = (TextView) findViewById(R.id.playingNow);
         barra = (ProgressBar) findViewById(R.id.progressBar1);
@@ -137,8 +132,8 @@ public class SingleMenuItemActivity extends Activity {
      * @param v
      */
     public void StopSong(View v) {
-        Intent in = new Intent(getApplicationContext(), Reproductor.class);
-        stopService(in);
+        Reproductor rep = new Reproductor();
+        rep.stop();
         new p().cancel(true);
     }
     

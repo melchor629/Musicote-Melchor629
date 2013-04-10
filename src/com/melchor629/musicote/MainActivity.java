@@ -90,6 +90,9 @@ public class MainActivity extends ListActivity {
             Last_String = savedInstanceState.getString(Last_STRING);
         }
         
+        Intent pl = new Intent(this, Reproductor.class);
+        startService(pl);
+        
         //Create a new progress dialog
         if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB){
         progressDialog = new ProgressDialog(MainActivity.this);
@@ -204,6 +207,8 @@ public class MainActivity extends ListActivity {
     @Override
     public void finish() {
         super.finish(); //Always call the superclass method first
+        Intent rep = new Intent(this, Reproductor.class);
+        stopService(rep);
     }
 
     @Override
