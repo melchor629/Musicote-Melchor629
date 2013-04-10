@@ -135,17 +135,16 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         public void run(MediaPlayer player, SharedPreferences pref, NotificationManager nm){
             player.start();
             try{
-                for(int i = 0; ((player.isPlaying() || paused) ? true : false) & i < player.getDuration(); i+=1000){
+                while(((player.isPlaying() || paused) ? true : false) & player.getCurrentPosition() < player.getDuration()){
                     try{
-                        if((int)(i/1000) == (int)((player.getDuration()/1000)/2)){
-                               if(pref.getBoolean("lastact", false) == true){
-                                   Scrobble scr = new Scrobble(tit, art);
-                                   scr.scrobble();
-                               }
+                        a = (long)(player.getCurrentPosition()/(long)(player.getDuration()/100));
+                        if(a==50){
+                            if(pref.getBoolean("lastact", false) == true){
+                                Scrobble scr = new Scrobble(tit, art);
+                                scr.scrobble();
+                            }
                         }
-                        a = (long)(i/(long)(player.getDuration()/100)); Log.d("Reproductor", "a = "+a+"-"+i+"-"+player.getDuration());
-                    	if(paused)
-                    		i-=1000;
+                        Log.d("Reproductor", "a = "+a+"-"+player.getCurrentPosition()+"-"+player.getDuration());
                         Thread.sleep(1000);
                     }catch (Exception e){
                         Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...");
