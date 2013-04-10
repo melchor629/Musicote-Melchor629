@@ -74,6 +74,13 @@
           android:onClick="PlaySong"
           android:src="@drawable/ic_stat_name" />
 
+      <Button
+          android:id="@+id/pause"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:onClick="PauseSong"
+          android:text="Pause" />
+
       <ImageButton
           android:id="@+id/imageButton1"
           android:layout_width="wrap_content"

@@ -22,15 +22,15 @@ import android.widget.Toast;
 /**
  * Reproductor del Musicote 0.1
  * TODO Mejorar con nuevas cosas el servicio inlcuyendo una interfaz gráfica y Last.FM
- * TODO Averiguar si en versiones antiguas funciona la notificación
  * TODO Cambiar el icono por uno mejor y con tamaños para que el Lint no se queje xD
  * @author melchor
  */
 public class Reproductor extends Service implements MediaPlayer.OnPreparedListener {
 
-    MediaPlayer reproductor = new MediaPlayer();
+    static MediaPlayer reproductor = new MediaPlayer();
 
     private String url;
+    private static boolean paused;
     public static String tit;
     public static String art;
     private coso cosa;
@@ -102,6 +102,16 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         cosa.run(player, pref, nm);
         }}).start();
     }
+    
+    public static void pause(){
+    	if(reproductor.isPlaying()){
+			reproductor.pause();
+			paused = true;
+    	}else{
+    		reproductor.start();
+    		paused = false;
+    	}
+    }
 
     /* (non-Javadoc)
      * @see android.app.Service#onBind(android.content.Intent)
@@ -125,7 +135,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         public void run(MediaPlayer player, SharedPreferences pref, NotificationManager nm){
             player.start();
             try{
-                for(int i = 0; player.isPlaying() & i < player.getDuration(); i+=1000){
+                for(int i = 0; ((player.isPlaying() || paused) ? true : false) & i < player.getDuration(); i+=1000){
                     try{
                         if((int)(i/1000) == (int)((player.getDuration()/1000)/2)){
                                if(pref.getBoolean("lastact", false) == true){
@@ -134,6 +144,8 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                                }
                         }
                         a = (long)(i/(long)(player.getDuration()/100)); Log.d("Reproductor", "a = "+a+"-"+i+"-"+player.getDuration());
+                    	if(paused)
+                    		i-=1000;
                         Thread.sleep(1000);
                     }catch (Exception e){
                         Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...");

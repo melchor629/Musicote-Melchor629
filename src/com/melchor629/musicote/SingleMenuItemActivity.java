@@ -99,7 +99,7 @@ public class SingleMenuItemActivity extends Activity {
                 startActivity(intent);
                 break;
              case R.id.parar:
-                Intent intento = new Intent(SingleMenuItemActivity.this, Reproductor.class);
+                Intent intento = new Intent(SingleMenuItemActivity.this, Reproductor.class); //TODO Cambiar esto por la actividad del reproductor UI
                 stopService(intento);
                 break;
             default:
@@ -121,7 +121,7 @@ public class SingleMenuItemActivity extends Activity {
         in.putExtra("titulo", name);
         in.putExtra("artista", cost);
         in.putExtra("archivo", url);
-          Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
+        Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
 
         startService(in);
         
@@ -140,6 +140,15 @@ public class SingleMenuItemActivity extends Activity {
         Intent in = new Intent(getApplicationContext(), Reproductor.class);
         stopService(in);
         new p().cancel(true);
+    }
+    
+    /**
+     * PauseSong
+     * Envia al servicio que pause la canción
+     * @param v
+     */
+    public void PauseSong(View v){
+    	Reproductor.pause();
     }
     
     class p extends AsyncTask<Void, Void, Void>{

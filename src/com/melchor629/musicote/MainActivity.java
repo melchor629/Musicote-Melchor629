@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import com.melchor629.musicote.R;
 
+import android.content.pm.ActivityInfo;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -122,6 +123,7 @@ public class MainActivity extends ListActivity {
 					Log.e("UIUpdate" ,"Error: "+ e.toString());
 				}
 			}}).start();
+      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
     
     private void sis(){
@@ -153,7 +155,7 @@ public class MainActivity extends ListActivity {
 
             public void onItemClick(AdapterView<?> parent, View view,
                 int position, long id) {
-            // getting values from selected ListItem
+                // getting values from selected ListItem
                 JSONObject tolcoño = null;
                 try{
                     tolcoño = contacts.getJSONObject(position);
