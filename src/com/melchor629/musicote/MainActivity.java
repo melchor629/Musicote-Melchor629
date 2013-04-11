@@ -168,7 +168,8 @@ public class MainActivity extends ListActivity {
         // Launching new screen on Selecting Single ListItem
         lv.setOnItemClickListener(new OnItemClickListener() {
 
-            public void onItemClick(AdapterView<?> parent, View view,
+            @Override
+			public void onItemClick(AdapterView<?> parent, View view,
                 int position, long id) {
                 // getting values from selected ListItem
                 JSONObject tolcoño = null;
@@ -203,22 +204,6 @@ public class MainActivity extends ListActivity {
                 startActivity(in);
             }
         });
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();  // Always call the superclass method first
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();  // Always call the superclass method first
-
-    }
-
-    @Override
-    public void finish() {
-        super.finish(); //Always call the superclass method first
     }
 
     @Override
@@ -293,7 +278,8 @@ public class MainActivity extends ListActivity {
         startActivity(intent);
     }
     // Intento de guardar lo ultimo enviado al otro .class
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    @Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
         savedInstanceState.putString(Last_STRING, EXTRA_MESSAGE);
 
@@ -310,7 +296,8 @@ public class MainActivity extends ListActivity {
 
         public int response;
 
-        protected ArrayList<HashMap<String, String>> doInBackground(Void... params){
+        @Override
+		protected ArrayList<HashMap<String, String>> doInBackground(Void... params){
             // Hashmap for ListView
             final ArrayList<HashMap<String, String>> contactList = new ArrayList<HashMap<String, String>>();
 
@@ -391,11 +378,13 @@ public class MainActivity extends ListActivity {
             }
         }
 
-        protected void onProgressUpdate(Integer... progress){
+        @Override
+		protected void onProgressUpdate(Integer... progress){
     		progressDialog.setProgress(progress[0]);
         }
 
-        protected void onPostExecute(ArrayList<HashMap<String, String>> result){
+        @Override
+		protected void onPostExecute(ArrayList<HashMap<String, String>> result){
             super.onPostExecute(result);
             try{
                 //Thread.sleep(1000);
