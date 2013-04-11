@@ -104,13 +104,17 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     }
     
     public static void pause(){
-    	if(reproductor.isPlaying()){
-			reproductor.pause();
-			paused = true;
-    	}else{
-    		reproductor.start();
-    		paused = false;
-    	}
+        try{
+            if(reproductor.isPlaying()){
+                reproductor.pause();
+                paused = true;
+            }else{
+                reproductor.start();
+                paused = false;
+            }
+         }catch(IllegalStateException e){
+            Log.d("Reproductor Pause", "Se ha invocado el pause, aunque el reproductor está cerrado");
+        }
     }
 
     /* (non-Javadoc)
