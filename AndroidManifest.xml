@@ -3,7 +3,7 @@
     package="com.melchor629.musicote"
     android:versionCode="1"
     android:versionName="@string/version"
-    android:installLocation="internalOnly">
+    android:installLocation="auto">
 
     <uses-sdk
         android:minSdkVersion="9"

@@ -91,16 +91,19 @@ public class MainActivity extends ListActivity {
         }
         
         //Create a new progress dialog
-        if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB){
         progressDialog = new ProgressDialog(MainActivity.this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setTitle("Musicote en camino...");
         progressDialog.setMessage("Cargando datos del servidor, espere...");
         progressDialog.setCancelable(false);
-        progressDialog.setIndeterminate(false);
-        progressDialog.setMax(100);
-        progressDialog.setProgress(0);
-        progressDialog.show();}
+        if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
+	        progressDialog.setIndeterminate(false);
+	        progressDialog.setMax(100);
+	        progressDialog.setProgress(0);
+        } else {
+        	progressDialog.setIndeterminate(true);
+        }
+        progressDialog.show();
         
         new Thread(new Runnable(){
 			@Override
@@ -116,8 +119,20 @@ public class MainActivity extends ListActivity {
 		            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
 		            e.printStackTrace();
 		        } 
-		        MainActivity.this.runOnUiThread(new Runnable(){@Override public void run(){sis();}});
+		        MainActivity.this.runOnUiThread(
+	        		new Runnable(){
+	        			@Override public void run(){
+	        				sis();
+	        				try {
+        						this.finalize();
+	        				} catch (Throwable e) {
+	        					Log.e(MainActivity.EXTRA_MESSAGE, "Error: "+ e.toString());
+	        				}
+        				}
+	                }
+        		);
 		        try {
+		        	progressDialog.dismiss();
 					this.finalize();
 				} catch (Throwable e) {
 					Log.e("UIUpdate" ,"Error: "+ e.toString());
@@ -377,19 +392,15 @@ public class MainActivity extends ListActivity {
         }
 
         protected void onProgressUpdate(Integer... progress){
-        	if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB)
-        		progressDialog.setProgress(progress[0]);
-            Log.d("Looper", ""+progress[0]);
+    		progressDialog.setProgress(progress[0]);
         }
 
         protected void onPostExecute(ArrayList<HashMap<String, String>> result){
             super.onPostExecute(result);
             try{
-                Thread.sleep(1000);
+                //Thread.sleep(1000);
                 publishProgress(99);
             } catch (Exception e) {}
-            if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB)
-            	progressDialog.dismiss();
         }
     }
 

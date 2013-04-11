@@ -4,12 +4,16 @@ import com.melchor629.musicote.R;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -46,6 +50,9 @@ public class SingleMenuItemActivity extends Activity {
     
     private TextView texto;
     private ProgressBar barra;
+    private Handler h = new Handler();
+    private boolean H = true;
+    private boolean ñ = false;
 
     public static String url;
     public static String name;
@@ -58,6 +65,48 @@ public class SingleMenuItemActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_list_item);
+        
+        texto = (TextView) findViewById(R.id.playingNow);
+        barra = (ProgressBar) findViewById(R.id.progressBar1);
+        barra.setMax(100);
+        
+        final Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
+    	final Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
+        new Thread(
+    		new Runnable() {
+    			public void run() {
+    				while(H) {
+    					h.post(
+							new Runnable() {
+								public void run() {
+									if(Reproductor.a != -1) {
+										if(ñ)
+											o();
+										barra.setProgress((int)Reproductor.a);
+										texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
+									} else {
+										if(!ñ) {
+									    	Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
+									    	ImageButton but = (ImageButton) findViewById(R.id.play);
+											but.setTag("playpause");
+								        	but.startAnimation(animAlpha);
+								    		but.setImageDrawable(play);
+								    		but.startAnimation(alphaAnim);
+								    		ñ = true;
+										}
+										barra.setProgress((int)Reproductor.a);
+										texto.setText("No reproduce nada");
+									}
+								}
+							}
+						);
+    					try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {}
+    				}
+    			}
+    		}
+		).start();
 
         // getting intent data
         Intent in = getIntent();
@@ -115,20 +164,41 @@ public class SingleMenuItemActivity extends Activity {
      * @param v
      */
     public void PlaySong(final View v) {
-        url = archivo;
-        // Starting new intent
-        Intent in = new Intent(getApplicationContext(), Reproductor.class);
-        in.putExtra("titulo", name);
-        in.putExtra("artista", cost);
-        in.putExtra("archivo", url);
-        Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
-
-        startService(in);
-        
-        texto = (TextView) findViewById(R.id.playingNow);
-        barra = (ProgressBar) findViewById(R.id.progressBar1);
-        barra.setMax(100);
-        new p().execute();
+    	Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
+    	Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
+    	Drawable pause = getResources().getDrawable(R.drawable.ic_pause);
+    	Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
+    	ImageButton but = (ImageButton)v.findViewById(R.id.play); Log.d("", but.getTag().toString());
+    	if(but.getTag().toString().equals("play")) {
+			but.startAnimation(animAlpha);
+			but.setImageDrawable(pause);
+			but.startAnimation(alphaAnim);
+			but.setTag("pause");
+			
+	        url = archivo;
+	        // Starting new intent
+	        Intent in = new Intent(getApplicationContext(), Reproductor.class);
+	        in.putExtra("titulo", name);
+	        in.putExtra("artista", cost);
+	        in.putExtra("archivo", url);
+	        Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
+	
+	        startService(in);
+	        
+	        Reproductor.a = 0;
+    	}else if(but.getTag().toString().equals("pause")) {
+        	but.setTag("playpause");
+        	but.startAnimation(animAlpha);
+    		but.setImageDrawable(play);
+    		but.startAnimation(alphaAnim);
+    		Reproductor.pause();
+    	}else if(but.getTag().toString().equals("playpause")) {
+			but.startAnimation(animAlpha);
+			but.setImageDrawable(pause);
+			but.startAnimation(alphaAnim);
+			but.setTag("pause");
+			Reproductor.pause();
+    	}
     }
 
     /**
@@ -139,41 +209,32 @@ public class SingleMenuItemActivity extends Activity {
     public void StopSong(View v) {
         Intent in = new Intent(getApplicationContext(), Reproductor.class);
         stopService(in);
-        new p().cancel(true);
     }
     
     /**
-     * PauseSong
-     * Envia al servicio que pause la canción
+     * download	
+     * Descarga la canción seleccionada
      * @param v
      */
-    public void PauseSong(View v){
-    	Reproductor.pause();
+    public void download(View v){
+    	//TODO
     }
     
-    class p extends AsyncTask<Void, Void, Void>{
-    	@Override
-    	protected void onPostExecute(Void i){
-    		texto.setText("No está reproduciendo nada");
-    	}
-    	
-		@Override
-		protected Void doInBackground(Void... i) {
-			while(Reproductor.a < 100 && Reproductor.a != -1){
-				try{Thread.sleep(100); publishProgress();}catch(Exception e){}
-			}
-			try {
-				this.finalize();
-			} catch (Throwable e) {
-				Log.e("Class p" ,"Error: "+ e.toString());
-			}
-			return null;
-		}
-		
-		@Override
-		protected void onProgressUpdate(Void... i){
-			barra.setProgress((int)Reproductor.a);
-			texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
-		}
+    @Override
+    protected void onDestroy() {
+    	super.onDestroy();
+    	H = false;
+    }
+    
+    public void o() {
+    	Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
+    	Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
+    	Drawable pause = getResources().getDrawable(R.drawable.ic_stat_name);
+    	ImageButton but = (ImageButton) findViewById(R.id.play);
+    	but.setTag("play");
+    	but.startAnimation(animAlpha);
+		but.setImageDrawable(pause);
+		but.startAnimation(alphaAnim);
+		ñ = false;
     }
 }

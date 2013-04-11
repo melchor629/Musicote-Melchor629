@@ -72,14 +72,8 @@
           android:layout_height="wrap_content"
           android:contentDescription="Play button"
           android:onClick="PlaySong"
-          android:src="@drawable/ic_stat_name" />
-
-      <Button
-          android:id="@+id/pause"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:onClick="PauseSong"
-          android:text="Pause" />
+          android:src="@drawable/ic_stat_name"
+          android:tag="play" />
 
       <ImageButton
           android:id="@+id/imageButton1"
@@ -88,6 +82,13 @@
           android:contentDescription="Stop Button"
           android:onClick="StopSong"
           android:src="@drawable/ic_stop" />
+
+      <Button
+          android:id="@+id/pause"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:onClick="download"
+          android:text="@string/download" />
 
   </LinearLayout>
   

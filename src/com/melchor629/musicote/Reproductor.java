@@ -36,7 +36,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     private coso cosa;
     private NotificationManager nm;
 
-    public static long a;
+    public static long a = -1;
 
     public int onStartCommand (Intent intent, int flags, int StartID){
         Toast.makeText(this, "Reproductor de musicote abierto", Toast.LENGTH_LONG).show();
@@ -132,6 +132,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
        if (reproductor != null)
            reproductor.release();
        nm.cancelAll();
+       a = -1;
        Toast.makeText(this, "Reproductor de musicote cerrado", Toast.LENGTH_LONG).show();
     }
 
