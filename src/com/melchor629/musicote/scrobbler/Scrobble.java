@@ -11,10 +11,9 @@ import java.util.Map;
 public class Scrobble {
 
     private static final String SK = Auth.SK;
-    private static final String TAG = "Scrobbler->Scrobble";
 
-    private static String titulo = null;
-    private static String artista = null;
+    private String titulo = null;
+    private String artista = null;
 
     public Scrobble(String Titulo, String Artista){
         titulo = Titulo;
@@ -29,8 +28,16 @@ public class Scrobble {
         int status = 0;
         long timestamp = System.currentTimeMillis()/1000;
         String sign = sign(titulo, artista, timestamp);
-        if(Peticiones.HTTPpost(sign) != null)
-            status = 1;
+        String request = Peticiones.HTTPpost(sign);
+        status = Peticiones.error(request);
+        if(status != 0) {
+        	switch(status) {
+        		case 8:
+        		case 16:
+        			this.scrobble();
+        			break;
+        	}
+        }
         //Make this variables again null for other uses
         titulo = null;
         artista = null;
@@ -44,8 +51,16 @@ public class Scrobble {
     public int nowPlaying(){
         int status = 0;
         String sign = sign(titulo, artista);
-        if(Peticiones.HTTPpost(sign) != null)
-            status = 1;
+        String request = Peticiones.HTTPpost(sign);
+        status = Peticiones.error(request);
+        if(status != 0) {
+        	switch(status) {
+        		case 8:
+        		case 16:
+        			this.nowPlaying();
+        			break;
+        	}
+        }
         return status;
     }
 

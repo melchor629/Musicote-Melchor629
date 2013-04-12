@@ -35,6 +35,7 @@ public class Auth {
         Log.d(TAG, "Last.FM sesión iniciada");
         if(SK==null) {
             SK = AuthParser(Peticiones.HTTPSpost(sign()));
+            Log.d("Scrobbler->Auth", "Renovando SK");
         }
         return SK;
     }

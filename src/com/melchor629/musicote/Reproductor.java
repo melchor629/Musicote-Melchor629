@@ -1,6 +1,7 @@
 package com.melchor629.musicote;
 
 import com.melchor629.musicote.scrobbler.Auth;
+import com.melchor629.musicote.scrobbler.Peticiones;
 import com.melchor629.musicote.scrobbler.Scrobble;
 
 import android.app.NotificationManager;
@@ -12,6 +13,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -139,20 +141,26 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     class coso extends Thread {
         public void run(MediaPlayer player, SharedPreferences pref, NotificationManager nm){
             player.start();
+            Looper.prepare();
             try{
                 while(((player.isPlaying() || paused) ? true : false) & player.getCurrentPosition() < player.getDuration()){
                     try{
                         a = (long)(player.getCurrentPosition()/(long)(player.getDuration()/100));
-                        if(a==50){
+                        boolean o = true;
+                        if(a==50 && o){
                             if(pref.getBoolean("lastact", false) == true){
                                 Scrobble scr = new Scrobble(tit, art);
-                                scr.scrobble();
+                                int e = scr.scrobble();
+                                //if(e != 0)
+                                	Toast.makeText(Reproductor.this, "Last.FM: "+Peticiones.errorM[e], Toast.LENGTH_LONG).show();
+                            	Log.d("Reproductor->Scrobbler", "Error: "+e+"\nMessage: "+Peticiones.errorM[e]);
+                            	o = false;
                             }
                         }
-                        Log.d("Reproductor", "a = "+a+"-"+player.getCurrentPosition()+"-"+player.getDuration());
+                        //Log.d("Reproductor", "a = "+a+"-"+player.getCurrentPosition()+"-"+player.getDuration());
                         Thread.sleep(1000);
                     }catch (Exception e){
-                        Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...");
+                        Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...\n"+e.toString());
                     }
                 }
 

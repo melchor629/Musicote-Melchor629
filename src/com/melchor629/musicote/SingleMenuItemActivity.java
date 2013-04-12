@@ -5,6 +5,7 @@ import com.melchor629.musicote.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -65,10 +66,13 @@ public class SingleMenuItemActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_list_item);
+        android.view.animation.Interpolator on = new android.view.animation.DecelerateInterpolator();
         
         texto = (TextView) findViewById(R.id.playingNow);
         barra = (ProgressBar) findViewById(R.id.progressBar1);
         barra.setMax(100);
+        barra.setInterpolator(on);
+        barra.setSecondaryProgress(50);
         
         final Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
     	final Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
@@ -88,7 +92,7 @@ public class SingleMenuItemActivity extends Activity {
 										if(!ñ) {
 									    	Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
 									    	ImageButton but = (ImageButton) findViewById(R.id.play);
-											but.setTag("playpause");
+											but.setTag("play");
 								        	but.startAnimation(animAlpha);
 								    		but.setImageDrawable(play);
 								    		but.startAnimation(alphaAnim);
@@ -186,6 +190,7 @@ public class SingleMenuItemActivity extends Activity {
 	        startService(in);
 	        
 	        Reproductor.a = 0;
+	        ñ = false;
     	}else if(but.getTag().toString().equals("pause")) {
         	but.setTag("playpause");
         	but.startAnimation(animAlpha);
@@ -217,7 +222,9 @@ public class SingleMenuItemActivity extends Activity {
      * @param v
      */
     public void download(View v){
-    	//TODO
+    	Uri location = Uri.parse(archivo);
+    	Intent dow = new Intent(Intent.ACTION_VIEW, location);
+    	startActivity(dow);
     }
     
     @Override
@@ -229,9 +236,9 @@ public class SingleMenuItemActivity extends Activity {
     public void o() {
     	Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
     	Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
-    	Drawable pause = getResources().getDrawable(R.drawable.ic_stat_name);
+    	Drawable pause = getResources().getDrawable(R.drawable.ic_pause);
     	ImageButton but = (ImageButton) findViewById(R.id.play);
-    	but.setTag("play");
+    	but.setTag("pause");
     	but.startAnimation(animAlpha);
 		but.setImageDrawable(pause);
 		but.startAnimation(alphaAnim);

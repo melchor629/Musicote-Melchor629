@@ -23,6 +23,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.os.StrictMode;
 import android.util.Log;
 
@@ -35,9 +38,20 @@ public class Peticiones {
 
     public static final String APIkey   = "201a5fdd42fd8cc5577fd0646b3e8ba7";
     public static final String url      = "https://ws.audioscrobbler.com/2.0/";
-    public static final String uRl        = "http://ws.audioscrobbler.com/2.0/";
+    public static final String uRl      = "http://ws.audioscrobbler.com/2.0/";
+    
+    public static String[] errorM = {
+    	"Correcto", "", "Invalid service - This service does not exist", "Invalid Method - No method with that name in this package",
+    	"Authentication Failed - You do not have permissions to access the service", "Invalid format - This service doesn't exist in that format",
+    	"Invalid parameters - Your request is missing a required parameter", "Invalid resource specified", "Operation failed - Something else went wrong",
+    	"Invalid session key - Please re-authenticate", "Invalid API key - You must be granted a valid key by last.fm",
+    	"Service Offline - This service is temporarily offline. Try again later.", "", "Invalid method signature supplied", "", "",
+    	"The service is temporarily unavailable, please try again.", "", "", "", "", "", "", "", "", "",
+    	"Suspended API key - Access for your account has been suspended, please contact Last.fm", "", "",
+    	"Rate limit exceeded - Your IP has made too many requests in a short period"
+    };
 
-    private static final String TAG        = "Scrobbler->Peticiones";
+    private static final String TAG      = "Scrobbler->Peticiones";
     private static final String Secret   = "8a5b2c73afdd9f1a585754d52449f0cd";
 
     /**
@@ -219,6 +233,24 @@ public class Peticiones {
                 builder.append('&');
         }
         return builder.toString();
+    }
+    
+    /**
+     * Procesa el mensaje enviado de Last.FM en busca de errores, y si los tiene saldrá en el resultado
+     * @param request <i>Respuesta de Last.FM</i>
+     * @return out <i>Código de error</i>
+     */
+    public static int error(String request) {
+    	int out = 0;
+    	JSONObject jObj;
+    	try {
+            jObj = new JSONObject(request);
+            if(jObj.has("error"))
+            	out = jObj.getInt("error");
+        } catch (JSONException e) {
+            Log.e("JSON Parser", "Error parsing data " + e.toString());
+        }
+    	return out;
     }
 
     public static Map<String, String> map(String... strings) {
