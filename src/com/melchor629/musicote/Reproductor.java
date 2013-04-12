@@ -29,6 +29,9 @@ import android.widget.Toast;
  */
 public class Reproductor extends Service implements MediaPlayer.OnPreparedListener {
 
+    /**
+     * Static variable for the Media Player
+     */
     static MediaPlayer reproductor = new MediaPlayer();
 
     private String url;
@@ -49,6 +52,12 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         return START_STICKY;
     }
 
+    /**
+     * When the service is ready, start playing the song
+     * @param url <i>URL for the file</i>
+     * @param titulo <i>Title of the song</i>
+     * @param artista <i>Song' Artist</i>
+     */
     public void initMediaPlayer(String url, String titulo, String artista){
         reproductor = new MediaPlayer(); // initialize it here
         reproductor.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -105,6 +114,9 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         }}).start();
     }
     
+    /**
+     * Pause or resume the song
+     */
     public static void pause(){
         try{
             if(reproductor.isPlaying()){
@@ -138,6 +150,12 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
        Toast.makeText(this, "Reproductor de musicote cerrado", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Class for manage the current position of the song, and send the scrobbling
+     * 
+     * @author melchor9000
+     *
+     */
     class coso extends Thread {
         public void run(MediaPlayer player, SharedPreferences pref, NotificationManager nm){
             player.start();
@@ -151,7 +169,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                             if(pref.getBoolean("lastact", false) == true){
                                 Scrobble scr = new Scrobble(tit, art);
                                 int e = scr.scrobble();
-                                //if(e != 0)
+                                if(e != 0)
                                 	Toast.makeText(Reproductor.this, "Last.FM: "+Peticiones.errorM[e], Toast.LENGTH_LONG).show();
                             	Log.d("Reproductor->Scrobbler", "Error: "+e+"\nMessage: "+Peticiones.errorM[e]);
                             	o = false;

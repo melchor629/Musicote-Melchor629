@@ -13,12 +13,31 @@ import android.util.Log;
  */
 public class Auth {
 
+	/**
+	 * TAG for the Log Android system
+	 */
     private static final String TAG = "Scrobbler->Auth";
+    
+    /**
+     * Username to authenticate, always starting as <b>null</b>
+     */
     private static String username     = null;
+    
+    /**
+     * Password to authenticate, always starting as <b>null</b>
+     */
     private static String password     = null;
 
+    /**
+     * Public SK code
+     */
     public static String SK = null;
 
+    /**
+     * Constructor for Auth
+     * @param user <i>Username to authenticate</i>
+     * @param pass <i>Password for the username</i>
+     */
     public Auth(String user, String pass){
         Log.d(TAG, "Llamado");
         if(user != null && pass != null){

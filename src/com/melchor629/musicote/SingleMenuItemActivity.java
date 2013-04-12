@@ -233,7 +233,7 @@ public class SingleMenuItemActivity extends Activity {
     	H = false;
     }
     
-    public void o() {
+    private void o() {
     	Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
     	Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
     	Drawable pause = getResources().getDrawable(R.drawable.ic_pause);

@@ -10,11 +10,26 @@ import java.util.Map;
  */
 public class Scrobble {
 
+    /**
+     * SK code from <link>Auth.SK</link>
+     */
     private static final String SK = Auth.SK;
 
+    /**
+     * Working title
+     */
     private String titulo = null;
+    
+    /**
+     * Working artist
+     */
     private String artista = null;
 
+    /**
+     * Constructor for the class <i>Scrobble</i>
+     * @param Titulo <i>Song title</i>
+     * @param Artista <i>Song artist</i>
+     */
     public Scrobble(String Titulo, String Artista){
         titulo = Titulo;
         artista = Artista;
@@ -22,7 +37,7 @@ public class Scrobble {
 
     /**
      * Envia el scrobbling a Last.FM
-     * @return status Estado resultante del Scrobbling TODO crear el sistema
+     * @return status Estado resultante del Scrobbling
      */
     public int scrobble(){
         int status = 0;
@@ -46,7 +61,7 @@ public class Scrobble {
 
     /**
      * Envia a Last.FM que estás escuchando dicha canción
-     * @return status Estado resultante del updateNowPlaying TODO crear el sistema
+     * @return status Estado resultante del updateNowPlaying
      */
     public int nowPlaying(){
         int status = 0;

@@ -36,10 +36,24 @@ import android.util.Log;
  */
 public class Peticiones {
 
+	/**
+	 * API key from <link>Last.FM</link>
+	 */
     public static final String APIkey   = "201a5fdd42fd8cc5577fd0646b3e8ba7";
+    
+    /**
+     * Url for the https API
+     */
     public static final String url      = "https://ws.audioscrobbler.com/2.0/";
+    
+    /**
+     * Url for the http API
+     */
     public static final String uRl      = "http://ws.audioscrobbler.com/2.0/";
     
+    /**
+     * Array with all descriptions for every error that could give Last.FM
+     */
     public static String[] errorM = {
     	"Correcto", "", "Invalid service - This service does not exist", "Invalid Method - No method with that name in this package",
     	"Authentication Failed - You do not have permissions to access the service", "Invalid format - This service doesn't exist in that format",
@@ -51,7 +65,14 @@ public class Peticiones {
     	"Rate limit exceeded - Your IP has made too many requests in a short period"
     };
 
+    /**
+     * Tag for the Logging Android system
+     */
     private static final String TAG      = "Scrobbler->Peticiones";
+    
+    /**
+     * Secret API key
+     */
     private static final String Secret   = "8a5b2c73afdd9f1a585754d52449f0cd";
 
     /**
