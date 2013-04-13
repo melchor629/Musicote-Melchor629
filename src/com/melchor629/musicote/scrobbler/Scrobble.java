@@ -81,13 +81,13 @@ public class Scrobble {
 
     private String sign(String titulo, String artista, long time){
         Map<String, String> datos = Peticiones.map("method","track.scrobble","track",titulo,"artist",artista,"timestamp",""+time,"sk",SK);
-        String petición = Peticiones.request(datos);
-        return petición;
+        String peticion = Peticiones.request(datos);
+        return peticion;
     }
 
     private String sign(String titulo, String artista){
         Map<String, String> datos = Peticiones.map("method","track.updateNowPlaying","track",titulo,"artist",artista,"sk",SK);
-        String petición = Peticiones.request(datos);
-        return petición;
+        String peticion = Peticiones.request(datos);
+        return peticion;
     }
 }

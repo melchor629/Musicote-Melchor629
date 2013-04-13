@@ -172,9 +172,9 @@ public class MainActivity extends ListActivity {
 			public void onItemClick(AdapterView<?> parent, View view,
                 int position, long id) {
                 // getting values from selected ListItem
-                JSONObject tolcoño = null;
+                JSONObject datos = null;
                 try{
-                    tolcoño = contacts.getJSONObject(position);
+                    datos = contacts.getJSONObject(position);
                 }catch(Exception e){
                     Log.e("com.melchor629.musicote", "121<<"+e.toString()); e.printStackTrace();
                 }
@@ -187,8 +187,8 @@ public class MainActivity extends ListActivity {
                     name = ((TextView) view.findViewById(R.id.name)).getText().toString();
                     cost = ((TextView) view.findViewById(R.id.email)).getText().toString();
                     description = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
-                    album = tolcoño.getString("duracion");
-                    archivo = tolcoño.getString("archivo");
+                    album = datos.getString("duracion");
+                    archivo = datos.getString("archivo");
                 } catch (Exception e){
                     Log.e("com.melchor629.musicote", e.toString());
                 }

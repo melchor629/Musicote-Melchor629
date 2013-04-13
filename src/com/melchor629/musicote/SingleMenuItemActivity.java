@@ -53,7 +53,7 @@ public class SingleMenuItemActivity extends Activity {
     private ProgressBar barra;
     private Handler h = new Handler();
     private boolean H = true;
-    private boolean ñ = false;
+    private boolean n = false;
 
     public static String url;
     public static String name;
@@ -84,19 +84,19 @@ public class SingleMenuItemActivity extends Activity {
 							new Runnable() {
 								public void run() {
 									if(Reproductor.a != -1) {
-										if(ñ)
+										if(n || (Reproductor.a != -1 && !n))
 											o();
 										barra.setProgress((int)Reproductor.a);
 										texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
 									} else {
-										if(!ñ) {
+										if(!n) {
 									    	Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
 									    	ImageButton but = (ImageButton) findViewById(R.id.play);
 											but.setTag("play");
 								        	but.startAnimation(animAlpha);
 								    		but.setImageDrawable(play);
 								    		but.startAnimation(alphaAnim);
-								    		ñ = true;
+								    		n = true;
 										}
 										barra.setProgress((int)Reproductor.a);
 										texto.setText("No reproduce nada");
@@ -190,7 +190,7 @@ public class SingleMenuItemActivity extends Activity {
 	        startService(in);
 	        
 	        Reproductor.a = 0;
-	        ñ = false;
+	        n = false;
     	}else if(but.getTag().toString().equals("pause")) {
         	but.setTag("playpause");
         	but.startAnimation(animAlpha);
@@ -242,6 +242,6 @@ public class SingleMenuItemActivity extends Activity {
     	but.startAnimation(animAlpha);
 		but.setImageDrawable(pause);
 		but.startAnimation(alphaAnim);
-		ñ = false;
+		n = false;
     }
 }
