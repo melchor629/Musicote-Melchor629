@@ -76,6 +76,10 @@ public class SingleMenuItemActivity extends Activity {
         
         final Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
     	final Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
+    	
+    	if(Reproductor.a != -1)
+    		H = true;
+
         new Thread(
     		new Runnable() {
     			public void run() {
