@@ -137,9 +137,11 @@ public class MainActivity extends ListActivity {
 				} catch (Throwable e) {
 					Log.e("UIUpdate" ,"Error: "+ e.toString());
 				}
-			}}).start();
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    }
+			}
+		}
+    ).start();
+    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+	}
     
     private void sis(){
         if(contactList == null){

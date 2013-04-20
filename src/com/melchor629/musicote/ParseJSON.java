@@ -62,42 +62,43 @@ public class ParseJSON {
      * @return JSONObject jObj
      */
     public JSONObject getJSONFromUrl(String url) {
-
-        // Making HTTP request
-        try {
-            // defaultHttpClient
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpGet httpPost = new HttpGet(url);
-
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            is = httpEntity.getContent();
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            Log.e("com.melchor629.musicote", "UnsupportedEncodingException "+e.toString());
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            Log.e("com.melchor629.musicote", "ClientProtocolException "+e.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("com.melchor629.musicote", "IOException "+e.toString());
-        }
-
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    is, "UTF8"), 8);
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            is.close();
-            json = sb.toString();
-        } catch (Exception e) {
-            Log.e("Buffer Error", "Error converting result " + e.toString());
-        }
-
+    	if(json.equals("")) { Log.e("", "Se ase");
+	        // Making HTTP request
+	        try {
+	            // defaultHttpClient
+	            DefaultHttpClient httpClient = new DefaultHttpClient();
+	            HttpGet httpPost = new HttpGet(url);
+	
+	            HttpResponse httpResponse = httpClient.execute(httpPost);
+	            HttpEntity httpEntity = httpResponse.getEntity();
+	            is = httpEntity.getContent();
+	
+	        } catch (UnsupportedEncodingException e) {
+	            e.printStackTrace();
+	            Log.e("com.melchor629.musicote", "UnsupportedEncodingException "+e.toString());
+	        } catch (ClientProtocolException e) {
+	            e.printStackTrace();
+	            Log.e("com.melchor629.musicote", "ClientProtocolException "+e.toString());
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            Log.e("com.melchor629.musicote", "IOException "+e.toString());
+	        }
+	
+	        try {
+	            BufferedReader reader = new BufferedReader(new InputStreamReader(
+	                    is, "UTF8"), 8);
+	            StringBuilder sb = new StringBuilder();
+	            String line = null;
+	            while ((line = reader.readLine()) != null) {
+	                sb.append(line + "\n");
+	            }
+	            is.close();
+	            json = sb.toString();
+	        } catch (Exception e) {
+	            Log.e("Buffer Error", "Error converting result " + e.toString());
+	        }
+    	}
+        
         // try parse the string to a JSON object
         try {
             jObj = new JSONObject(json);

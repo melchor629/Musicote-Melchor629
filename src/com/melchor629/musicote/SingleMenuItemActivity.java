@@ -78,7 +78,7 @@ public class SingleMenuItemActivity extends Activity {
     	final Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
     	
     	if(Reproductor.a != -1)
-    		H = true;
+    		n = true;
 
         new Thread(
     		new Runnable() {
@@ -88,7 +88,7 @@ public class SingleMenuItemActivity extends Activity {
 							new Runnable() {
 								public void run() {
 									if(Reproductor.a != -1) {
-										if(n || (Reproductor.a != -1 && !n))
+										if(n || (Reproductor.a != -1 && n))
 											o();
 										barra.setProgress((int)Reproductor.a);
 										texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
