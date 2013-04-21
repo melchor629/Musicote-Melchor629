@@ -10,7 +10,8 @@ import json
 
 print "Content-type:text/json;charset=utf-8\n"
 
-path = "/path/to/music/folder/" """Modify only this line, the RELATIVE PATH to music folder"""
+path = "/path/to/music/folder" """Modify this line, the RELATIVE PATH to music folder"""
+webpath = "/WebPath/to/music/folder" """Modify this line too, the path to music web folder""" 
 musicote = []
 directorios = []
 i = 0
@@ -21,8 +22,8 @@ for base, dirs, files in os.walk(path):
 for carpeta in directorios:
     dir = os.listdir(carpeta)
     for archivo in dir:
-        i = i+1
         if "mp3" in archivo:
+            i = i+1
             audio = MP3(carpeta+"/"+archivo, ID3=EasyID3)
             try:
                 titulo =  audio["title"][0]
@@ -48,6 +49,7 @@ for carpeta in directorios:
             musicote.append({"id": str(i),"titulo": titulo, "album": album, "artista": artista, "duracion": duracion, "archivo": carpeta.replace("/users/melchor9000/music","/musica")+"/"+archivo})
 
         elif ("mp4" in archivo) | ("m4a" in archivo):
+            i = i+1
             audio = M4A(carpeta+"/"+archivo)
             album = audio.tags["\xa9alb"]
             artista = audio.tags["\xa9ART"]
@@ -58,6 +60,6 @@ for carpeta in directorios:
             if len(str(sec)) == 1:
                 sec = "0"+str(sec)
             duracion = str(min)+":"+str(sec)
-            musicote.append({"id": str(i),"titulo": titulo, "album": album, "artista": artista, "duracion": duracion, "archivo": carpeta.replace("/users/melchor9000/music","/musica")+"/"+archivo})
+            musicote.append({"id": str(i),"titulo": titulo, "album": album, "artista": artista, "duracion": duracion, "archivo": carpeta.replace(path,webpath)+"/"+archivo})
 
 print json.dumps({"canciones": musicote});
