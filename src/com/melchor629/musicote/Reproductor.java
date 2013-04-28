@@ -161,18 +161,18 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             player.start();
             Looper.prepare();
             try{
+            	boolean o = true;
                 while(((player.isPlaying() || paused) ? true : false) & player.getCurrentPosition() < player.getDuration()){
                     try{
                         a = (long)(player.getCurrentPosition()/(long)(player.getDuration()/100));
-                        boolean o = true;
                         if(a==50 && o){
                             if(pref.getBoolean("lastact", false) == true){
+                            	o = false;
                                 Scrobble scr = new Scrobble(tit, art);
                                 int e = scr.scrobble();
                                 if(e != 0)
                                 	Toast.makeText(Reproductor.this, "Last.FM: "+Peticiones.errorM[e], Toast.LENGTH_LONG).show();
                             	Log.d("Reproductor->Scrobbler", "Error: "+e+"\nMessage: "+Peticiones.errorM[e]);
-                            	o = false;
                             }
                         }
                         //Log.d("Reproductor", "a = "+a+"-"+player.getCurrentPosition()+"-"+player.getDuration());

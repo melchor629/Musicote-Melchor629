@@ -53,6 +53,7 @@ public class Scrobble {
         			break;
         	}
         }
+        this.nowPlaying();
         //Make this variables again null for other uses
         titulo = null;
         artista = null;
