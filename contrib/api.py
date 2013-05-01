@@ -62,4 +62,18 @@ for carpeta in directorios:
             duracion = str(min)+":"+str(sec)
             musicote.append({"id": str(i),"titulo": titulo, "album": album, "artista": artista, "duracion": duracion, "archivo": carpeta.replace(path,webpath)+"/"+archivo})
 
-print json.dumps({"canciones": musicote});
+art = []
+artistas = {}
+for arti in musicote:
+    art += [arti["artista"]]
+art = sorted(list(set(art)))
+for arti in art:
+    i = 0
+    artistas[arti] = []
+    for arto in musicote:
+        if arto["artista"] == arti:
+            d = artistas[arti]
+            artistas[arti].append(arto)
+            i = i+1
+
+print json.dumps({"canciones": musicote, "artistas": artistas})
