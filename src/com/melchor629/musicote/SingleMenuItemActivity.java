@@ -155,8 +155,6 @@ public class SingleMenuItemActivity extends Activity {
         lblDesc.setText(description);
         lblDura.setText(duracion);
         //TODO Poner una carátula de álbum
-
-        //TODO Hacer que el titulo de la actividad cambia dependiendo de la canción
     }
 
     @Override

@@ -17,7 +17,13 @@
     <PreferenceCategory android:title="Sobre la App" android:key="about">
         <Preference android:key="aboutapp"
             		android:summary="@string/version"
-            		android:title="Versión"/>
-        <Preference android:summary="Melchor Garau" android:title="Autor" android:key="aboutauthor"/>
+            		android:title="Versión">
+            <intent android:action="android.intent.action.VIEW"
+                    android:data="http://melchor629.github.io/Musicote-Melchor629/" />
+        </Preference>
+        <Preference android:summary="Melchor Garau" android:title="Autor" android:key="aboutauthor">
+            <intent android:action="android.intent.action.VIEW"
+                    android:data="http://melchor629.github.io" />
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
