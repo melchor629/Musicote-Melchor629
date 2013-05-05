@@ -4,12 +4,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.melchor629.musicote.R;
 
 import android.content.pm.ActivityInfo;
@@ -21,18 +23,14 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 
 /**
@@ -61,7 +59,7 @@ import android.app.ProgressDialog;
  *
  */
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends SherlockListActivity {
 
     public final static String EXTRA_MESSAGE = "com.melchor629.musicote.MESSAGE";
     public final static String Last_STRING = "asdasda";
@@ -217,7 +215,7 @@ public class MainActivity extends ListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getSupportMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -237,48 +235,6 @@ public class MainActivity extends ListActivity {
         return true;
     }
 
-    /** Called when the user selects the Send button **/
-    public void sendMessage(View view) {
-        // Do something in response to button
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.edit_message);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        intent.putExtra(Last_STRING, Last_String);
-        startActivity(intent);
-    }
-
-    /** Called when the user selects the Send Random button **/
-    public void sendMessageRandom(View view) {
-        // Do something in response to button
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        Random rand = new Random();
-        int num = rand.nextInt(5-0)+1;
-        String randText = "Error al enviar texto random...";
-        switch (num) {
-            case 1:
-                randText = "Una tortuga empieza con 5 metros de ventaja y el humano nunca alcanzará a la tortuga. ¿Por qué? Preguntaselo a la hdp de Filosofia...";
-                break;
-            case 2:
-                randText = "Los dinosarios d'Albert...";
-                break;
-            case 3:
-                randText = "If you love me, want let me know...";
-                break;
-            case 4:
-                randText = "Musicote: The 2nd Law de Muse";
-                break;
-            case 5:
-                randText = "Cutre Application by Melchor629...";
-                break;
-            default:
-                randText = "El número que ha tret el generador"+ rand +" es incorrect, cagon putes...";
-        }
-        String message = randText;
-        intent.putExtra(EXTRA_MESSAGE, message);
-        intent.putExtra(Last_STRING, Last_String);
-        startActivity(intent);
-    }
     // Intento de guardar lo ultimo enviado al otro .class
     @Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {

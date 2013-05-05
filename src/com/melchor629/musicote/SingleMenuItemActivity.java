@@ -1,9 +1,13 @@
 package com.melchor629.musicote;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
 import com.melchor629.musicote.R;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -19,8 +23,6 @@ import android.os.Handler;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -51,7 +53,7 @@ import android.widget.Toast;
  * Crea la actividad de cuando seleccionas una cancion, SOLO UNA
  * @author Melchor
  */
-public class SingleMenuItemActivity extends Activity {
+public class SingleMenuItemActivity extends SherlockActivity {
 
     // JSON node keys
     private static final String TAG_NAME = "titulo";
@@ -82,6 +84,9 @@ public class SingleMenuItemActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         dm = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+        ActionBar ab = getSupportActionBar();
+        //ab.setHomeButtonEnabled(true);
+        ab.setDisplayHomeAsUpEnabled(true);
         
         android.view.animation.Interpolator on = new android.view.animation.DecelerateInterpolator();
         
@@ -142,6 +147,9 @@ public class SingleMenuItemActivity extends Activity {
         description = in.getStringExtra(TAG_PHONE_MOBILE);
         duracion = in.getStringExtra(TAG_DURACIONS);
         archivo = in.getStringExtra(TAG_FILE);
+        
+        //Setting the activity title
+        ab.setTitle(name);
 
         // Displaying all values on the screen
         TextView lblName = (TextView) findViewById(R.id.name_label);
@@ -159,13 +167,18 @@ public class SingleMenuItemActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getSupportMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
+        	case 16908332:
+                Intent intenta = new Intent(this, MainActivity.class);
+                intenta.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intenta);
+                break;
             case R.id.ajustesm:
                 Intent intent = new Intent(SingleMenuItemActivity.this, Ajustes.class);
                 startActivity(intent);
