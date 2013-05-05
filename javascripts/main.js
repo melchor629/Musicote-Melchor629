@@ -10,9 +10,9 @@ function commit_history() {
 		$.each(json.data, function(i, data) {
 			var $col = $('<tr style="border-bottom: 1px solid #999; text-shadow: none" />');
 			var $committer = $('<td valign="top" />').html(data.commit.committer.name);
-			var $link = $('<a style="font-weight: bold" />').attr('href', 'https://github.com/needim/noty/commit/' + data.sha).html(data.commit.message);
+			var $link = $('<a style="font-weight: bold" />').attr('href', 'https://github.com/melchor629/Musicote-Melchor629/commit/' + data.sha).html(data.commit.message);
 			var $url = $('<td />').append($link);
-			var $date = $('<td style="text-align: right" />').html($.format.date(data.commit.committer.date, "dd.MM.yy HH:MM"));
+			var $date = $('<td style="text-align: right" />').html($.format.date(data.commit.committer.date, "dd/MM/yy HH:mm"));
 			
 			$col.append($committer);
 			$col.append($url);
