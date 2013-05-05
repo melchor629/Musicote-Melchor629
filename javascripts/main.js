@@ -5,23 +5,23 @@ var isAndroid = ua.indexOf("android") > -1;
  window.location.href = 'http://reinoslokos.no-ip.org/com.melchor629.musicote.apk';
 } Revisar esto**/
 function commit_history() {
-	$.getJSON('https://api.github.com/repos/melchor629/Musicote-Melchor629/commits?callback=?', function(json) {
-		$('#commit-history-json').animate({"opacity":0},500,function(){
-                $("#commit-history-json tr").remove();
-		$.each(json.data, function(i, data) {
-			var $col = $('<tr style="border-bottom: 1px solid #999; text-shadow: none" />');
-			var $committer = $('<td valign="top" />').html(data.commit.committer.name);
-			var $link = $('<a style="font-weight: bold" />').attr('href', 'https://github.com/melchor629/Musicote-Melchor629/commit/' + data.sha).html(data.commit.message.replace("\n", "<br>"));
-			var $url = $('<td />').append($link);
-			var $date = $('<td style="text-align: right" />').html($.format.date(data.commit.committer.date, "dd/MM/yy HH:mm").replace("T", " ").replace("Z", ""));
-			
-			$col.append($committer);
-			$col.append($url);
-			$col.append($date);
-			
-			$('#commit-history-json').append($col);
-		});
+    $.getJSON('https://api.github.com/repos/melchor629/Musicote-Melchor629/commits?callback=?', function(json) {
+        $('#commit-history-json').animate({"opacity": 0}, 500, function() {
+            $("#commit-history-json tr").remove();
+            $.each(json.data, function(i, data) {
+                var $col = $('<tr style="border-bottom: 1px solid #999; text-shadow: none" />');
+                var $committer = $('<td valign="top" />').html(data.commit.committer.name);
+                var $link = $('<a style="font-weight: bold" />').attr('href', 'https://github.com/melchor629/Musicote-Melchor629/commit/' + data.sha).html(data.commit.message.replace("\n", "<br>"));
+                var $url = $('<td />').append($link);
+                var $date = $('<td style="text-align: right" />').html($.format.date(data.commit.committer.date, "dd/MM/yy HH:mm").replace("T", " ").replace("Z", ""));
+                
+                $col.append($committer);
+                $col.append($url);
+                $col.append($date);
+                
+                $('#commit-history-json').append($col);
+            });
         });
-        $("#commit-history-json").animate({"opacity":1}, 500);
-	});
+        $("#commit-history-json").animate({"opacity": 1}, 500);
+    });
 }
