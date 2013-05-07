@@ -15,7 +15,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.melchor629.musicote.R;
 
 import android.content.pm.ActivityInfo;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build.VERSION;
@@ -73,7 +72,7 @@ public class MainActivity extends SherlockListActivity {
 
     // contacts JSONArray
     private static JSONArray contacts = null;
-    private ArrayList<HashMap<String, String>> contactList = null;
+    private ArrayList<HashMap<String, String>> contactList;
 
     TextView mTextView; // Member variable for text view in the layout
     @Override
@@ -103,41 +102,43 @@ public class MainActivity extends SherlockListActivity {
         }
         progressDialog.show();
         
-        new Thread(new Runnable(){
-			@Override
-			public void run() {
-				Looper.prepare();
-		        try {
-		        	AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
-		            contactList = asd.get();
-		        } catch (InterruptedException e) {
-		            Log.e("AsyncTask","AsyncTask not finished: "+e.toString()); 
-		            e.printStackTrace();
-		        } catch (Exception e) {
-		            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
-		            e.printStackTrace();
-		        } 
-		        MainActivity.this.runOnUiThread(
-	        		new Runnable(){
-	        			@Override public void run(){
-	        				sis();
-	        				try {
-        						this.finalize();
-	        				} catch (Throwable e) {
-	        					Log.e(MainActivity.EXTRA_MESSAGE, "Error: "+ e.toString());
+        if(contactList == null) {
+	        new Thread(new Runnable(){
+				@Override
+				public void run() {
+					Looper.prepare();
+			        try {
+			        	AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
+			            contactList = asd.get();
+			        } catch (InterruptedException e) {
+			            Log.e("AsyncTask","AsyncTask not finished: "+e.toString()); 
+			            e.printStackTrace();
+			        } catch (Exception e) {
+			            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
+			            e.printStackTrace();
+			        } 
+			        MainActivity.this.runOnUiThread(
+		        		new Runnable(){
+		        			@Override public void run(){
+		        				sis();
+		        				try {
+	        						this.finalize();
+		        				} catch (Throwable e) {
+		        					Log.e(MainActivity.EXTRA_MESSAGE, "Error: "+ e.toString());
+		        				}
 	        				}
-        				}
-	                }
-        		);
-		        try {
-		        	progressDialog.dismiss();
-					this.finalize();
-				} catch (Throwable e) {
-					Log.e("UIUpdate" ,"Error: "+ e.toString());
+		                }
+	        		);
+			        try {
+			        	progressDialog.dismiss();
+						this.finalize();
+					} catch (Throwable e) {
+						Log.e("UIUpdate" ,"Error: "+ e.toString());
+					}
 				}
 			}
-		}
-    ).start();
+	    ).start();
+    }
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 	}
     
@@ -205,12 +206,10 @@ public class MainActivity extends SherlockListActivity {
             }
         });
     }
-
+    
     @Override
-    public void onStop() {
-        super.onStop();
-        ContentValues values = new ContentValues();
-        values.put(Last_STRING, Last_String);
+    public void onPause() {
+    	super.onPause();
     }
 
     @Override
