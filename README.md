@@ -1,6 +1,6 @@
 Musicote App
 ====================
-[![Build Status](https://travis-ci.org/melchor629/Musicote-Melchor629.png?branch=master)](https://travis-ci.org/melchor629/Musicote-Melchor629)
+[![Build Status](https://travis-ci.org/melchor629/Musicote-Melchor629.png?branch=ActionBarSherlock)](https://travis-ci.org/melchor629/Musicote-Melchor629)
 
 Una sencilla aplicación para android 2.3, montado con el SDK de android 17 (platform 17)
 Descarga el contenido emitido por un servidor web del archivo "api.py", lo procesa y carga en una lista en el que puedes apretar una canción, ver su información básica y reproducir. También incluye Scrobbler para Last.FM, disponible en el menú de ajustes.
