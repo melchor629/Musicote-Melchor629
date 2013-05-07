@@ -24,4 +24,5 @@ public abstract class DB implements BaseColumns {
 	 * No constructor for DB
 	 */
 	private DB() { }
+	
 }
