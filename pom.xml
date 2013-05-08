@@ -14,11 +14,11 @@
   		<version>4.1.1.4</version>
   		<scope>provided</scope>
   	</dependency>
-    <dependency>
+    <!--<dependency>
         <groupId>com.google.android</groupId>
         <artifactId>support-v5</artifactId>
         <version>r7</version>
-    </dependency>
+    </dependency>-->
     <dependency>
 		<groupId>com.actionbarsherlock</groupId>
   		<artifactId>actionbarsherlock</artifactId>
