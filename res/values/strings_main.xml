@@ -12,5 +12,8 @@
     <string name="menu_parar">Current Song</string>
     <string name="download">Download the song!</string>
     <string name="addplaylist">Add this song to the playlist</string>
+    <string name="delete_bd">Do you want to upgrade the data base?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     
 </resources>

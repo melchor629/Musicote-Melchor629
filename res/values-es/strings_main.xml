@@ -12,5 +12,8 @@
     <string name="menu_parar">Canción Actual</string>
     <string name="download">¡Descárgala!</string>
     <string name="addplaylist">Añadir a la lista de reproducción</string>
+    <string name="delete_bd">¿Desea actualizar la base de datos de musicote?</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
     
 </resources>

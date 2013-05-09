@@ -1,8 +1,6 @@
-/**
- * 
- */
 package com.melchor629.musicote.basededatos;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -93,12 +91,18 @@ public class DB extends SQLiteOpenHelper {
 	
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(DB_entry.CREATE_CANCIONES);
+		db.execSQL(DB_entry.CREATE_ULTIMO_ACCESO);
+		ContentValues a = new ContentValues();
+		a.put(DB_entry.COLUMN_NAME_TABLA, "canciones");
+		a.put(DB_entry.COLUMN_NAME_FECHA, System.currentTimeMillis()/1000);
+		db.insert(DB_entry.TABLE_ULTIMO_ACCESO, "null", a);
 	}
 	
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
         db.execSQL(DB_entry.DELETE_CANCIONES);
+        db.execSQL(DB_entry.DELETE_ULTIMO_ACCESO);
         onCreate(db);
     }
     
@@ -119,5 +123,18 @@ public class DB extends SQLiteOpenHelper {
         int count = cursor.getInt(0);
         cursor.close();
         return count > 0;
+    }
+    
+    public void ultimo_acceso(SQLiteDatabase db, String tabla) {
+    	if(tabla == null || db == null || !db.isOpen())
+    		return;
+    	ContentValues e = new ContentValues();
+    	e.put(DB_entry.COLUMN_NAME_TABLA, "canciones");
+		e.put(DB_entry.COLUMN_NAME_FECHA, System.currentTimeMillis()/1000);
+    	db.update(DB_entry.TABLE_ULTIMO_ACCESO,
+				e,
+				tabla + " LIKE ?",
+				null);
+    	return;
     }
 }
