@@ -13,9 +13,14 @@ import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.melchor629.musicote.R;
+import com.melchor629.musicote.basededatos.DB;
+import com.melchor629.musicote.basededatos.DB_entry;
 
 import android.content.pm.ActivityInfo;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -102,7 +107,11 @@ public class MainActivity extends SherlockListActivity {
         }
         progressDialog.show();
         
-        if(contactList == null) {
+        DB mDbHelper = new DB(getBaseContext());
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        mDbHelper.ifTableExists(db, "canciones");
+        
+        if(!mDbHelper.ifTableExists(db, "canciones")) {
 	        new Thread(new Runnable(){
 				@Override
 				public void run() {
@@ -138,6 +147,55 @@ public class MainActivity extends SherlockListActivity {
 				}
 			}
 	    ).start();
+    }else {
+    	// Define a projection that specifies which columns from the database
+    	// you will actually use after this query.
+    	String[] projection = {
+    	    DB_entry.COLUMN_NAME_ID,
+    	    DB_entry.COLUMN_NAME_TITULO,
+    	    DB_entry.COLUMN_NAME_ARTISTA,
+    	    DB_entry.COLUMN_NAME_ALBUM,
+    	    DB_entry.COLUMN_NAME_DURACION,
+    	    DB_entry.COLUMN_NAME_ARCHIVO
+    	    };
+
+    	// How you want the results sorted in the resulting Cursor
+    	String sortOrder =
+    	    DB_entry.COLUMN_NAME_ID + " ASC";
+
+    	Cursor c = db.query(
+    	    DB_entry.TABLE_CANCIONES,  // The table to query
+    	    projection,                               // The columns to return
+    	    null,                                     // The columns for the WHERE clause
+    	    null,                                     // The values for the WHERE clause
+    	    null,                                     // don't group the rows
+    	    null,                                     // don't filter by row groups
+    	    sortOrder                                 // The sort order
+    	    );
+    	contactList = new ArrayList<HashMap<String, String>>();
+    	
+    	c.moveToFirst();
+    	do {
+	    	// creating new HashMap
+	        HashMap<String, String> map = new HashMap<String, String>();
+	        
+	        long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ID));
+	        String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_TITULO));
+	        String artista = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARTISTA));
+	        String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ALBUM));
+	        String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARCHIVO));
+	        String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DURACION));
+	
+	        // adding each child node to HashMap key => value
+	        map.put("id", ""+id);
+	        map.put("titulo", titulo);
+	        map.put("artista", artista);
+	        map.put("album", album);
+	        map.put("archivo", "http://"+MainActivity.url+""+archivo);
+	        map.put("duracion", duracion);
+	        
+	        contactList.add(map);
+    	}while(c.moveToNext()); progressDialog.dismiss(); c.close(); db.close(); sis();
     }
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 	}
@@ -293,13 +351,16 @@ public class MainActivity extends SherlockListActivity {
 
                             // looping through All Songs
                             publishProgress(37);
+                            DB dbHelper = new DB(getBaseContext());
+                            SQLiteDatabase db = dbHelper.getWritableDatabase();
                             for(int i = 0; i < MainActivity.contacts.length(); i++){
                                 JSONObject c = MainActivity.contacts.getJSONObject(i);
+                                ContentValues values = new ContentValues();
 
                                 int counter = 40 + ((i*100/MainActivity.contacts.length())/2);
                                 publishProgress(counter);
                                 // Storing each json item in variable
-                                String id = c.getString("id");
+                                int id = c.getInt("id");
                                 String archivo = c.getString("archivo");
                                 String titulo = c.getString("titulo");
                                 String artista = c.getString("artista");
@@ -310,15 +371,27 @@ public class MainActivity extends SherlockListActivity {
                                 HashMap<String, String> map = new HashMap<String, String>();
 
                                 // adding each child node to HashMap key => value
-                                map.put("id", id);
+                                map.put("id", ""+id);
                                 map.put("titulo", titulo);
                                 map.put("artista", artista);
                                 map.put("album", album);
                                 map.put("archivo", "http://"+MainActivity.url+""+archivo);
                                 map.put("duracion", duracion);
+                                
+                                //DB
+                                values.put(DB_entry.COLUMN_NAME_ID, id);
+                                values.put(DB_entry.COLUMN_NAME_ARCHIVO, archivo);
+                                values.put(DB_entry.COLUMN_NAME_TITULO, titulo);
+                                values.put(DB_entry.COLUMN_NAME_ARTISTA, artista);
+                                values.put(DB_entry.COLUMN_NAME_ALBUM, album);
+                                values.put(DB_entry.COLUMN_NAME_DURACION, duracion);
 
                                 // adding HashList to ArrayList
                                 contactList.add(map);
+                                
+                                //Adding data into DB
+                                long newRowID;
+                                newRowID = db.insert(DB_entry.TABLE_CANCIONES, "null", values);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
