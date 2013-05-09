@@ -15,13 +15,11 @@ import com.actionbarsherlock.view.MenuItem;
 import com.melchor629.musicote.R;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DB_entry;
-import com.melchor629.musicote.basededatos.borrar;
 
 import android.content.pm.ActivityInfo;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build.VERSION;
@@ -110,7 +108,8 @@ public class MainActivity extends SherlockListActivity {
         progressDialog.show();
         
         DB mDbHelper = new DB(getBaseContext());
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        mDbHelper.ifTableExists(db, "canciones");
         
         if(!mDbHelper.ifTableExists(db, "canciones")) {
 	        new Thread(new Runnable(){
@@ -148,7 +147,7 @@ public class MainActivity extends SherlockListActivity {
 				}
 			}
 	    ).start();
-    } else {
+    }else {
     	// Define a projection that specifies which columns from the database
     	// you will actually use after this query.
     	String[] projection = {
@@ -175,7 +174,6 @@ public class MainActivity extends SherlockListActivity {
     	    );
     	contactList = new ArrayList<HashMap<String, String>>();
     	
-    	try {
     	c.moveToFirst();
     	do {
 	    	// creating new HashMap
@@ -197,16 +195,7 @@ public class MainActivity extends SherlockListActivity {
 	        map.put("duracion", duracion);
 	        
 	        contactList.add(map);
-    	}while(c.moveToNext());
-    	progressDialog.dismiss();
-    	c.close();
-    	db.close();
-    	}catch(CursorIndexOutOfBoundsException e) {
-    		Log.e("Musicote Cursor", "Ha habido un error con la base de datos, reiniciar");
-    		mDbHelper.onCreate(db);
-    		finish();
-    	}
-    	sis();
+    	}while(c.moveToNext()); progressDialog.dismiss(); c.close(); db.close(); sis();
     }
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 	}
@@ -295,10 +284,8 @@ public class MainActivity extends SherlockListActivity {
                 startActivity(intent);
                 break;
             case R.id.parar:
-                /*Intent intento = new Intent(MainActivity.this, Reproductor.class);
-                stopService(intento);*/
-            	Intent intento = new Intent(MainActivity.this, borrar.class);
-                startActivity(intento);
+                Intent intento = new Intent(MainActivity.this, Reproductor.class);
+                stopService(intento);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -403,9 +390,9 @@ public class MainActivity extends SherlockListActivity {
                                 contactList.add(map);
                                 
                                 //Adding data into DB
-                                db.insert(DB_entry.TABLE_CANCIONES, "null", values);
+                                long newRowID;
+                                newRowID = db.insert(DB_entry.TABLE_CANCIONES, "null", values);
                             }
-                            dbHelper.ultimo_acceso(db, "canciones");
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.i("com.melchor629.musicote","Excepción encontrada: "+e.toString());

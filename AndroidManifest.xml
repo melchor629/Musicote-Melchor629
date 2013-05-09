@@ -38,9 +38,6 @@
         
         <service android:name="com.melchor629.musicote.Reproductor"
             	 android:enabled="true"></service>
-        <activity android:name="com.melchor629.musicote.basededatos.borrar"
-                  android:theme="@android:style/Theme.Dialog"
-                  android:label="Actualizar el musicote"></activity>
     </application>
 
 </manifest>

@@ -13,13 +13,8 @@
         <EditTextPreference android:summary="Contraseña de Last.FM"
             				android:title="Contraseña"
             				android:key="contraseña"/>
-    </PreferenceCategory><PreferenceCategory android:key="db" android:title="Base de Datos">
-        <Preference android:title="Actializar datos de musicote" android:key="actualizar">
-            <intent android:action="android.intent.action.VIEW"
-                    android:targetPackage="com.melchor629.musicote.basededatos"
-                    android:targetClass="com.melchor629.musicote.basededatos.borrar"/>
-        </Preference>
-    </PreferenceCategory><PreferenceCategory android:title="Sobre la App" android:key="about">
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Sobre la App" android:key="about">
         <Preference android:key="aboutapp"
             		android:summary="@string/version"
             		android:title="Versión">
@@ -31,6 +26,4 @@
                     android:data="http://melchor629.github.io" />
         </Preference>
     </PreferenceCategory>
-    
-    
 </PreferenceScreen>
