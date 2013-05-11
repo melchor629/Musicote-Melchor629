@@ -18,10 +18,14 @@ You can compile the project by Eclipse, easy way, or by Maven. In Eclipse you wi
 mvn install:install-file -Dfile=$PWD/libs/android-support-v4.jar -DgroupId=com.google.android -DartifactId=support-v5 -Dversion=r7
 -Dpackagin=jar
 ```
-Where ```$PWD``` is the current directory in *nix terminals. If the current directory isn't the main directory of the project, ```$PWD``` must be replaced with the relative path to this file.
+Where ```$PWD``` is the current directory in *nix terminals. If the current directory isn't the main directory of the project, ```$PWD``` must be replaced with the relative path to this file. And finally, build the project:
+```
+mvn install --quiet -DskipTests=true -B
+```
 
 ##What is api.py
 This file is the pseudo-json file that a webserver creates for the app. You need to modify the path of the music directory. Your web server have to support Python scripts and have installed [mutagen](https://code.google.com/p/mutagen/).
+You will need to modify the lines 13 & 14, because you need to configure this two variables (``` path webpath ```) acording to the little description near the variable.
 
 ##DOWNLOAD APK
 Aptoide:
