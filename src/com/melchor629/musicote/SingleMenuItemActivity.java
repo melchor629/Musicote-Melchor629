@@ -1,5 +1,15 @@
 package com.melchor629.musicote;
 
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -7,21 +17,15 @@ import com.actionbarsherlock.view.MenuItem;
 
 import com.melchor629.musicote.R;
 
-import android.annotation.SuppressLint;
-import android.app.DownloadManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -73,8 +77,6 @@ public class SingleMenuItemActivity extends SherlockActivity {
     public static String cost;
     public static String description;
     public static String duracion;
-    
-    public DownloadManager dm = null;
 
     private static String archivo;
     @Override
@@ -83,7 +85,6 @@ public class SingleMenuItemActivity extends SherlockActivity {
         setContentView(R.layout.single_list_item);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        dm = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
         ActionBar ab = getSupportActionBar();
         //ab.setHomeButtonEnabled(true);
         ab.setDisplayHomeAsUpEnabled(true);
@@ -254,7 +255,11 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * @param v
      */
     public void download(View v){
-    	new DownloadFile().doInBackground(archivo);
+    	try {
+    		new DownloadFile().doInBackground(archivo);
+    		//TODO poner un Thread + Handler para actualizar la descarga perfectamente y que no vaya atascada
+    	} catch(java.lang.RuntimeException o) {
+    	}
     }
     
     @Override
@@ -275,87 +280,43 @@ public class SingleMenuItemActivity extends SherlockActivity {
 		n = false;
     }
     
-    private class DownloadFile extends AsyncTask<String, Void, Void> {
-        @SuppressWarnings("deprecation")
-		@SuppressLint("NewApi")
+    private class DownloadFile extends AsyncTask<String, Integer, Void> {
 		@Override
         protected Void doInBackground(String... urls) {
             if(Environment.MEDIA_MOUNTED.equals("mounted")) {
-	            // params comes from the execute() call: params[0] is the url.
-	            /**try {
-	            	InputStream is = null;
-	            	String arch = urls[0].substring(urls[0].lastIndexOf("/"));
-	            	try {
-	                    URL url = new URL(urls[0]);
-	                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-	                    conn.setReadTimeout(10000);
-	                    conn.setConnectTimeout(15000);
-	                    conn.setRequestMethod("GET");
-	                    conn.setDoInput(true);
-	                    // Starts the query
-	                    conn.connect();
-	                    int response = conn.getResponseCode();
-	                    Log.d("DownloadFile", "The response is: " + response);
-	                    is = conn.getInputStream();
-	                    int len;
-	                    int size = 1024;
-	                    byte[] buf;
-
-	                    if (is instanceof ByteArrayInputStream) {
-	                      size = is.available();
-	                      buf = new byte[size];
-	                      len = is.read(buf, 0, size);
-	                    } else {
-	                      ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	                      buf = new byte[size];
-	                      while ((len = is.read(buf, 0, size)) != -1)
-	                        bos.write(buf, 0, len);
-	                      buf = bos.toByteArray();
-	                    }
-	
-	                    URI uri = new URI(Environment.getExternalStorageDirectory().getPath()+"Music/"+arch);
-	                    File file = new File(uri);
-	                    file.createNewFile();
-	                    FileOutputStream out = new FileOutputStream(file);
-	                    out.write(buf);
-	                    out.close();
-	                // Makes sure that the InputStream is closed after the app is
-	                // finished using it.
-	                }catch(Exception e) {
-	                	
-	                }finally {
-	                    if (is != null) {
-	                        is.close();
-	                    } 
-	                }
-	            } catch (IOException e) {
-	                Log.e("DownloadFile", "Unable to retrieve web page. URL may be invalid.");
-	            }*/
+	            // params comes from the execute() call: params[0] is the url
             	try {
-	            	Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).mkdirs();
-	            	Uri uri = Uri.parse(urls[0].replace(" ", "%20"));
-	            	String arch = urls[0].substring(urls[0].lastIndexOf("/")+1); Log.e("DownloadFile", urls[0].replace(" ", "%20")+" - "+arch);
-	            	DownloadManager.Request d = new DownloadManager.Request(uri);
-	            	d.setTitle(arch);
-	            	d.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
-	            	d.setDescription("Descargando musicote ("+name+" de "+cost+")");
-	            	d.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC.toString(), arch);
-	            	if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB)
-	            		d.setNotificationVisibility(1);
-	            	else
-	            		d.setShowRunningNotification(true);
-	            	d.setVisibleInDownloadsUi(true);
-	            	
-	            	dm.enqueue(d);
-	            	
-	            	Cursor c = dm.query(new DownloadManager.Query().setFilterById(1));
-	            	c.moveToFirst();
-	            	Log.e("DownloadFile", ""+c.getInt(c.getColumnIndex(DownloadManager.COLUMN_REASON)));
-            	}catch(Exception e) {
-            		Log.e("DownloadFile", e.toString());
-            		e.printStackTrace();
-            		Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-            	}
+					URL url = new URL(urls[0].replace(" ", "%20"));
+					String arch = urls[0].substring(urls[0].lastIndexOf("/")+1);
+					URLConnection connection = url.openConnection();
+					connection.connect();
+					// this will be useful so that you can show a typical 0-100% progress bar
+					int fileLength = connection.getContentLength();
+
+					// download the file
+					InputStream input = new BufferedInputStream(url.openStream());
+					OutputStream output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString()+"/"+arch);
+
+					byte data[] = new byte[1024];
+					long total = 0;
+					int count;
+					while ((count = input.read(data)) != -1) {
+					    total += count;
+					    // publishing the progress....
+					    publishProgress((int) (total * 100 / fileLength));
+					    output.write(data, 0, count);
+					}
+
+					output.flush();
+					output.close();
+					input.close();
+				} catch (MalformedURLException e) {
+					Log.e("DM1","Error: "+ e.toString());
+				} catch (FileNotFoundException e) {
+					Log.e("DM2","Error: "+ e.toString());
+				} catch (IOException e) {
+					Log.e("DM3","Error: "+ e.toString());
+				}
             }else {
             	Toast.makeText(getApplicationContext(), "No hay SD montada", Toast.LENGTH_LONG).show();
             }
@@ -366,5 +327,11 @@ public class SingleMenuItemActivity extends SherlockActivity {
         protected void onPostExecute(Void result) {
             return;
        }
+        
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+            barra.setProgress(progress[0]);
+        }
     }
 }
