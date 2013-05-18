@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="time">
+        <item>5 min (debug)</item>
+        <item>1 hora</item>
+        <item>5 horas</item>
+        <item>12 horas</item>
+        <item>20 horas</item>
+        <item>1 día</item>
+        <item>2 dias</item>
+        <item>1 semana</item>
+    </string-array>
+    <string-array name="updatetime">
+        <item>5</item>
+        <item>60</item>
+        <item>300</item>
+        <item>720</item>
+        <item>1200</item>
+        <item>1440</item>
+        <item>2880</item>
+        <item>10080</item>
+    </string-array>
+</resources>

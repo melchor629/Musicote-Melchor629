@@ -19,6 +19,7 @@ import com.melchor629.musicote.basededatos.DB_entry;
 import android.content.pm.ActivityInfo;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,6 +28,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -117,7 +119,11 @@ public class MainActivity extends SherlockListActivity {
         
         DB mDbHelper = new DB(getBaseContext());
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
-        mDbHelper.ifTableExists(db, "canciones");
+
+        //Actualización de la lista
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+	    if(mDbHelper.isNecesaryUpgrade(db, pref))
+	    	db.execSQL(DB_entry.DELETE_CANCIONES);
         
         if(!mDbHelper.ifTableExists(db, "canciones")) {
 	        new Thread(new Runnable(){
@@ -217,9 +223,6 @@ public class MainActivity extends SherlockListActivity {
 	    	c.close();
 	    	sis();
 	    }
-	    
-	    if(mDbHelper.isNecesaryUpgrade(db))
-	    	db.execSQL(DB_entry.DELETE_CANCIONES);
 	    
 	    db.close();
 	    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

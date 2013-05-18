@@ -9,10 +9,20 @@
        						android:key="lastact"/>
         <EditTextPreference android:summary="Usuario de Last.FM"
             				android:title="Usuario"
-            				android:key="usuario"/>
+            				android:key="usuario"
+                            android:dependency="lastact"/>
         <EditTextPreference android:summary="Contraseña de Last.FM"
             				android:title="Contraseña"
-            				android:key="contraseña"/>
+            				android:key="contraseña"
+                            android:dependency="lastact"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Base de Datos" android:key="db">
+        <ListPreference android:title="Actualización de la lista"
+                        android:summary="¿Cada cuanto se debe actualizar?"
+                        android:key="updateTime"
+                        android:dialogTitle="Elije el tiempo de actualización de la lista de musicote"
+                        android:entries="@array/time"
+                        android:entryValues="@array/updatetime" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Sobre la App" android:key="about">
         <Preference android:key="aboutapp"

@@ -5,6 +5,7 @@ package com.melchor629.musicote.basededatos;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -139,11 +140,12 @@ public class DB extends SQLiteOpenHelper {
     	return Short;
     }
     
-    public boolean isNecesaryUpgrade(SQLiteDatabase db) {
+    public boolean isNecesaryUpgrade(SQLiteDatabase db, SharedPreferences pref) {
     	long ultimo = obtenerAcceso(db, "canciones");
-    	long ahora = System.currentTimeMillis();
-    	long diff = 18000000;
-    	Log.d("DB", "Is necesary upgrade table contents? "+ ((ahora - ultimo) > 300000l));
-    	return (ahora - ultimo) >  300000l;
+    	long ahora = System.currentTimeMillis();    	
+    	long diff = Long.parseLong(pref.getString("updateTime", "15"), 10)*60l*1000l;
+    	Log.d("DB", "Is necesary upgrade table contents? "
+    	+ (((ahora - ultimo) > diff) == true ? "True" : "False, will be in " + ((ahora - ultimo) / 60l / 1000l)) + " of " + diff/60l/1000l + " minutes.");
+    	return (ahora - ultimo) >  diff;
     }
 }
