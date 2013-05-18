@@ -41,7 +41,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     private coso cosa;
     private NotificationManager nm;
 
-    public static long a = -1;
+    public static double a = -1;
 
     public int onStartCommand (Intent intent, int flags, int StartID){
         Toast.makeText(this, "Reproductor de musicote abierto", Toast.LENGTH_LONG).show();
@@ -164,8 +164,8 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             	boolean o = true;
                 while(((player.isPlaying() || paused) ? true : false) & player.getCurrentPosition() < player.getDuration()){
                     try{
-                        a = (long)(player.getCurrentPosition()/(long)(player.getDuration()/100));
-                        if(a==50 && o){
+                        a = (player.getCurrentPosition()/(player.getDuration()/100d));
+                        if((int)a==50 && o){
                             if(pref.getBoolean("lastact", false) == true){
                             	o = false;
                                 Scrobble scr = new Scrobble(tit, art);
@@ -176,7 +176,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                             }
                         }
                         //Log.d("Reproductor", "a = "+a+"-"+player.getCurrentPosition()+"-"+player.getDuration());
-                        Thread.sleep(1000);
+                        Thread.sleep(100);
                     }catch (Exception e){
                         Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...\n"+e.toString());
                     }

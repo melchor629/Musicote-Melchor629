@@ -20,6 +20,7 @@ import android.content.pm.ActivityInfo;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build.VERSION;
@@ -39,9 +40,9 @@ import android.app.ProgressDialog;
 
 /**
  * Musicote App
- * Melchor629 2012
+ * Melchor629 2013
  *
- *    Copyright 2012 Melchor629
+ *    Copyright 2013 Melchor629
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -57,10 +58,9 @@ import android.app.ProgressDialog;
 **/
 
 /**
- * Actividad principal de la App
- * TODO añadir la función de Inicio de sesión
+ * Actividad principal de la App, hace muchas cosas<br>
+ * <b>TODO</b> añadir la función de Inicio de sesión
  * @author melchor
- *
  */
 
 public class MainActivity extends SherlockListActivity {
@@ -90,6 +90,14 @@ public class MainActivity extends SherlockListActivity {
         if (savedInstanceState != null) {
             // Restore value of members from saved state
             Last_String = savedInstanceState.getString(Last_STRING);
+        }
+        
+        // La app prueba en busca de la dirección correcta
+        ParseJSON jParser = new ParseJSON();
+        if(jParser.HostTest("192.168.1.133",80)){
+            MainActivity.url = "192.168.1.133";
+        }else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
+            MainActivity.url = "reinoslokos.no-ip.org";
         }
         
         //Create a new progress dialog
@@ -145,59 +153,76 @@ public class MainActivity extends SherlockListActivity {
 						Log.e("UIUpdate" ,"Error: "+ e.toString());
 					}
 				}
-			}
-	    ).start();
-    }else {
-    	// Define a projection that specifies which columns from the database
-    	// you will actually use after this query.
-    	String[] projection = {
-    	    DB_entry.COLUMN_NAME_ID,
-    	    DB_entry.COLUMN_NAME_TITULO,
-    	    DB_entry.COLUMN_NAME_ARTISTA,
-    	    DB_entry.COLUMN_NAME_ALBUM,
-    	    DB_entry.COLUMN_NAME_DURACION,
-    	    DB_entry.COLUMN_NAME_ARCHIVO
-    	    };
-
-    	// How you want the results sorted in the resulting Cursor
-    	String sortOrder =
-    	    DB_entry.COLUMN_NAME_ID + " ASC";
-
-    	Cursor c = db.query(
-    	    DB_entry.TABLE_CANCIONES,  // The table to query
-    	    projection,                               // The columns to return
-    	    null,                                     // The columns for the WHERE clause
-    	    null,                                     // The values for the WHERE clause
-    	    null,                                     // don't group the rows
-    	    null,                                     // don't filter by row groups
-    	    sortOrder                                 // The sort order
-    	    );
-    	contactList = new ArrayList<HashMap<String, String>>();
-    	
-    	c.moveToFirst();
-    	do {
-	    	// creating new HashMap
-	        HashMap<String, String> map = new HashMap<String, String>();
-	        
-	        long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ID));
-	        String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_TITULO));
-	        String artista = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARTISTA));
-	        String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ALBUM));
-	        String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARCHIVO));
-	        String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DURACION));
+			}).start();
+	    } else {
+	    	// Define a projection that specifies which columns from the database
+	    	// you will actually use after this query.
+	    	String[] projection = {
+	    	    DB_entry.COLUMN_NAME_ID,
+	    	    DB_entry.COLUMN_NAME_TITULO,
+	    	    DB_entry.COLUMN_NAME_ARTISTA,
+	    	    DB_entry.COLUMN_NAME_ALBUM,
+	    	    DB_entry.COLUMN_NAME_DURACION,
+	    	    DB_entry.COLUMN_NAME_ARCHIVO
+	    	    };
 	
-	        // adding each child node to HashMap key => value
-	        map.put("id", ""+id);
-	        map.put("titulo", titulo);
-	        map.put("artista", artista);
-	        map.put("album", album);
-	        map.put("archivo", "http://"+MainActivity.url+""+archivo);
-	        map.put("duracion", duracion);
-	        
-	        contactList.add(map);
-    	}while(c.moveToNext()); progressDialog.dismiss(); c.close(); db.close(); sis();
-    }
-    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+	    	// How you want the results sorted in the resulting Cursor
+	    	String sortOrder =
+	    	    DB_entry.COLUMN_NAME_ID + " ASC";
+	
+	    	Cursor c = db.query(
+	    	    DB_entry.TABLE_CANCIONES,  				  // The table to query
+	    	    projection,                               // The columns to return
+	    	    null,                                     // The columns for the WHERE clause
+	    	    null,                                     // The values for the WHERE clause
+	    	    null,                                     // don't group the rows
+	    	    null,                                     // don't filter by row groups
+	    	    sortOrder                                 // The sort order
+	    	    );
+	    	contactList = new ArrayList<HashMap<String, String>>();
+	    	
+	    	c.moveToFirst();
+	    	try{
+	    		do {
+			    	// creating new HashMap
+			        HashMap<String, String> map = new HashMap<String, String>();
+			        
+			        long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ID));
+			        String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_TITULO));
+			        String artista = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARTISTA));
+			        String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ALBUM));
+			        String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARCHIVO));
+			        String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DURACION));
+			
+			        // adding each child node to HashMap key => value
+			        map.put("id", ""+id);
+			        map.put("titulo", titulo);
+			        map.put("artista", artista);
+			        map.put("album", album);
+			        map.put("archivo", "http://"+MainActivity.url+""+archivo);
+			        map.put("duracion", duracion);
+			        
+			        contactList.add(map);
+		    	} while(c.moveToNext());
+	    	} catch(CursorIndexOutOfBoundsException e) {
+	    		db.execSQL(DB_entry.DELETE_CANCIONES);
+	    		Log.e("DB", "Mala integridad de la BD");
+	    		try {
+					this.finalize();
+				} catch (Throwable e1) {
+					Log.e("error","Error: "+ e1.toString());
+				}
+			}
+	    	progressDialog.dismiss();
+	    	c.close();
+	    	sis();
+	    }
+	    
+	    if(mDbHelper.isNecesaryUpgrade(db))
+	    	db.execSQL(DB_entry.DELETE_CANCIONES);
+	    
+	    db.close();
+	    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 	}
     
     private void sis(){
@@ -231,11 +256,12 @@ public class MainActivity extends SherlockListActivity {
 			public void onItemClick(AdapterView<?> parent, View view,
                 int position, long id) {
                 // getting values from selected ListItem
-                JSONObject datos = null;
+                //JSONObject datos = null;
+                HashMap<String, String> datos = null;
                 try{
-                    datos = contacts.getJSONObject(position);
+                	datos = contactList.get(position);
                 }catch(Exception e){
-                    Log.e("com.melchor629.musicote", "121<<"+e.toString()); e.printStackTrace();
+                    Log.e("com.melchor629.musicote", "250<<"+e.toString()); e.printStackTrace();
                 }
                 String name = getString(R.string.vacio);
                 String cost = getString(R.string.vacio);
@@ -246,8 +272,10 @@ public class MainActivity extends SherlockListActivity {
                     name = ((TextView) view.findViewById(R.id.name)).getText().toString();
                     cost = ((TextView) view.findViewById(R.id.email)).getText().toString();
                     description = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
-                    album = datos.getString("duracion");
-                    archivo = datos.getString("archivo");
+                    album = datos.get("duracion");
+                    archivo = datos.get("archivo");
+                    //album = datos.getString("duracion");
+                    //archivo = datos.getString("archivo");
                 } catch (Exception e){
                     Log.e("com.melchor629.musicote", e.toString());
                 }
@@ -258,7 +286,7 @@ public class MainActivity extends SherlockListActivity {
                 in.putExtra("artista", cost);
                 in.putExtra("album", description);
                 in.putExtra("duracion", album);
-                in.putExtra("archivo", "http://"+url+""+archivo);
+                in.putExtra("archivo", archivo);
 
                 startActivity(in);
             }
@@ -321,13 +349,8 @@ public class MainActivity extends SherlockListActivity {
 
             synchronized (this){
                 publishProgress(1);
-                // La app prueba en busca de la dirección correcta
-                if(jParser.HostTest("192.168.1.133",80)){
-                    MainActivity.url = "192.168.1.133";publishProgress(5);
-                }else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
-                    MainActivity.url = "reinoslokos.no-ip.org";
-                }
-                publishProgress(10);
+                
+                publishProgress(2);
                 if(MainActivity.url!=null){
                     // getting JSON string from URL
                     try{
@@ -353,6 +376,8 @@ public class MainActivity extends SherlockListActivity {
                             publishProgress(37);
                             DB dbHelper = new DB(getBaseContext());
                             SQLiteDatabase db = dbHelper.getWritableDatabase();
+                            if(!dbHelper.ifTableExists(db, "canciones"))
+                            	db.execSQL(DB_entry.CREATE_CANCIONES);
                             for(int i = 0; i < MainActivity.contacts.length(); i++){
                                 JSONObject c = MainActivity.contacts.getJSONObject(i);
                                 ContentValues values = new ContentValues();
@@ -390,9 +415,9 @@ public class MainActivity extends SherlockListActivity {
                                 contactList.add(map);
                                 
                                 //Adding data into DB
-                                long newRowID;
-                                newRowID = db.insert(DB_entry.TABLE_CANCIONES, "null", values);
+                                db.insert(DB_entry.TABLE_CANCIONES, "null", values);
                             }
+                            dbHelper.actualizarAcceso(db, "canciones", System.currentTimeMillis());
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.i("com.melchor629.musicote","Excepción encontrada: "+e.toString());

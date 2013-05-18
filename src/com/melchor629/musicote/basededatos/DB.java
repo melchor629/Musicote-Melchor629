@@ -3,10 +3,12 @@
  */
 package com.melchor629.musicote.basededatos;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * A data base class for the app.<br>
@@ -93,12 +95,14 @@ public class DB extends SQLiteOpenHelper {
 	
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(DB_entry.CREATE_CANCIONES);
+		db.execSQL(DB_entry.CREATE_ACCESO);
 	}
 	
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
         db.execSQL(DB_entry.DELETE_CANCIONES);
+        db.execSQL(DB_entry.DELETE_ACCESO);
         onCreate(db);
     }
     
@@ -119,5 +123,27 @@ public class DB extends SQLiteOpenHelper {
         int count = cursor.getInt(0);
         cursor.close();
         return count > 0;
+    }
+    
+    public void actualizarAcceso(SQLiteDatabase db, String tabla, long time) {
+    	db.execSQL(DB_entry.CREATE_ACCESO);
+    	ContentValues values = new ContentValues();
+    	values.put("fecha", time);
+    	db.update("acceso", values, "tabla = ?", new String[] {tabla});
+    }
+    
+    public long obtenerAcceso(SQLiteDatabase db, String tabla) {
+    	Cursor c = db.query("acceso", new String[] {"fecha"}, "tabla = ?", new String[] {tabla}, null, null, null);
+    	c.moveToFirst();
+    	long Short = c.getLong(c.getColumnIndexOrThrow("fecha"));
+    	return Short;
+    }
+    
+    public boolean isNecesaryUpgrade(SQLiteDatabase db) {
+    	long ultimo = obtenerAcceso(db, "canciones");
+    	long ahora = System.currentTimeMillis();
+    	long diff = 18000000;
+    	Log.d("DB", "Is necesary upgrade table contents? "+ ((ahora - ultimo) > 300000l));
+    	return (ahora - ultimo) >  300000l;
     }
 }

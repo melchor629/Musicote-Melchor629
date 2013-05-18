@@ -27,6 +27,8 @@ public abstract class DB_entry implements BaseColumns {
 			+ COLUMN_NAME_DURACION + ");";
 	public static final String DELETE_CANCIONES = "DROP TABLE IF EXISTS " + TABLE_CANCIONES;
 
+	public static final String CREATE_ACCESO = "CREATE TABLE IF NOT EXISTS acceso (tabla, fecha);";
+	public static final String DELETE_ACCESO = "DROP TABLE IF EXISTS acceso";
 	/**
 	 * No constructor for DB
 	 */

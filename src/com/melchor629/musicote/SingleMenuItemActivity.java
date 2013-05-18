@@ -112,7 +112,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
 									if(Reproductor.a != -1) {
 										if(n || (Reproductor.a != -1 && n))
 											o();
-										barra.setProgress((int)(Reproductor.a*10));
+										barra.setProgress((int)(Reproductor.a*10d));
 										texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
 									} else {
 										if(!n) {
@@ -124,14 +124,14 @@ public class SingleMenuItemActivity extends SherlockActivity {
 								    		but.startAnimation(alphaAnim);
 								    		n = true;
 										}
-										barra.setProgress((int)Reproductor.a);
+										barra.setProgress((int)(Reproductor.a*10d));
 										texto.setText("No reproduce nada");
 									}
 								}
 							}
 						);
     					try {
-							Thread.sleep(1000);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {}
     				}
     			}
