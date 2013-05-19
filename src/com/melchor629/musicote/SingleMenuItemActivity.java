@@ -17,15 +17,17 @@ import com.actionbarsherlock.view.MenuItem;
 
 import com.melchor629.musicote.R;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -68,6 +70,9 @@ public class SingleMenuItemActivity extends SherlockActivity {
     
     private TextView texto;
     private ProgressBar barra;
+    NotificationManager mNotifyManager;
+    Builder mBuilder;
+    public volatile int progress;
     private Handler h = new Handler();
     private boolean H = true;
     private boolean n = false;
@@ -255,11 +260,89 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * @param v
      */
     public void download(View v){
-    	try {
-    		new DownloadFile().doInBackground(archivo);
-    		//TODO poner un Thread + Handler para actualizar la descarga perfectamente y que no vaya atascada
-    	} catch(java.lang.RuntimeException o) {
-    	}
+    	mNotifyManager =
+    	        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    	mBuilder = new NotificationCompat.Builder(this);
+    	mBuilder.setContentTitle("Descargando "+name+ " de "+cost)
+    	    .setContentText("Descargando musicote...")
+    	    .setSmallIcon(R.drawable.download);
+
+    	new Thread(
+			new Runnable() {
+				@Override
+				public void run() {
+					Log.e("future", "true");
+					if(Environment.MEDIA_MOUNTED.equals("mounted")) {
+			            // params comes from the execute() call: params[0] is the url
+		            	try {
+							URL url = new URL(archivo.replace(" ", "%20"));
+							String arch = archivo.substring(archivo.lastIndexOf("/")+1);
+							URLConnection connection = url.openConnection();
+							connection.connect();
+							// this will be useful so that you can show a typical 0-100% progress bar
+							int fileLength = connection.getContentLength();
+
+							// download the file
+							InputStream input = new BufferedInputStream(url.openStream());
+							OutputStream output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString()+"/"+arch);
+
+							byte data[] = new byte[1024];
+							long total = 0;
+							int count;
+							while ((count = input.read(data)) != -1) {
+							    total += count;
+					            progress = (int)(total * 100 / fileLength);
+							    output.write(data, 0, count);
+							}
+
+							output.flush();
+							output.close();
+							input.close();
+						} catch (MalformedURLException e) {
+							Log.e("DM1","Error: "+ e.toString());
+						} catch (FileNotFoundException e) {
+							Log.e("DM2","Error: "+ e.toString());
+						} catch (IOException e) {
+							Log.e("DM3","Error: "+ e.toString());
+						}
+		            }else {
+		            	Toast.makeText(getApplicationContext(), "No hay SD montada", Toast.LENGTH_LONG).show();
+		            }
+					try {
+						this.finalize();
+					} catch (Throwable e) {
+						Log.e("little town","Error: "+ e.toString());
+					}
+				}
+			}
+		).start();
+    	new Thread(new Runnable() {
+    		@Override
+    		public void run() {
+    			while(progress != 100) {
+				    // publishing the progress....
+		            mBuilder.setProgress(100, progress, false);
+		            mNotifyManager.notify(0, mBuilder.build());
+    			
+		            try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						Log.e("2nd thread","Error: "+ e.toString());
+					}
+    			}
+    			
+
+	        	mBuilder.setContentText("Descarga completa")
+	            // Removes the progress bar
+	                    .setProgress(0,0,false);
+	            mNotifyManager.notify(0, mBuilder.build());
+	            try {
+					this.finalize();
+				} catch (Throwable e) {
+					Log.e("2nd thread","Error: "+ e.toString());
+				}
+    		}
+    	}).start();
     }
     
     @Override
@@ -278,60 +361,5 @@ public class SingleMenuItemActivity extends SherlockActivity {
 		but.setImageDrawable(pause);
 		but.startAnimation(alphaAnim);
 		n = false;
-    }
-    
-    private class DownloadFile extends AsyncTask<String, Integer, Void> {
-		@Override
-        protected Void doInBackground(String... urls) {
-            if(Environment.MEDIA_MOUNTED.equals("mounted")) {
-	            // params comes from the execute() call: params[0] is the url
-            	try {
-					URL url = new URL(urls[0].replace(" ", "%20"));
-					String arch = urls[0].substring(urls[0].lastIndexOf("/")+1);
-					URLConnection connection = url.openConnection();
-					connection.connect();
-					// this will be useful so that you can show a typical 0-100% progress bar
-					int fileLength = connection.getContentLength();
-
-					// download the file
-					InputStream input = new BufferedInputStream(url.openStream());
-					OutputStream output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString()+"/"+arch);
-
-					byte data[] = new byte[1024];
-					long total = 0;
-					int count;
-					while ((count = input.read(data)) != -1) {
-					    total += count;
-					    // publishing the progress....
-					    publishProgress((int) (total * 100 / fileLength));
-					    output.write(data, 0, count);
-					}
-
-					output.flush();
-					output.close();
-					input.close();
-				} catch (MalformedURLException e) {
-					Log.e("DM1","Error: "+ e.toString());
-				} catch (FileNotFoundException e) {
-					Log.e("DM2","Error: "+ e.toString());
-				} catch (IOException e) {
-					Log.e("DM3","Error: "+ e.toString());
-				}
-            }else {
-            	Toast.makeText(getApplicationContext(), "No hay SD montada", Toast.LENGTH_LONG).show();
-            }
-			return null;
-        }
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(Void result) {
-            return;
-       }
-        
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-            super.onProgressUpdate(progress);
-            barra.setProgress(progress[0]);
-        }
     }
 }

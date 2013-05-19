@@ -78,7 +78,8 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.altavoz)
                 .setContentTitle("Musicote")
-                .setContentText("Reproduciendo "+titulo+" de "+artista); //TODO poner que sea fijo
+                .setContentText("Reproduciendo "+titulo+" de "+artista)
+                .setOngoing(true);
 
         Intent resultIntent = new Intent(this, MainActivity.class);
 
@@ -88,6 +89,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         notification.setContentIntent(resultPendingIntent);
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.cancelAll();
         nm.notify(mID, notification.build());
     }
 
@@ -95,8 +97,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * Se llama cuando el reproductor está listo
      */
     public void onPrepared(final MediaPlayer player) {
-        //player.start();
-
         SharedPreferences get = PreferenceManager.getDefaultSharedPreferences(this);
         if(get.getBoolean("lastact", false)==true){
             Auth auth = new Auth(get.getString("usuario", null), get.getString("contraseña", null));
