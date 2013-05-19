@@ -217,7 +217,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
 			but.startAnimation(alphaAnim);
 			but.setTag("pause");
 			
-	        url = archivo;
+	        url = archivo; //TODO comprobar si existe el archivo en la carpeta música, entonces la canción será la descargada
 	        // Starting new intent
 	        Intent in = new Intent(getApplicationContext(), Reproductor.class);
 	        in.putExtra("titulo", name);
@@ -272,9 +272,8 @@ public class SingleMenuItemActivity extends SherlockActivity {
 			new Runnable() {
 				@Override
 				public void run() {
-					Log.e("future", "true");
+					Log.e("Download", "Descargando "+archivo+"...");
 					if(Environment.MEDIA_MOUNTED.equals("mounted")) {
-			            // params comes from the execute() call: params[0] is the url
 		            	try {
 							URL url = new URL(archivo.replace(" ", "%20"));
 							String arch = archivo.substring(archivo.lastIndexOf("/")+1);

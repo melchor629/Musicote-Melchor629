@@ -95,8 +95,12 @@ public class DB extends SQLiteOpenHelper {
 	}
 	
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL(DB_entry.CREATE_CANCIONES);
+		//db.execSQL(DB_entry.CREATE_CANCIONES); se hace en MainActivity
 		db.execSQL(DB_entry.CREATE_ACCESO);
+		ContentValues values = new ContentValues();
+		values.put("tabla", "canciones");
+		values.put("fecha", System.currentTimeMillis());
+		Log.e("newDB", "Dado "+db.insert("acceso", "null", values));
 	}
 	
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -113,16 +117,12 @@ public class DB extends SQLiteOpenHelper {
     
     public boolean ifTableExists(SQLiteDatabase db, String tableName) {
         if (tableName == null || db == null || !db.isOpen())
-        {
             return false;
-        }
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", tableName});
         if (!cursor.moveToFirst() || cursor.getCount() == 0)
-        {
             return false;
-        }
         int count = cursor.getInt(0);
-        cursor.close();
+        cursor.close(); Log.e("newDB", "Count: "+count);
         return count > 0;
     }
     

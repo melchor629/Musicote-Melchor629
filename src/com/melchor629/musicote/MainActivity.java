@@ -124,7 +124,15 @@ public class MainActivity extends SherlockListActivity {
         	mn.cancel(1);
         
         DB mDbHelper = new DB(getBaseContext());
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        if(mDbHelper.ifTableExists(db, "canciones") == false || mDbHelper.ifTableExists(db, "acceso") == false) {
+        	//db.execSQL(DB_entry.CREATE_CANCIONES); Mira en la linea 142
+			db.execSQL(DB_entry.CREATE_ACCESO);
+			ContentValues values = new ContentValues();
+			values.put("tabla", "canciones");
+			values.put("fecha", System.currentTimeMillis());
+			Log.e("newDB", "Dado "+db.insert("acceso", "null", values));
+    	}
 
         //Actualización de la lista
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
