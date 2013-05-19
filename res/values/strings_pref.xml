@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ajustes_titulo">Musicote settings</string>
+    <string name="ajustes_hacer_scrobblings">Should I make Scrobblings?</string>
+    <string name="ajustes_hacer_scrobblings_summary">If you want to make Scrobblings, check this</string>
+    <string name="ajustes_usuario_lastfm">Last.FM user</string>
+    <string name="ajustes_usuario">User</string>
+    <string name="ajustes_contrasena_lastfm">Last.FM password</string>
+    <string name="ajustes_contrasena">Password</string>
+    <string name="ajustes_base_datos">Database</string>
+    <string name="ajustes_actualizar_bd">List upgrade</string>
+    <string name="ajustes_cada_cuanto">How often should the list upgrade?</string>
+    <string name="ajustes_cada_cuanto_dialog">Choose upgrade time for the list</string>
+    <string name="ajustes_aboutapp">About app</string>
+    <string name="ajustes_autor">Author</string>
+    <string name="ajustes_version">Version</string>
+</resources>

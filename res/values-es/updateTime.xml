@@ -2,13 +2,13 @@
 <resources>
     <string-array name="time">
         <item>5 min (debug)</item>
-        <item>1 hour</item>
-        <item>5 hours</item>
-        <item>12 hours</item>
-        <item>20 hours</item>
-        <item>1 day</item>
-        <item>2 days</item>
-        <item>1 week</item>
+        <item>1 hora</item>
+        <item>5 horas</item>
+        <item>12 horas</item>
+        <item>20 horas</item>
+        <item>1 día</item>
+        <item>2 dias</item>
+        <item>1 semana</item>
     </string-array>
     <string-array name="updatetime">
         <item>5</item>

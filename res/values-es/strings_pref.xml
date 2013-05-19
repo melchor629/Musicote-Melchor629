@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ajustes_titulo">Ajustes del musicote</string>
+    <string name="ajustes_hacer_scrobblings">¿Hacer Scrobblings?</string>
+    <string name="ajustes_hacer_scrobblings_summary">Si quieres hacer Scrobblings, activa esta casilla</string>
+    <string name="ajustes_usuario_lastfm">Usuario de Last.FM</string>
+    <string name="ajustes_usuario">Usuario</string>
+    <string name="ajustes_contrasena_lastfm">Contraseña de Last.FM</string>
+    <string name="ajustes_contrasena">Contraseña</string>
+    <string name="ajustes_base_datos">Base de Datos</string>
+    <string name="ajustes_actualizar_bd">Actualización de la lista</string>
+    <string name="ajustes_cada_cuanto">¿Cada cuanto se debe actualizar?</string>
+    <string name="ajustes_cada_cuanto_dialog">Elije el tiempo de actualización de la lista de musicote</string>
+    <string name="ajustes_aboutapp">Sobre la app</string>
+    <string name="ajustes_autor">Autor</string>
+    <string name="ajustes_version">Versión</string>
+</resources>

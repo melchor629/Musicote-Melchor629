@@ -75,10 +75,11 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         reproductor.prepareAsync(); // prepare async to not block main thread
         int mID = 1;
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
+        notification
                 .setSmallIcon(R.drawable.altavoz)
                 .setContentTitle("Musicote")
-                .setContentText("Reproduciendo "+titulo+" de "+artista)
+                .setContentText(getResources().getString(R.string.playing)+" "+Reproductor.tit+" "+getResources().getString(R.string.playing_of)+" "+Reproductor.art)
                 .setOngoing(true);
 
         Intent resultIntent = new Intent(this, MainActivity.class);
@@ -89,7 +90,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         notification.setContentIntent(resultPendingIntent);
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        nm.cancelAll();
+        nm.cancel(mID);
         nm.notify(mID, notification.build());
     }
 

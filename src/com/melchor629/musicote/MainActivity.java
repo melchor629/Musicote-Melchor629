@@ -18,6 +18,7 @@ import com.melchor629.musicote.basededatos.DB_entry;
 
 import android.content.pm.ActivityInfo;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -38,6 +39,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 
 /**
@@ -116,6 +118,10 @@ public class MainActivity extends SherlockListActivity {
         	progressDialog.setIndeterminate(true);
         }
         progressDialog.show();
+        
+        NotificationManager mn = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if(Reproductor.a == -1)
+        	mn.cancel(1);
         
         DB mDbHelper = new DB(getBaseContext());
         SQLiteDatabase db = mDbHelper.getReadableDatabase();

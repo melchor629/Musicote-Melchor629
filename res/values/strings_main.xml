@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="button_send">Send</string>
-    <string name="edit_message">Edit me</string>
-    <string name="button_send2">Random</string>
     <string name="Play">Play this song!</string>
     <string name="infor">Received message:</string>
     <string name="vacio">Nothing</string>
     <string name="menu_settings">Settings</string>
-    <string name="PlayerDesc"><b>Press the above play button and the song will start.</b>\n
-        Soon will be a better player</string>
     <string name="menu_parar">Current Song</string>
-    <string name="download">Download the song!</string>
-    <string name="addplaylist">Add this song to the playlist</string>
-    
+    <string name="playing">Playing</string>
+    <string name="playing_of">of</string>
+    <string name="playing_no">No playing</string>
 </resources>

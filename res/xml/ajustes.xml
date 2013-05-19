@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-   				android:title="Ajustes del musicote"
+   				android:title="@string/ajustes_titulo"
    				android:key="Musicote">
     <PreferenceCategory android:title="Last.FM" android:key="last.fm">
         <CheckBoxPreference android:selectable="true"
-            				android:title="¿Hacer Scrobblings?"
-       						android:summary="Si quieres hacer scrobblings, activa esta casilla"
+            				android:title="@string/ajustes_hacer_scrobblings"
+       						android:summary="@string/ajustes_hacer_scrobblings_summary"
        						android:key="lastact"/>
-        <EditTextPreference android:summary="Usuario de Last.FM"
-            				android:title="Usuario"
+        <EditTextPreference android:summary="@string/ajustes_usuario_lastfm"
+            				android:title="@string/ajustes_usuario"
             				android:key="usuario"
                             android:dependency="lastact"/>
-        <EditTextPreference android:summary="Contraseña de Last.FM"
-            				android:title="Contraseña"
+        <EditTextPreference android:summary="@string/ajustes_contrasena_lastfm"
+            				android:title="@string/ajustes_contrasena"
             				android:key="contraseña"
                             android:dependency="lastact"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="Base de Datos" android:key="db">
-        <ListPreference android:title="Actualización de la lista"
-                        android:summary="¿Cada cuanto se debe actualizar?"
+    <PreferenceCategory android:title="@string/ajustes_base_datos" android:key="db">
+        <ListPreference android:title="@string/ajustes_actualizar_bd"
+                        android:summary="@string/ajustes_cada_cuanto"
                         android:key="updateTime"
-                        android:dialogTitle="Elije el tiempo de actualización de la lista de musicote"
+                        android:dialogTitle="@string/ajustes_cada_cuanto_dialog"
                         android:entries="@array/time"
                         android:entryValues="@array/updatetime" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Sobre la App" android:key="about">
+    <PreferenceCategory android:title="@string/ajustes_aboutapp" android:key="about">
         <Preference android:key="aboutapp"
             		android:summary="@string/version"
-            		android:title="Versión">
+            		android:title="@string/ajustes_version">
             <intent android:action="android.intent.action.VIEW"
                     android:data="http://melchor629.github.io/Musicote-Melchor629/" />
         </Preference>
-        <Preference android:summary="Melchor Garau" android:title="Autor" android:key="aboutauthor">
+        <Preference android:summary="Melchor Garau" android:title="@string/ajustes_autor" android:key="aboutauthor">
             <intent android:action="android.intent.action.VIEW"
                     android:data="http://melchor629.github.io" />
         </Preference>

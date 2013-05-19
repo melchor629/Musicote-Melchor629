@@ -119,7 +119,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
 										if(n || (Reproductor.a != -1 && n))
 											o();
 										barra.setProgress((int)(Reproductor.a*10d));
-										texto.setText("Reproduciendo "+Reproductor.tit+" de "+Reproductor.art);
+										texto.setText(getResources().getString(R.string.playing)+" "+Reproductor.tit+" "+getResources().getString(R.string.playing_of)+" "+Reproductor.art);
 									} else {
 										if(!n) {
 									    	Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
@@ -131,7 +131,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
 								    		n = true;
 										}
 										barra.setProgress((int)(Reproductor.a*10d));
-										texto.setText("No reproduce nada");
+										texto.setText(getResources().getString(R.string.playing_no));
 									}
 								}
 							}
@@ -265,7 +265,8 @@ public class SingleMenuItemActivity extends SherlockActivity {
     	mBuilder = new NotificationCompat.Builder(this);
     	mBuilder.setContentTitle("Descargando "+name+ " de "+cost)
     	    .setContentText("Descargando musicote...")
-    	    .setSmallIcon(R.drawable.download);
+    	    .setSmallIcon(R.drawable.download)
+    	    .setOngoing(true);
 
     	new Thread(
 			new Runnable() {
@@ -334,7 +335,9 @@ public class SingleMenuItemActivity extends SherlockActivity {
 
 	        	mBuilder.setContentText("Descarga completa")
 	            // Removes the progress bar
-	                    .setProgress(0,0,false);
+	                    .setProgress(0,0,false)
+                //Removes fixed notify, ensure to be deleted by user
+	                    .setOngoing(false);
 	            mNotifyManager.notify(0, mBuilder.build());
 	            try {
 					this.finalize();
