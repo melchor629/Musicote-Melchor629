@@ -255,6 +255,15 @@ public class SingleMenuItemActivity extends SherlockActivity {
     }
     
     /**
+     * addToPlaylist
+     * Añade una canción a la lista de reproducción
+     * @param v
+     */
+    public void addToPlaylist(View v) {
+    	Reproductor.addSong(name, cost, archivo);
+    }
+    
+    /**
      * download	
      * Descarga la canción seleccionada
      * @param v

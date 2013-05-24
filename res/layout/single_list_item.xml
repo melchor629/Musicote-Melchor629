@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/fondo2"
+    android:onClick="addToPlaylist"
     android:orientation="vertical" >
 
   <!-- Titulo de la canción -->
@@ -87,6 +88,13 @@
           android:layout_height="41dp"
           android:onClick="download"
           android:src="@drawable/download" />
+
+      <Button
+          android:id="@+id/addToPlaylist"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:onClick="addToPlaylist"
+          android:text="+ playlist" />
 
   </LinearLayout>
 
