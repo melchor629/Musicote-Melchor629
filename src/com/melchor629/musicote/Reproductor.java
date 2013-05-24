@@ -39,6 +39,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     public volatile static String tit;
     public volatile static String art;
     public volatile static boolean paused;
+
     private coso cosa;
     private NotificationManager nm;
     private volatile static ArrayList<String[]> playlist;
@@ -50,7 +51,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         playlist = new ArrayList<String[]>();
         String [] eso = addSong(intent.getStringExtra("titulo"), intent.getStringExtra("artista"), intent.getStringExtra("archivo"));
         initMediaPlayer(eso);
-        eso = null;
         return START_STICKY;
     }
 
@@ -67,25 +67,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     	
     	reproductor = newPlayer(song);
     	
-        int mID = 1;
-
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
-        notification
-                .setSmallIcon(R.drawable.altavoz)
-                .setContentTitle("Musicote")
-                .setContentText(getResources().getString(R.string.playing)+" "+Reproductor.tit+" "+getResources().getString(R.string.playing_of)+" "+Reproductor.art)
-                .setOngoing(true);
-
-        Intent resultIntent = new Intent(this, MainActivity.class);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(MainActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        notification.setContentIntent(resultPendingIntent);
-        nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        nm.cancel(mID);
-        nm.notify(mID, notification.build());
+        notification();
     }
     
     /**
@@ -109,6 +91,41 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         reproductor.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         reproductor.prepareAsync(); // prepare async to not block main thread
         return reproductor;
+    }
+    
+    /**
+     * Notificación de la canción
+     */
+    public void notification() {
+    	int mID = 1;
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
+        notification
+                .setSmallIcon(R.drawable.altavoz)
+                .setContentTitle("Musicote")
+                .setContentText(getResources().getString(R.string.playing)+" "+tit+" "+getResources().getString(R.string.playing_of)+" "+art)
+                .setOngoing(true);
+        
+        NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
+        inbox.setBigContentTitle(getResources().getString(R.string.playing)+" "+tit+" "+getResources().getString(R.string.playing_of)+" "+art);
+        for(int i = 0; i < playlist.size(); i++) {
+        	if(i == 0)
+        		inbox.addLine("Y después..."); //TODO translate this
+        	else
+        		inbox.addLine(playlist.get(i)[0] + this.getResources().getString(R.string.playing_of) + playlist.get(i)[1]);
+        }
+        notification.setStyle(inbox);
+
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.setContentIntent(resultPendingIntent);
+        nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.cancel(mID);
+        nm.notify(mID, notification.build());
     }
 
     /**
@@ -228,6 +245,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             Looper.prepare();
             try{
             	boolean o = true;
+            	int count = playlist.size();
 
             	while(True) {
                     try{
@@ -252,6 +270,11 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                         	this.finalize();
                         	this.interrupt();
                         }
+                    	
+                    	if(count != playlist.size()) {
+                    		notification();
+                    		count = playlist.size();
+                    	}
                     }catch (Exception e){
                     	if(True)
                     		Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...\n"+e.getMessage());
