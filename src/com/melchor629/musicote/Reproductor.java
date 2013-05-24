@@ -106,15 +106,17 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                 .setContentText(getResources().getString(R.string.playing)+" "+tit+" "+getResources().getString(R.string.playing_of)+" "+art)
                 .setOngoing(true);
         
-        NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
-        inbox.setBigContentTitle(getResources().getString(R.string.playing)+" "+tit+" "+getResources().getString(R.string.playing_of)+" "+art);
-        for(int i = 0; i < playlist.size(); i++) {
-        	if(i == 0)
-        		inbox.addLine("Y después..."); //TODO translate this
-        	else
-        		inbox.addLine(playlist.get(i)[0] + this.getResources().getString(R.string.playing_of) + playlist.get(i)[1]);
+        if(playlist.size() > 1){
+	        NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
+	        inbox.setBigContentTitle(getResources().getString(R.string.playing)+" "+tit+" "+getResources().getString(R.string.playing_of)+" "+art);
+	        for(int i = 0; i < playlist.size(); i++) {
+	        	if(i == 0)
+	        		inbox.addLine(getResources().getString(R.string.and_after));
+	        	else
+	        		inbox.addLine(playlist.get(i)[0] + " " + getResources().getString(R.string.playing_of) + " " + playlist.get(i)[1]);
+	        }
+	        notification.setStyle(inbox);
         }
-        notification.setStyle(inbox);
 
         Intent resultIntent = new Intent(this, MainActivity.class);
 

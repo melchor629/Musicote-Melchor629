@@ -223,7 +223,6 @@ public class SingleMenuItemActivity extends SherlockActivity {
 	        in.putExtra("titulo", name);
 	        in.putExtra("artista", cost);
 	        in.putExtra("archivo", url);
-	        Log.i("Iniciando servicio...", "1. "+name+" 2. "+cost+" 3."+url);
 	
 	        startService(in);
 	        
