@@ -24,6 +24,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -97,10 +99,13 @@ public class MainActivity extends SherlockListActivity {
         }
         
         // La app prueba en busca de la dirección correcta
-        ParseJSON jParser = new ParseJSON();
-        if(jParser.HostTest("192.168.1.133",80)){
+        WifiManager mw = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wi = mw.getConnectionInfo();
+        String SSID = wi.getSSID();
+        Log.d("MainActivity", "Wifi conectado: "+SSID);
+        if(SSID.equals("wifi5eber")){
             MainActivity.url = "192.168.1.133";
-        }else if(jParser.HostTest("reinoslokos.no-ip.org",80)){
+        } else {
             MainActivity.url = "reinoslokos.no-ip.org";
         }
         

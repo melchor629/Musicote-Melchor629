@@ -8,4 +8,5 @@
     <string name="playing">Reproduciendo</string>
     <string name="playing_of">de</string>
     <string name="playing_no">No reproduce nada</string>
+    <string name="added_to_playlist"> añadida a la lista de reproducción</string>
 </resources>

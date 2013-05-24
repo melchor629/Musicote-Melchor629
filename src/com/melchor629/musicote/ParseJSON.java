@@ -124,6 +124,7 @@ public class ParseJSON {
 
         try {
             Socket connection = new Socket(host, port);
+            connection.setSoTimeout(1000);
             if(connection.isConnected() == true){
                 Log.e("com.melchor629.musicote","Conexión... conosco a tu padre ("+host+")");
                 i = true;
@@ -131,9 +132,7 @@ public class ParseJSON {
                 Log.e("com.melchor629.musicote","Con esta dirección "+host+":"+port+" no hay na");
                 i = false;
             }
-
-        } catch (Exception ex) // SocketException for connect, IOException for
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
             Log.e("com.melchor629.musicote", "Error al comprobar el host: "+host+":"+port+" | "+ex.toString());
         }

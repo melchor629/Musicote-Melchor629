@@ -261,6 +261,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
      */
     public void addToPlaylist(View v) {
     	Reproductor.addSong(name, cost, archivo);
+    	Toast.makeText(this, name + " " + this.getResources().getString(R.string.added_to_playlist), Toast.LENGTH_LONG).show();
     }
     
     /**

@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 /**
  * Reproductor del Musicote 0.1
- * TODO Mejorar con nuevas cosas el servicio inlcuyendo una interfaz gráfica
+ * TODO Añadir interfaz gráfica para manejar el reproductor
  * @author melchor
  */
 public class Reproductor extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
@@ -47,8 +47,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     public volatile static double a = -1;
 
     public int onStartCommand (Intent intent, int flags, int StartID){
-        Toast.makeText(this, "Reproductor de musicote abierto", Toast.LENGTH_LONG).show();
-
         playlist = new ArrayList<String[]>();
         String [] eso = addSong(intent.getStringExtra("titulo"), intent.getStringExtra("artista"), intent.getStringExtra("archivo"));
         initMediaPlayer(eso);
@@ -218,7 +216,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
            reproductor.release();
        nm.cancelAll();
        a = -1;
-       Toast.makeText(this, "Reproductor de musicote cerrado", Toast.LENGTH_LONG).show();
     }
 
     /**
