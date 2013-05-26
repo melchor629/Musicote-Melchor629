@@ -270,6 +270,8 @@ public class MainActivity extends SherlockListActivity {
 
         // selecting single ListView item
         ListView lv = getListView();
+        
+        lv.setFastScrollEnabled(true);
 
         // Launching new screen on Selecting Single ListItem
         lv.setOnItemClickListener(new OnItemClickListener() {
@@ -334,8 +336,8 @@ public class MainActivity extends SherlockListActivity {
                 startActivity(intent);
                 break;
             case R.id.parar:
-                Intent intento = new Intent(MainActivity.this, Reproductor.class);
-                stopService(intento);
+                Intent intento = new Intent(MainActivity.this, ReproductorGrafico.class);
+                startActivity(intento);
             default:
                 return super.onOptionsItemSelected(item);
         }

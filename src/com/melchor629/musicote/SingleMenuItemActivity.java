@@ -84,6 +84,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
     public static String duracion;
 
     private static String archivo;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +92,6 @@ public class SingleMenuItemActivity extends SherlockActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         ActionBar ab = getSupportActionBar();
-        //ab.setHomeButtonEnabled(true);
         ab.setDisplayHomeAsUpEnabled(true);
         
         android.view.animation.Interpolator on = new android.view.animation.DecelerateInterpolator();
@@ -190,8 +190,8 @@ public class SingleMenuItemActivity extends SherlockActivity {
                 startActivity(intent);
                 break;
              case R.id.parar:
-                Intent intento = new Intent(SingleMenuItemActivity.this, Reproductor.class); //TODO Cambiar esto por la actividad del reproductor UI
-                stopService(intento);
+                Intent intento = new Intent(SingleMenuItemActivity.this, ReproductorGrafico.class); //TODO Cambiar esto por la actividad del reproductor UI
+                startActivity(intento);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -223,6 +223,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
 	        in.putExtra("titulo", name);
 	        in.putExtra("artista", cost);
 	        in.putExtra("archivo", url);
+	        in.putExtra("album", description);
 	
 	        startService(in);
 	        
@@ -259,7 +260,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * @param v
      */
     public void addToPlaylist(View v) {
-    	Reproductor.addSong(name, cost, archivo);
+    	Reproductor.addSong(name, cost, archivo, description);
     	Toast.makeText(this, name + " " + this.getResources().getString(R.string.added_to_playlist), Toast.LENGTH_LONG).show();
     }
     

@@ -38,6 +38,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     public volatile static String url;
     public volatile static String tit;
     public volatile static String art;
+    public volatile static String alb;
     public volatile static boolean paused;
 
     private coso cosa;
@@ -49,7 +50,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
     public int onStartCommand (Intent intent, int flags, int StartID){
         playlist = new ArrayList<String[]>();
-        String [] eso = addSong(intent.getStringExtra("titulo"), intent.getStringExtra("artista"), intent.getStringExtra("archivo"));
+        String [] eso = addSong(intent.getStringExtra("titulo"), intent.getStringExtra("artista"), intent.getStringExtra("archivo"), intent.getStringExtra("album"));
         initMediaPlayer(eso);
         return START_STICKY;
     }
@@ -64,6 +65,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     	tit = song[0];
     	art = song[1];
     	url = song[2];
+    	alb = song[3];
     	
     	reproductor = newPlayer(song);
     	
@@ -121,7 +123,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         Intent resultIntent = new Intent(this, MainActivity.class);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addParentStack(ReproductorGrafico.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         notification.setContentIntent(resultPendingIntent);
@@ -173,14 +175,23 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * Add a song into playlist
      * @return eso A String[] for use, if you want
      */
-    public static String[] addSong(String titulo, String artista, String urle) {
+    public static String[] addSong(String titulo, String artista, String urle, String album) {
     	if(playlist == null)
     		playlist = new ArrayList<String[]>();
-		String[] eso = new String[] {titulo, artista, urle};
+		String[] eso = new String[] {titulo, artista, urle, album};
 		playlist.add(eso);
 		int SongID = playlist.indexOf(eso);
 		Log.d("Reproductor", titulo + " añadida a la lista de reproducción con ID " + SongID);
 		return eso;
+    }
+    
+    /**
+     * Delete a song from the playlist
+     * @param id of the song
+     */
+    public static void deleteSong(int id) {
+    	Log.d("Reproductor", playlist.get(id)[0] + " eliminada de la lista de reproducción");
+    	playlist.remove(id);
     }
     
     /**
@@ -205,6 +216,14 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     	reproductor.release();
     	reproductor = null;
     	initMediaPlayer(playlist.get(0));
+    }
+    
+    /**
+     * Gets the playlist array
+     * @return playlist An ArrayList{String[]}
+     */
+    public static ArrayList<String[]> getPlaylist() {
+    	return playlist;
     }
     
     @Override

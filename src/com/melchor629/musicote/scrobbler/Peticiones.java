@@ -265,13 +265,23 @@ public class Peticiones {
     	int out = 0;
     	JSONObject jObj;
     	try {
-            jObj = new JSONObject(request);
+            jObj = getJSONObject(request);
             if(jObj.has("error"))
             	out = jObj.getInt("error");
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
         }
     	return out;
+    }
+    
+    /**
+     * Procesa el mensaje enviado de Last.FM a un objeto JSON para después poderlo manejar
+     * @param request <i>Repuesta de Last.FM</i>
+     * @return JSONObject <i>El JSONObject</i>
+     * @throws JSONException <i>Si no se ha podido converitir</i>
+     */
+    public static JSONObject getJSONObject(String request) throws JSONException {
+    	return new JSONObject(request);
     }
 
     public static Map<String, String> map(String... strings) {

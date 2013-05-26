@@ -4,7 +4,6 @@ import java.util.Map;
 
 /**
  * Envia scrobblings
- * TODO enviar el now playing
  * @author melchor
  *
  */
