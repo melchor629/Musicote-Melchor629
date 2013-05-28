@@ -42,9 +42,6 @@ public class Album {
 			j = Peticiones.getJSONObject(request);
 
 			JSONObject album = j.getJSONObject("album");
-			JSONArray image = album.getJSONArray("image");
-			JSONObject images = image.getJSONObject(4);
-			albumUrl = images.getString("#text");
 			
 			return album;
 		} catch (JSONException e) {
@@ -55,10 +52,22 @@ public class Album {
 	
 	/**
 	 * Gets the url album image
+	 * @param album <i>JSONObject with the album data</i>
+	 * @param id <i>ID of the image size [0-5]</i>
 	 * @return <i>The url in a String</i>
 	 */
-	public String getAlbumUrl() {
-		return albumUrl;
+	public String getAlbumUrl(JSONObject album, int id) {
+		if(id > 5 || id < 0)
+			id = 3;
+		try {
+			JSONArray image = album.getJSONArray("image");
+			JSONObject images = image.getJSONObject(id);
+			albumUrl = images.getString("#text");
+			return albumUrl;
+		} catch (JSONException e) {
+			Log.e("Last.FM->Album","Error: "+ e.toString());
+		}
+		return null;
 	}
 	
     private String sign(String artista, String album){

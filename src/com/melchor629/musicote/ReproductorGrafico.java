@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ImageButton;
@@ -64,6 +65,13 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
 		ab = getSupportActionBar();
 		ab.setDisplayHomeAsUpEnabled(true);
 		
+		if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+			//If possible Hardware accelerated
+			getWindow().setFlags(
+				    WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+				    WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+		}
+		
 		//Starting layout variables
 		tituloActual = (TextView) findViewById(R.id.tituloActual);
 		artistaActual = (TextView) findViewById(R.id.artistaActual);
@@ -91,48 +99,54 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
 		albumActual.setText(Reproductor.alb);
 		ArrayList<HashMap<String, String>> toPlaylistView = new ArrayList<HashMap<String, String>>();
 		ArrayList<String[]> playlist = Reproductor.getPlaylist();
-		for(int i = 1; i < playlist.size(); i++) {
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("titulo", playlist.get(i)[0]);
-			map.put("artista", playlist.get(i)[1]);
-			map.put("album", playlist.get(i)[3]);
-			toPlaylistView.add(map);
-		}
-		
-		ListAdapter adapter = new SimpleAdapter(this, toPlaylistView, R.layout.list_item,
-				new String[] { "titulo", "artista", "album" },
-				new int[] { R.id.name, R.id.email, R.id.mobile });
-		
-		setListAdapter(adapter);
-		
-		this.playlist.setLongClickable(true);
-		this.playlist.setOnItemLongClickListener(new OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				Reproductor.deleteSong(arg2 + 1);
-				return false;
+		if(playlist != null) {
+			for(int i = 1; i < playlist.size(); i++) {
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("titulo", playlist.get(i)[0]);
+				map.put("artista", playlist.get(i)[1]);
+				map.put("album", playlist.get(i)[3]);
+				toPlaylistView.add(map);
 			}
-		});
+			
+			ListAdapter adapter = new SimpleAdapter(this, toPlaylistView, R.layout.list_item,
+					new String[] { "titulo", "artista", "album" },
+					new int[] { R.id.name, R.id.email, R.id.mobile });
+			
+			setListAdapter(adapter);
+			
+			this.playlist.setLongClickable(true);
+			this.playlist.setOnItemLongClickListener(new OnItemLongClickListener() {
+				@Override
+				public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					Reproductor.deleteSong(arg2 + 1);
+					return false;
+				}
+			});
+		}
 	}
 	
 	public void playpause(View v) {
-		if(!Reproductor.paused) {
-			playpauseActual.setImageResource(R.drawable.ic_stat_name);
-			playpauseActual.setTag("play");
-		} else {
-			playpauseActual.setImageResource(R.drawable.ic_pause);
-			playpauseActual.setTag("pause");
+		if(Reproductor.a != -1){
+			if(!Reproductor.paused) {
+				playpauseActual.setImageResource(R.drawable.ic_stat_name);
+				playpauseActual.setTag("play");
+			} else {
+				playpauseActual.setImageResource(R.drawable.ic_pause);
+				playpauseActual.setTag("pause");
+			}
+	
+			Reproductor.pause();
 		}
-
-		Reproductor.pause();
 	}
 	
 	public void stop(View v) {
-		Intent in = new Intent(getApplicationContext(), Reproductor.class);
-        stopService(in);
-		playpauseActual.setImageResource(R.drawable.ic_stat_name);
-		playpauseActual.setTag("play");
+		if(Reproductor.a != -1) {
+			Intent in = new Intent(getApplicationContext(), Reproductor.class);
+	        stopService(in);
+			playpauseActual.setImageResource(R.drawable.ic_stat_name);
+			playpauseActual.setTag("play");
+		}
 	}
 	
 	@SuppressLint("NewApi")
@@ -147,9 +161,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
 	}
 	
 	private Drawable background() { //TODO Esta actividad ocupa demasiado procesador y memoria
-		Album album = new Album(Reproductor.art, Reproductor.alb); Log.d("ReproductorGráfico", "Background");
-		album.getInfo();
-		String albumart = album.getAlbumUrl();
+		Album album = new Album(Reproductor.art, Reproductor.alb);
+		String albumart = album.getAlbumUrl(album.getInfo(), 4);
 		InputStream is;
 		try {
 			is = (InputStream) new URL(albumart).getContent();
@@ -185,8 +198,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
 					}
 				}
 			);
-			if(!song.equals(Reproductor.tit)) {
-				if(Reproductor.alb != "" || Reproductor.alb != null)
+			if(Reproductor.tit != null && !song.equals(Reproductor.tit)) {
+				if(Reproductor.alb != "" && Reproductor.alb != null)
 					d = background();
 				song = Reproductor.tit;
 			}

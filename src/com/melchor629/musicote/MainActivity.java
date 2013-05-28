@@ -103,7 +103,7 @@ public class MainActivity extends SherlockListActivity {
         WifiInfo wi = mw.getConnectionInfo();
         String SSID = wi.getSSID();
         Log.d("MainActivity", "Wifi conectado: "+SSID);
-        if(SSID.equals("wifi5eber")){
+        if(SSID.equals("wifi5eber") || true){
             MainActivity.url = "192.168.1.133";
         } else {
             MainActivity.url = "reinoslokos.no-ip.org";
