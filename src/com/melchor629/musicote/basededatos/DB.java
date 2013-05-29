@@ -100,7 +100,6 @@ public class DB extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put("tabla", "canciones");
 		values.put("fecha", System.currentTimeMillis());
-		Log.e("newDB", "Dado "+db.insert("acceso", "null", values));
 	}
 	
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -122,7 +121,8 @@ public class DB extends SQLiteOpenHelper {
         if (!cursor.moveToFirst() || cursor.getCount() == 0)
             return false;
         int count = cursor.getInt(0);
-        cursor.close(); Log.e("newDB", "Count: "+count);
+        cursor.close();
+        Log.d("DB", "If table exists> Count: "+count);
         return count > 0;
     }
     

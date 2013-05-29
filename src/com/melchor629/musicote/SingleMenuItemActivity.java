@@ -76,6 +76,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
     private Handler h = new Handler();
     private boolean H = true;
     private boolean n = false;
+    private boolean e = true;
 
     public static String url;
     public static String name;
@@ -112,30 +113,32 @@ public class SingleMenuItemActivity extends SherlockActivity {
     		new Runnable() {
     			public void run() {
     				while(H) {
-    					h.post(
-							new Runnable() {
-								public void run() {
-									if(Reproductor.a != -1) {
-										if(n || (Reproductor.a != -1 && n))
-											o();
-										barra.setProgress((int)(Reproductor.a*10d));
-										texto.setText(getResources().getString(R.string.playing)+" "+Reproductor.tit+" "+getResources().getString(R.string.playing_of)+" "+Reproductor.art);
-									} else {
-										if(!n) {
-									    	Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
-									    	ImageButton but = (ImageButton) findViewById(R.id.play);
-											but.setTag("play");
-								        	but.startAnimation(animAlpha);
-								    		but.setImageDrawable(play);
-								    		but.startAnimation(alphaAnim);
-								    		n = true;
+    					if(e) {
+	    					h.post(
+								new Runnable() {
+									public void run() {
+										if(Reproductor.a != -1) {
+											if(n || (Reproductor.a != -1 && n))
+												o();
+											barra.setProgress((int)(Reproductor.a*10d));
+											texto.setText(getResources().getString(R.string.playing)+" "+Reproductor.tit+" "+getResources().getString(R.string.playing_of)+" "+Reproductor.art);
+										} else {
+											if(!n) {
+										    	Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
+										    	ImageButton but = (ImageButton) findViewById(R.id.play);
+												but.setTag("play");
+									        	but.startAnimation(animAlpha);
+									    		but.setImageDrawable(play);
+									    		but.startAnimation(alphaAnim);
+									    		n = true;
+											}
+											barra.setProgress((int)(Reproductor.a*10d));
+											texto.setText(getResources().getString(R.string.playing_no));
 										}
-										barra.setProgress((int)(Reproductor.a*10d));
-										texto.setText(getResources().getString(R.string.playing_no));
 									}
 								}
-							}
-						);
+							);
+    					}
     					try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {}
@@ -361,6 +364,18 @@ public class SingleMenuItemActivity extends SherlockActivity {
     protected void onDestroy() {
     	super.onDestroy();
     	H = false;
+    }
+    
+    @Override
+    public void onPause() {
+    	super.onPause();
+    	e = false;
+    }
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	e = true;
     }
     
     private void o() {

@@ -10,15 +10,20 @@ import java.util.HashMap;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Rect;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ImageButton;
@@ -56,6 +61,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
 	private volatile boolean sease;
 	private volatile Drawable d;
 	
+	@SuppressLint("InlinedApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -158,6 +164,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
         	getWindow().getDecorView().setBackgroundDrawable(d);
         sease = false;
         d = null;
+        Log.d("ReproductorGráfico", "Cambiando fondo");
 	}
 	
 	private Drawable background() { //TODO Esta actividad ocupa demasiado procesador y memoria
@@ -169,6 +176,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
 	        Drawable d = Drawable.createFromStream(is, "src name");
 	        is.close();
 	        sease = true;
+	        
 	        return d;
 		} catch (MalformedURLException e) {
 			Log.e("ReproductorGráfico","Error: "+ e.toString());

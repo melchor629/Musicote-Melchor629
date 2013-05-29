@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.Socket;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -116,27 +117,19 @@ public class ParseJSON {
      * Sirve para comprobar si está encendido el PC
      * Nothing to see here...
      * @param host
-     * @param port
-     * @return boolean i
+     * @return int response
      */
-    public boolean HostTest(String host, int port) {
-        boolean i = false;
+    public int HostTest(String host) {
+        int response = 0;
 
-        try {
-            Socket connection = new Socket(host, port);
-            connection.setSoTimeout(1000);
-            if(connection.isConnected() == true){
-                Log.e("com.melchor629.musicote","Conexión... conosco a tu padre ("+host+")");
-                i = true;
-            }else{
-                Log.e("com.melchor629.musicote","Con esta dirección "+host+":"+port+" no hay na");
-                i = false;
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Log.e("com.melchor629.musicote", "Error al comprobar el host: "+host+":"+port+" | "+ex.toString());
+        try{
+            URL urlhttp = new URL("http://" + host + "/cgi-bin/archivos.py");
+            HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
+            response = http.getResponseCode();
+        } catch(Exception e){
+            Log.e("Comprobando", "Excepción HTTPURL: "+e.toString());
         }
 
-        return i;
+        return response;
     }
 }

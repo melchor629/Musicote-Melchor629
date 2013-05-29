@@ -1,7 +1,5 @@
 package com.melchor629.musicote;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -75,7 +73,7 @@ public class MainActivity extends SherlockListActivity {
     public final static String Last_STRING = "asdasda";
 
     public static String Last_String = "";
-    public static int response = 0;
+    public static volatile int response = 0;
     public static String url;
 
     private ProgressDialog progressDialog;
@@ -103,11 +101,12 @@ public class MainActivity extends SherlockListActivity {
         WifiInfo wi = mw.getConnectionInfo();
         String SSID = wi.getSSID();
         Log.d("MainActivity", "Wifi conectado: "+SSID);
-        if(SSID.equals("wifi5eber") || true){
+        if(SSID.equals("wifi5eber") || System.getProperty("os.version").equals("2.6.29-gea477bb")){
             MainActivity.url = "192.168.1.133";
         } else {
             MainActivity.url = "reinoslokos.no-ip.org";
         }
+        Log.d("MainActivity", "url: "+url);
         
         //Create a new progress dialog
         progressDialog = new ProgressDialog(MainActivity.this);
@@ -360,9 +359,6 @@ public class MainActivity extends SherlockListActivity {
      *
      */
     private class JSONParseDialog extends AsyncTask<Void, Integer, ArrayList<HashMap<String,String>>> {
-
-        public int response;
-
         @Override
 		protected ArrayList<HashMap<String, String>> doInBackground(Void... params){
             // Hashmap for ListView
@@ -377,18 +373,12 @@ public class MainActivity extends SherlockListActivity {
                 publishProgress(2);
                 if(MainActivity.url!=null){
                     // getting JSON string from URL
-                    try{
-                        URL urlhttp = new URL("http://"+MainActivity.url+"/cgi-bin/archivos.py");
-                        publishProgress(13);
-                        HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
-                        publishProgress(17);
-                        response = http.getResponseCode();
-                        publishProgress(21);
-                    } catch(Exception e){
-                        Log.e("Comprobando", "Excepción HTTPURL: "+e.toString());
-                    }
+            		response = jParser.HostTest(MainActivity.url);
+                    
+                    Log.d("MainActivity", "Response code: "+response);
+                    
                     publishProgress(25);
-                    if(response==200){
+                    if(response == 200){
                         JSONObject json = jParser.getJSONFromUrl("http://"+MainActivity.url+"/cgi-bin/archivos.py");
                         publishProgress(30);
                         try {
@@ -465,8 +455,7 @@ public class MainActivity extends SherlockListActivity {
         @Override
 		protected void onPostExecute(ArrayList<HashMap<String, String>> result){
             super.onPostExecute(result);
-            try{
-                //Thread.sleep(1000);
+            try {
                 publishProgress(99);
             } catch (Exception e) {}
         }
