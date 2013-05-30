@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.SearchView;
 import com.melchor629.musicote.R;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DB_entry;
@@ -21,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -30,8 +32,12 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.BaseColumns;
+import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
@@ -41,6 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 
 /**
  * Musicote App
@@ -67,7 +74,7 @@ import android.app.ProgressDialog;
  * @author melchor
  */
 
-public class MainActivity extends SherlockListActivity {
+public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
 
     public final static String EXTRA_MESSAGE = "com.melchor629.musicote.MESSAGE";
     public final static String Last_STRING = "asdasda";
@@ -78,6 +85,7 @@ public class MainActivity extends SherlockListActivity {
 
     private ProgressDialog progressDialog;
     private Toast tostado;
+    private SuggestionsAdapter mSuggestionsAdapter;
 
     // contacts JSONArray
     private static JSONArray contacts = null;
@@ -324,6 +332,32 @@ public class MainActivity extends SherlockListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.main, menu);
+        
+        //TODO http://developer.android.com/intl/es/guide/topics/search/search-dialog.html
+    	//Create the search view
+        SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
+        searchView.setQueryHint(getResources().getString(R.string.menu_search));
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnSuggestionListener(this);
+        searchView.setSuggestionsAdapter(mSuggestionsAdapter);
+        
+        String[] COLUMNS = {
+            BaseColumns._ID,
+            SearchManager.SUGGEST_COLUMN_TEXT_1,
+        };
+        
+        if (mSuggestionsAdapter == null) {
+            MatrixCursor cursor = new MatrixCursor(COLUMNS);
+            cursor.addRow(new String[]{"1", "'Murica"});
+            cursor.addRow(new String[]{"2", "Canada"});
+            cursor.addRow(new String[]{"3", "Denmark"});
+            mSuggestionsAdapter = new SuggestionsAdapter(getSupportActionBar().getThemedContext(), cursor);
+        }
+        
+        menu.add("Search")
+        	.setIcon(R.drawable.abs__ic_search)
+        	.setActionView(searchView)
+        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         return true;
     }
 
@@ -461,4 +495,49 @@ public class MainActivity extends SherlockListActivity {
         }
     }
 
+    //SearchBar methods
+	@Override
+	public boolean onSuggestionSelect(int position) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onSuggestionClick(int position) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onQueryTextSubmit(String query) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onQueryTextChange(String newText) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+    private class SuggestionsAdapter extends CursorAdapter {
+
+        public SuggestionsAdapter(Context context, Cursor c) {
+            super(context, c, 0);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View v = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            return v;
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            TextView tv = (TextView) view;
+            final int textIndex = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1);
+            tv.setText(cursor.getString(textIndex));
+        }
+    }
 }

@@ -184,9 +184,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
         	case 16908332:
-                Intent intenta = new Intent(this, MainActivity.class);
-                intenta.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intenta);
+        		finish();
                 break;
             case R.id.ajustesm:
                 Intent intent = new Intent(SingleMenuItemActivity.this, Ajustes.class);

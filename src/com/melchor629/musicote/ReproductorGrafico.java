@@ -10,20 +10,14 @@ import java.util.HashMap;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ImageButton;
@@ -36,6 +30,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.melchor629.musicote.scrobbler.Album;
 
 /**
@@ -228,6 +223,22 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.activity_reproductor_grafico, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+    	case 16908332:
+    		finish();
+            break;
+        case R.id.ajustesm:
+            Intent intent = new Intent(this, Ajustes.class);
+            startActivity(intent);
+            break;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
         return true;
     }
 }
