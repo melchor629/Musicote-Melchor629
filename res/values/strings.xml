@@ -1,7 +1,7 @@
 <resources>
 
     <string name="app_name">Musicote</string>
-    <string name="version">1.0.4</string>
+    <string name="version">1.0.5_beta</string>
     <string name="app_description">Music everywhere</string>
 
 </resources>
