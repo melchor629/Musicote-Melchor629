@@ -13,9 +13,9 @@ import android.util.Log;
  */
 public class Auth {
 
-	/**
-	 * TAG for the Log Android system
-	 */
+    /**
+     * TAG for the Log Android system
+     */
     private static final String TAG = "Scrobbler->Auth";
     
     /**

@@ -62,13 +62,13 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * @param artista <i>Song' Artist</i>
      */
     public void initMediaPlayer(String[] song){
-    	tit = song[0];
-    	art = song[1];
-    	url = song[2];
-    	alb = song[3];
-    	
-    	reproductor = newPlayer(song);
-    	
+        tit = song[0];
+        art = song[1];
+        url = song[2];
+        alb = song[3];
+        
+        reproductor = newPlayer(song);
+        
         notification();
     }
     
@@ -76,7 +76,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * Configura un reproductor
      */
     private MediaPlayer newPlayer(String[] song) {
-    	String url = song[2];
+        String url = song[2];
         MediaPlayer reproductor = new MediaPlayer(); // initialize it here
         reproductor.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
@@ -84,7 +84,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         } catch (Exception e) {
             Log.e("Reproductor","Error al descargar: "+ e.toString());
             if(e.toString().equals("(1, -1004"))
-            	Toast.makeText(this, "No se ha podido descargar la canción", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "No se ha podido descargar la canción", Toast.LENGTH_LONG).show();
             Intent in = new Intent(getApplicationContext(), Reproductor.class);
             stopService(in);
         }
@@ -99,7 +99,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * Notificación de la canción
      */
     public void notification() {
-    	int mID = 1;
+        int mID = 1;
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
         notification
@@ -109,15 +109,15 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                 .setOngoing(true);
         
         if(playlist.size() > 1){
-	        NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
-	        inbox.setBigContentTitle(getResources().getString(R.string.playing)+" "+tit+" "+getResources().getString(R.string.playing_of)+" "+art);
-	        for(int i = 0; i < playlist.size(); i++) {
-	        	if(i == 0)
-	        		inbox.addLine(getResources().getString(R.string.and_after));
-	        	else
-	        		inbox.addLine(playlist.get(i)[0] + " " + getResources().getString(R.string.playing_of) + " " + playlist.get(i)[1]);
-	        }
-	        notification.setStyle(inbox);
+            NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
+            inbox.setBigContentTitle(getResources().getString(R.string.playing)+" "+tit+" "+getResources().getString(R.string.playing_of)+" "+art);
+            for(int i = 0; i < playlist.size(); i++) {
+                if(i == 0)
+                    inbox.addLine(getResources().getString(R.string.and_after));
+                else
+                    inbox.addLine(playlist.get(i)[0] + " " + getResources().getString(R.string.playing_of) + " " + playlist.get(i)[1]);
+            }
+            notification.setStyle(inbox);
         }
 
         Intent resultIntent = new Intent(this, ReproductorGrafico.class);
@@ -147,10 +147,10 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         }
 
         new Thread(new Runnable(){@Override public void run(){
-        	cosa = new coso();
-        	True = true;
-        	player.start();
-        	cosa.run(player, pref, nm);
+            cosa = new coso();
+            True = true;
+            player.start();
+            cosa.run(player, pref, nm);
         }}).start();
     }
     
@@ -176,13 +176,13 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * @return eso A String[] for use, if you want
      */
     public static String[] addSong(String titulo, String artista, String urle, String album) {
-    	if(playlist == null)
-    		playlist = new ArrayList<String[]>();
-		String[] eso = new String[] {titulo, artista, urle, album};
-		playlist.add(eso);
-		int SongID = playlist.indexOf(eso);
-		Log.d("Reproductor", titulo + " añadida a la lista de reproducción con ID " + SongID);
-		return eso;
+        if(playlist == null)
+            playlist = new ArrayList<String[]>();
+        String[] eso = new String[] {titulo, artista, urle, album};
+        playlist.add(eso);
+        int SongID = playlist.indexOf(eso);
+        Log.d("Reproductor", titulo + " añadida a la lista de reproducción con ID " + SongID);
+        return eso;
     }
     
     /**
@@ -190,32 +190,32 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * @param id of the song
      */
     public static void deleteSong(int id) {
-    	Log.d("Reproductor", playlist.get(id)[0] + " eliminada de la lista de reproducción");
-    	playlist.remove(id);
+        Log.d("Reproductor", playlist.get(id)[0] + " eliminada de la lista de reproducción");
+        playlist.remove(id);
     }
     
     /**
      * Comprueba si hay otra canción después de la actual
      */
     public boolean isNextSong() {
-    	try {
-    		Log.d("Reproductor", "Left "+(playlist.size()-1)+" "+(playlist.size() > 1 ? "Hay una siguiente canción" : "No hay una siguiente canción"));
-    		return playlist.size() > 1;
-    	} catch(java.lang.IndexOutOfBoundsException e) {
-    		Log.d("Reproductor", "No hay una siguiente canción");
-    		return false;
-    	}
+        try {
+            Log.d("Reproductor", "Left "+(playlist.size()-1)+" "+(playlist.size() > 1 ? "Hay una siguiente canción" : "No hay una siguiente canción"));
+            return playlist.size() > 1;
+        } catch(java.lang.IndexOutOfBoundsException e) {
+            Log.d("Reproductor", "No hay una siguiente canción");
+            return false;
+        }
     }
     
     /**
      * Pasa a la siguiente canción
      */
     public void nextSong() {
-    	playlist.remove(0);
-    	Log.d("Reproductor", "Siguiente canción");
-    	reproductor.release();
-    	reproductor = null;
-    	initMediaPlayer(playlist.get(0));
+        playlist.remove(0);
+        Log.d("Reproductor", "Siguiente canción");
+        reproductor.release();
+        reproductor = null;
+        initMediaPlayer(playlist.get(0));
     }
     
     /**
@@ -223,19 +223,19 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * @return playlist An ArrayList{String[]}
      */
     public static ArrayList<String[]> getPlaylist() {
-    	return playlist;
+        return playlist;
     }
     
     @Override
     public void onCompletion(MediaPlayer mp) {
-    	Log.d("Reproductor", "Canción lista");
-    	True = false;
-    	tit = art = url = null;
-    	if(isNextSong()){
+        Log.d("Reproductor", "Canción lista");
+        True = false;
+        tit = art = url = null;
+        if(isNextSong()){
             nextSong();
-    	} else {
-    		onDestroy();
-    	}
+        } else {
+            onDestroy();
+        }
     }
 
     /* (non-Javadoc)
@@ -248,8 +248,8 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
    @Override
    public void onDestroy() {
-	   if(!cosa.getState().toString().equals("NEW"))
-		   cosa.interrupt();
+       if(!cosa.getState().toString().equals("NEW"))
+           cosa.interrupt();
        if (reproductor != null)
            reproductor.release();
        nm.cancelAll();
@@ -265,40 +265,40 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         public void run(MediaPlayer player, SharedPreferences pref, NotificationManager nm){
             Looper.prepare();
             try{
-            	boolean o = true;
-            	int count = playlist.size();
+                boolean o = true;
+                int count = playlist.size();
 
-            	while(True) {
+                while(True) {
                     try{
                         a = (player.getCurrentPosition()/(player.getDuration()/100d));
                         if((int)a==50 && o){
                             if(pref.getBoolean("lastact", false) == true){
-                            	o = false;
+                                o = false;
                                 Scrobble scr = new Scrobble(tit, art);
                                 int e = scr.scrobble();
                                 if(e != 0)
-                                	Toast.makeText(Reproductor.this, "Last.FM: "+Peticiones.errorM[e], Toast.LENGTH_LONG).show();
-                            	Log.d("Scrobbler", "Error: "+e+"\nMessage: "+Peticiones.errorM[e]);
+                                    Toast.makeText(Reproductor.this, "Last.FM: "+Peticiones.errorM[e], Toast.LENGTH_LONG).show();
+                                Log.d("Scrobbler", "Error: "+e+"\nMessage: "+Peticiones.errorM[e]);
                             }
                         }
                         
                         Thread.sleep(100);
                         
-                    	if(player.getCurrentPosition() >= player.getDuration()){
-                    		a = 0;
-                    		player.stop();
-                        	True = false;
-                        	this.finalize();
-                        	this.interrupt();
+                        if(player.getCurrentPosition() >= player.getDuration()){
+                            a = 0;
+                            player.stop();
+                            True = false;
+                            this.finalize();
+                            this.interrupt();
                         }
-                    	
-                    	if(count != playlist.size()) {
-                    		notification();
-                    		count = playlist.size();
-                    	}
+                        
+                        if(count != playlist.size()) {
+                            notification();
+                            count = playlist.size();
+                        }
                     }catch (Exception e){
-                    	if(True)
-                    		Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...\n"+e.getMessage());
+                        if(True)
+                            Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...\n"+e.getMessage());
                         True = false;
                         this.finalize();
                     }
@@ -311,7 +311,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             } catch (Exception e){
                 Log.e("Reproductor", "Ha habido un error en el \"coso\": "+e.toString());
             } catch(Throwable e) {
-            	Log.e("Reproductor", "Ha habido un error en el \"coso\": "+e.toString());
+                Log.e("Reproductor", "Ha habido un error en el \"coso\": "+e.toString());
             }
         }
     }

@@ -123,141 +123,48 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         progressDialog.setMessage("Cargando datos del servidor, espere...");
         progressDialog.setCancelable(false);
         if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
-	        progressDialog.setIndeterminate(false);
-	        progressDialog.setMax(100);
-	        progressDialog.setProgress(0);
+            progressDialog.setIndeterminate(false);
+            progressDialog.setMax(100);
+            progressDialog.setProgress(0);
         } else {
-        	progressDialog.setIndeterminate(true);
+            progressDialog.setIndeterminate(true);
         }
         progressDialog.show();
-        
+
+        //Deletes the notification if remains (BUG)
         NotificationManager mn = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if(Reproductor.a == -1)
-        	mn.cancel(1);
-        
+            mn.cancel(1);
+
+        //Revisa la base de datos
         DB mDbHelper = new DB(getBaseContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         if(mDbHelper.ifTableExists(db, "canciones") == false || mDbHelper.ifTableExists(db, "acceso") == false) {
-        	//db.execSQL(DB_entry.CREATE_CANCIONES); Mira en la linea 142
-			db.execSQL(DB_entry.CREATE_ACCESO);
-			ContentValues values = new ContentValues();
-			values.put("tabla", "canciones");
-			values.put("fecha", System.currentTimeMillis());
-			Log.e("newDB", "Dado "+db.insert("acceso", "null", values));
-    	}
+            db.execSQL(DB_entry.CREATE_ACCESO);
+            ContentValues values = new ContentValues();
+            values.put("tabla", "canciones");
+            values.put("fecha", System.currentTimeMillis());
+                Log.e("newDB", "Dado "+db.insert("acceso", "null", values));
+        }
 
         //Actualización de la lista
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-	    if(mDbHelper.isNecesaryUpgrade(db, pref))
-	    	db.execSQL(DB_entry.DELETE_CANCIONES);
+        if(mDbHelper.isNecesaryUpgrade(db, pref))
+            db.execSQL(DB_entry.DELETE_CANCIONES);
+
+        if(!mDbHelper.ifTableExists(db, "canciones"))
+            async();
+        else
+            cursordb();
         
-        if(!mDbHelper.ifTableExists(db, "canciones")) {
-	        new Thread(new Runnable(){
-				@Override
-				public void run() {
-					Looper.prepare();
-			        try {
-			        	AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
-			            contactList = asd.get();
-			        } catch (InterruptedException e) {
-			            Log.e("AsyncTask","AsyncTask not finished: "+e.toString()); 
-			            e.printStackTrace();
-			        } catch (Exception e) {
-			            Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
-			            e.printStackTrace();
-			        } 
-			        MainActivity.this.runOnUiThread(
-		        		new Runnable(){
-		        			@Override public void run(){
-		        				sis();
-		        				try {
-	        						this.finalize();
-		        				} catch (Throwable e) {
-		        					Log.e(MainActivity.EXTRA_MESSAGE, "Error: "+ e.toString());
-		        				}
-	        				}
-		                }
-	        		);
-			        try {
-			        	progressDialog.dismiss();
-						this.finalize();
-					} catch (Throwable e) {
-						Log.e("UIUpdate" ,"Error: "+ e.toString());
-					}
-				}
-			}).start();
-	    } else {
-	    	// Define a projection that specifies which columns from the database
-	    	// you will actually use after this query.
-	    	String[] projection = {
-	    	    DB_entry.COLUMN_NAME_ID,
-	    	    DB_entry.COLUMN_NAME_TITULO,
-	    	    DB_entry.COLUMN_NAME_ARTISTA,
-	    	    DB_entry.COLUMN_NAME_ALBUM,
-	    	    DB_entry.COLUMN_NAME_DURACION,
-	    	    DB_entry.COLUMN_NAME_ARCHIVO
-	    	    };
-	
-	    	// How you want the results sorted in the resulting Cursor
-	    	String sortOrder =
-	    	    DB_entry.COLUMN_NAME_ID + " ASC";
-	
-	    	Cursor c = db.query(
-	    	    DB_entry.TABLE_CANCIONES,  				  // The table to query
-	    	    projection,                               // The columns to return
-	    	    null,                                     // The columns for the WHERE clause
-	    	    null,                                     // The values for the WHERE clause
-	    	    null,                                     // don't group the rows
-	    	    null,                                     // don't filter by row groups
-	    	    sortOrder                                 // The sort order
-	    	    );
-	    	contactList = new ArrayList<HashMap<String, String>>();
-	    	
-	    	c.moveToFirst();
-	    	try{
-	    		do {
-			    	// creating new HashMap
-			        HashMap<String, String> map = new HashMap<String, String>();
-			        
-			        long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ID));
-			        String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_TITULO));
-			        String artista = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARTISTA));
-			        String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ALBUM));
-			        String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARCHIVO));
-			        String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DURACION));
-			
-			        // adding each child node to HashMap key => value
-			        map.put("id", ""+id);
-			        map.put("titulo", titulo);
-			        map.put("artista", artista);
-			        map.put("album", album);
-			        map.put("archivo", "http://"+MainActivity.url+""+archivo);
-			        map.put("duracion", duracion);
-			        
-			        contactList.add(map);
-		    	} while(c.moveToNext());
-	    	} catch(CursorIndexOutOfBoundsException e) {
-	    		db.execSQL(DB_entry.DELETE_CANCIONES);
-	    		Log.e("DB", "Mala integridad de la BD");
-	    		try {
-					this.finalize();
-				} catch (Throwable e1) {
-					Log.e("error","Error: "+ e1.toString());
-				}
-			}
-	    	progressDialog.dismiss();
-	    	c.close();
-	    	sis();
-	    }
-	    
-	    db.close();
-	    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-	}
+        db.close();
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
     
     private void sis(){
         if(contactList == null){
-        	Log.e("MainActivity", "contactList viene vacío...");
-        	return;
+            Log.e("MainActivity", "contactList viene vacío...");
+            return;
         }
         /**
          * Updating parsed JSON data into ListView
@@ -284,13 +191,13 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         lv.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
-			public void onItemClick(AdapterView<?> parent, View view,
+            public void onItemClick(AdapterView<?> parent, View view,
                 int position, long id) {
                 // getting values from selected ListItem
                 //JSONObject datos = null;
                 HashMap<String, String> datos = null;
                 try{
-                	datos = contactList.get(position);
+                    datos = contactList.get(position);
                 }catch(Exception e){
                     Log.e("com.melchor629.musicote", "250<<"+e.toString()); e.printStackTrace();
                 }
@@ -326,7 +233,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     
     @Override
     public void onPause() {
-    	super.onPause();
+        super.onPause();
     }
 
     @Override
@@ -334,7 +241,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         getSupportMenuInflater().inflate(R.menu.main, menu);
         
         //TODO http://developer.android.com/intl/es/guide/topics/search/search-dialog.html
-    	//Create the search view
+        //Create the search view
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
         searchView.setQueryHint(getResources().getString(R.string.menu_search));
         searchView.setOnQueryTextListener(this);
@@ -355,9 +262,9 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         }
         
         menu.add("Search")
-        	.setIcon(R.drawable.abs__ic_search)
-        	.setActionView(searchView)
-        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+            .setIcon(R.drawable.abs__ic_search)
+            .setActionView(searchView)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         return true;
     }
 
@@ -379,7 +286,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
     // Intento de guardar lo ultimo enviado al otro .class
     @Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
         savedInstanceState.putString(Last_STRING, EXTRA_MESSAGE);
 
@@ -394,7 +301,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
      */
     private class JSONParseDialog extends AsyncTask<Void, Integer, ArrayList<HashMap<String,String>>> {
         @Override
-		protected ArrayList<HashMap<String, String>> doInBackground(Void... params){
+        protected ArrayList<HashMap<String, String>> doInBackground(Void... params){
             // Hashmap for ListView
             final ArrayList<HashMap<String, String>> contactList = new ArrayList<HashMap<String, String>>();
 
@@ -407,7 +314,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 publishProgress(2);
                 if(MainActivity.url!=null){
                     // getting JSON string from URL
-            		response = jParser.HostTest(MainActivity.url);
+                    response = jParser.HostTest(MainActivity.url);
                     
                     Log.d("MainActivity", "Response code: "+response);
                     
@@ -425,7 +332,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                             DB dbHelper = new DB(getBaseContext());
                             SQLiteDatabase db = dbHelper.getWritableDatabase();
                             if(!dbHelper.ifTableExists(db, "canciones"))
-                            	db.execSQL(DB_entry.CREATE_CANCIONES);
+                                db.execSQL(DB_entry.CREATE_CANCIONES);
                             for(int i = 0; i < MainActivity.contacts.length(); i++){
                                 JSONObject c = MainActivity.contacts.getJSONObject(i);
                                 ContentValues values = new ContentValues();
@@ -482,12 +389,12 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         }
 
         @Override
-		protected void onProgressUpdate(Integer... progress){
-    		progressDialog.setProgress(progress[0]);
+        protected void onProgressUpdate(Integer... progress){
+            progressDialog.setProgress(progress[0]);
         }
 
         @Override
-		protected void onPostExecute(ArrayList<HashMap<String, String>> result){
+        protected void onPostExecute(ArrayList<HashMap<String, String>> result){
             super.onPostExecute(result);
             try {
                 publishProgress(99);
@@ -496,29 +403,29 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     }
 
     //SearchBar methods
-	@Override
-	public boolean onSuggestionSelect(int position) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean onSuggestionSelect(int position) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean onSuggestionClick(int position) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean onSuggestionClick(int position) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean onQueryTextSubmit(String query) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean onQueryTextChange(String newText) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
     private class SuggestionsAdapter extends CursorAdapter {
 
@@ -539,5 +446,114 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             final int textIndex = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1);
             tv.setText(cursor.getString(textIndex));
         }
+    }
+
+    //Desastre de la carga de datos
+    /**
+     * Si tiene que hacer la descarga
+     */
+    private void async() {
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                Looper.prepare();
+                try {
+                    AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
+                    contactList = asd.get();
+                } catch (InterruptedException e) {
+                    Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    Log.e("AsyncTask","AsyncTask not finished: "+e.toString());
+                    e.printStackTrace();
+                }
+                MainActivity.this.runOnUiThread(
+                    new Runnable(){
+                        @Override
+                        public void run(){
+                            sis();
+                            try {
+                                this.finalize();
+                            } catch (Throwable e) {
+                                Log.e(MainActivity.EXTRA_MESSAGE, "Error: "+ e.toString());
+                            }
+                        }
+                    }
+                );
+                try {
+                    progressDialog.dismiss();
+                    this.finalize();
+                } catch (Throwable e) {
+                    Log.e("UIUpdate" ,"Error: "+ e.toString());
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * Si solo carga desde la base de datos
+     */
+    private void cursordb() {
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+            DB_entry.COLUMN_NAME_ID,
+            DB_entry.COLUMN_NAME_TITULO,
+            DB_entry.COLUMN_NAME_ARTISTA,
+            DB_entry.COLUMN_NAME_ALBUM,
+            DB_entry.COLUMN_NAME_DURACION,
+            DB_entry.COLUMN_NAME_ARCHIVO
+        };
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder =
+        DB_entry.COLUMN_NAME_ID + " ASC";
+
+        Cursor c = db.query(
+                            DB_entry.TABLE_CANCIONES,                    // The table to query
+                            projection,                               // The columns to return
+                            null,                                     // The columns for the WHERE clause
+                            null,                                     // The values for the WHERE clause
+                            null,                                     // don't group the rows
+                            null,                                     // don't filter by row groups
+                            sortOrder                                 // The sort order
+                            );
+        contactList = new ArrayList<HashMap<String, String>>();
+
+        c.moveToFirst();
+        try{
+            do {
+                // creating new HashMap
+                HashMap<String, String> map = new HashMap<String, String>();
+
+                long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ID));
+                String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_TITULO));
+                String artista = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARTISTA));
+                String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ALBUM));
+                String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARCHIVO));
+                String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DURACION));
+
+                // adding each child node to HashMap key => value
+                map.put("id", ""+id);
+                map.put("titulo", titulo);
+                map.put("artista", artista);
+                map.put("album", album);
+                map.put("archivo", "http://"+MainActivity.url+""+archivo);
+                map.put("duracion", duracion);
+
+                contactList.add(map);
+            } while(c.moveToNext());
+        } catch(CursorIndexOutOfBoundsException e) {
+            db.execSQL(DB_entry.DELETE_CANCIONES);
+            Log.e("DB", "Mala integridad de la BD");
+            try {
+                this.finalize();
+            } catch (Throwable e1) {
+                Log.e("error","Error: "+ e1.toString());
+            }
+        }
+        progressDialog.dismiss();
+        c.close();
+        sis();
     }
 }

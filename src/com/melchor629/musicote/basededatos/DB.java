@@ -86,22 +86,22 @@ import android.util.Log;
  *
  */
 public class DB extends SQLiteOpenHelper {
-	
-	private static int db_version = DB_entry.DATABASE_VERSION;
-	private static String db_musicote = DB_entry.DATABASE_MUSICOTE;
-	
-	public DB(Context context) {
-		super(context, db_musicote, null, db_version);
-	}
-	
-	public void onCreate(SQLiteDatabase db) {
-		//db.execSQL(DB_entry.CREATE_CANCIONES); se hace en MainActivity
-		db.execSQL(DB_entry.CREATE_ACCESO);
-		ContentValues values = new ContentValues();
-		values.put("tabla", "canciones");
-		values.put("fecha", System.currentTimeMillis());
-	}
-	
+    
+    private static int db_version = DB_entry.DATABASE_VERSION;
+    private static String db_musicote = DB_entry.DATABASE_MUSICOTE;
+    
+    public DB(Context context) {
+        super(context, db_musicote, null, db_version);
+    }
+    
+    public void onCreate(SQLiteDatabase db) {
+        //db.execSQL(DB_entry.CREATE_CANCIONES); se hace en MainActivity
+        db.execSQL(DB_entry.CREATE_ACCESO);
+        ContentValues values = new ContentValues();
+        values.put("tabla", "canciones");
+        values.put("fecha", System.currentTimeMillis());
+    }
+    
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
@@ -127,25 +127,25 @@ public class DB extends SQLiteOpenHelper {
     }
     
     public void actualizarAcceso(SQLiteDatabase db, String tabla, long time) {
-    	db.execSQL(DB_entry.CREATE_ACCESO);
-    	ContentValues values = new ContentValues();
-    	values.put("fecha", time);
-    	db.update("acceso", values, "tabla = ?", new String[] {tabla});
+        db.execSQL(DB_entry.CREATE_ACCESO);
+        ContentValues values = new ContentValues();
+        values.put("fecha", time);
+        db.update("acceso", values, "tabla = ?", new String[] {tabla});
     }
     
     public long obtenerAcceso(SQLiteDatabase db, String tabla) {
-    	Cursor c = db.query("acceso", new String[] {"fecha"}, "tabla = ?", new String[] {tabla}, null, null, null);
-    	c.moveToFirst();
-    	long Short = c.getLong(c.getColumnIndexOrThrow("fecha"));
-    	return Short;
+        Cursor c = db.query("acceso", new String[] {"fecha"}, "tabla = ?", new String[] {tabla}, null, null, null);
+        c.moveToFirst();
+        long Short = c.getLong(c.getColumnIndexOrThrow("fecha"));
+        return Short;
     }
     
     public boolean isNecesaryUpgrade(SQLiteDatabase db, SharedPreferences pref) {
-    	long ultimo = obtenerAcceso(db, "canciones");
-    	long ahora = System.currentTimeMillis();    	
-    	long diff = Long.parseLong(pref.getString("updateTime", "15"), 10)*60l*1000l;
-    	Log.d("DB", "Is necesary upgrade table contents? "
-    	+ (((ahora - ultimo) > diff) == true ? "True" : "False, will be in " + ((ahora - ultimo) / 60l / 1000l)) + " of " + diff/60l/1000l + " minutes.");
-    	return (ahora - ultimo) >  diff;
+        long ultimo = obtenerAcceso(db, "canciones");
+        long ahora = System.currentTimeMillis();        
+        long diff = Long.parseLong(pref.getString("updateTime", "15"), 10)*60l*1000l;
+        Log.d("DB", "Is necesary upgrade table contents? "
+        + (((ahora - ultimo) > diff) == true ? "True" : "False, will be in " + ((ahora - ultimo) / 60l / 1000l)) + " of " + diff/60l/1000l + " minutes.");
+        return (ahora - ultimo) >  diff;
     }
 }

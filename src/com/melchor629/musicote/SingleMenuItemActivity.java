@@ -104,48 +104,48 @@ public class SingleMenuItemActivity extends SherlockActivity {
         barra.setSecondaryProgress(500);
         
         final Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
-    	final Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
-    	
-    	if(Reproductor.a != -1)
-    		n = true;
+        final Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
+        
+        if(Reproductor.a != -1)
+            n = true;
 
         new Thread(
-    		new Runnable() {
-    			public void run() {
-    				while(H) {
-    					if(e) {
-	    					h.post(
-								new Runnable() {
-									public void run() {
-										if(Reproductor.a != -1) {
-											if(n || (Reproductor.a != -1 && n))
-												o();
-											barra.setProgress((int)(Reproductor.a*10d));
-											texto.setText(getResources().getString(R.string.playing)+" "+Reproductor.tit+" "+getResources().getString(R.string.playing_of)+" "+Reproductor.art);
-										} else {
-											if(!n) {
-										    	Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
-										    	ImageButton but = (ImageButton) findViewById(R.id.play);
-												but.setTag("play");
-									        	but.startAnimation(animAlpha);
-									    		but.setImageDrawable(play);
-									    		but.startAnimation(alphaAnim);
-									    		n = true;
-											}
-											barra.setProgress((int)(Reproductor.a*10d));
-											texto.setText(getResources().getString(R.string.playing_no));
-										}
-									}
-								}
-							);
-    					}
-    					try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {}
-    				}
-    			}
-    		}
-		).start();
+            new Runnable() {
+                public void run() {
+                    while(H) {
+                        if(e) {
+                            h.post(
+                                new Runnable() {
+                                    public void run() {
+                                        if(Reproductor.a != -1) {
+                                            if(n || (Reproductor.a != -1 && n))
+                                                o();
+                                            barra.setProgress((int)(Reproductor.a*10d));
+                                            texto.setText(getResources().getString(R.string.playing)+" "+Reproductor.tit+" "+getResources().getString(R.string.playing_of)+" "+Reproductor.art);
+                                        } else {
+                                            if(!n) {
+                                                Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
+                                                ImageButton but = (ImageButton) findViewById(R.id.play);
+                                                but.setTag("play");
+                                                but.startAnimation(animAlpha);
+                                                but.setImageDrawable(play);
+                                                but.startAnimation(alphaAnim);
+                                                n = true;
+                                            }
+                                            barra.setProgress((int)(Reproductor.a*10d));
+                                            texto.setText(getResources().getString(R.string.playing_no));
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {}
+                    }
+                }
+            }
+        ).start();
 
         // getting intent data
         Intent in = getIntent();
@@ -183,8 +183,8 @@ public class SingleMenuItemActivity extends SherlockActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
-        	case 16908332:
-        		finish();
+            case 16908332:
+                finish();
                 break;
             case R.id.ajustesm:
                 Intent intent = new Intent(SingleMenuItemActivity.this, Ajustes.class);
@@ -207,42 +207,42 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * @param v
      */
     public void PlaySong(final View v) {
-    	Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
-    	Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
-    	Drawable pause = getResources().getDrawable(R.drawable.ic_pause);
-    	Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
-    	ImageButton but = (ImageButton)v.findViewById(R.id.play); Log.d("", but.getTag().toString());
-    	if(but.getTag().toString().equals("play")) {
-			but.startAnimation(animAlpha);
-			but.setImageDrawable(pause);
-			but.startAnimation(alphaAnim);
-			but.setTag("pause");
-			
-	        url = archivo; //TODO comprobar si existe el archivo en la carpeta música, entonces la canción será la descargada
-	        // Starting new intent
-	        Intent in = new Intent(getApplicationContext(), Reproductor.class);
-	        in.putExtra("titulo", name);
-	        in.putExtra("artista", cost);
-	        in.putExtra("archivo", url);
-	        in.putExtra("album", description);
-	
-	        startService(in);
-	        
-	        Reproductor.a = 0;
-	        n = false;
-    	}else if(but.getTag().toString().equals("pause")) {
-        	but.setTag("playpause");
-        	but.startAnimation(animAlpha);
-    		but.setImageDrawable(play);
-    		but.startAnimation(alphaAnim);
-    		Reproductor.pause();
-    	}else if(but.getTag().toString().equals("playpause")) {
-			but.startAnimation(animAlpha);
-			but.setImageDrawable(pause);
-			but.startAnimation(alphaAnim);
-			but.setTag("pause");
-			Reproductor.pause();
-    	}
+        Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
+        Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
+        Drawable pause = getResources().getDrawable(R.drawable.ic_pause);
+        Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
+        ImageButton but = (ImageButton)v.findViewById(R.id.play); Log.d("", but.getTag().toString());
+        if(but.getTag().toString().equals("play")) {
+            but.startAnimation(animAlpha);
+            but.setImageDrawable(pause);
+            but.startAnimation(alphaAnim);
+            but.setTag("pause");
+            
+            url = archivo; //TODO comprobar si existe el archivo en la carpeta música, entonces la canción será la descargada
+            // Starting new intent
+            Intent in = new Intent(getApplicationContext(), Reproductor.class);
+            in.putExtra("titulo", name);
+            in.putExtra("artista", cost);
+            in.putExtra("archivo", url);
+            in.putExtra("album", description);
+    
+            startService(in);
+            
+            Reproductor.a = 0;
+            n = false;
+        }else if(but.getTag().toString().equals("pause")) {
+            but.setTag("playpause");
+            but.startAnimation(animAlpha);
+            but.setImageDrawable(play);
+            but.startAnimation(alphaAnim);
+            Reproductor.pause();
+        }else if(but.getTag().toString().equals("playpause")) {
+            but.startAnimation(animAlpha);
+            but.setImageDrawable(pause);
+            but.startAnimation(alphaAnim);
+            but.setTag("pause");
+            Reproductor.pause();
+        }
     }
 
     /**
@@ -261,130 +261,130 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * @param v
      */
     public void addToPlaylist(View v) {
-    	Reproductor.addSong(name, cost, archivo, description);
-    	Toast.makeText(this, name + " " + this.getResources().getString(R.string.added_to_playlist), Toast.LENGTH_LONG).show();
+        Reproductor.addSong(name, cost, archivo, description);
+        Toast.makeText(this, name + " " + this.getResources().getString(R.string.added_to_playlist), Toast.LENGTH_LONG).show();
     }
     
     /**
-     * download	
+     * download    
      * Descarga la canción seleccionada
      * @param v
      */
     public void download(View v){
-    	mNotifyManager =
-    	        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    	mBuilder = new NotificationCompat.Builder(this);
-    	mBuilder.setContentTitle("Descargando "+name+ " de "+cost)
-    	    .setContentText("Descargando musicote...")
-    	    .setSmallIcon(R.drawable.download)
-    	    .setOngoing(true);
+        mNotifyManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setContentTitle("Descargando "+name+ " de "+cost)
+            .setContentText("Descargando musicote...")
+            .setSmallIcon(R.drawable.download)
+            .setOngoing(true);
 
-    	new Thread(
-			new Runnable() {
-				@Override
-				public void run() {
-					Log.e("Download", "Descargando "+archivo+"...");
-					if(Environment.MEDIA_MOUNTED.equals("mounted")) {
-		            	try {
-							URL url = new URL(archivo.replace(" ", "%20"));
-							String arch = archivo.substring(archivo.lastIndexOf("/")+1);
-							URLConnection connection = url.openConnection();
-							connection.connect();
-							// this will be useful so that you can show a typical 0-100% progress bar
-							int fileLength = connection.getContentLength();
+        new Thread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    Log.e("Download", "Descargando "+archivo+"...");
+                    if(Environment.MEDIA_MOUNTED.equals("mounted")) {
+                        try {
+                            URL url = new URL(archivo.replace(" ", "%20"));
+                            String arch = archivo.substring(archivo.lastIndexOf("/")+1);
+                            URLConnection connection = url.openConnection();
+                            connection.connect();
+                            // this will be useful so that you can show a typical 0-100% progress bar
+                            int fileLength = connection.getContentLength();
 
-							// download the file
-							InputStream input = new BufferedInputStream(url.openStream());
-							OutputStream output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString()+"/"+arch);
+                            // download the file
+                            InputStream input = new BufferedInputStream(url.openStream());
+                            OutputStream output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString()+"/"+arch);
 
-							byte data[] = new byte[1024];
-							long total = 0;
-							int count;
-							while ((count = input.read(data)) != -1) {
-							    total += count;
-					            progress = (int)(total * 100 / fileLength);
-							    output.write(data, 0, count);
-							}
+                            byte data[] = new byte[1024];
+                            long total = 0;
+                            int count;
+                            while ((count = input.read(data)) != -1) {
+                                total += count;
+                                progress = (int)(total * 100 / fileLength);
+                                output.write(data, 0, count);
+                            }
 
-							output.flush();
-							output.close();
-							input.close();
-						} catch (MalformedURLException e) {
-							Log.e("DM1","Error: "+ e.toString());
-						} catch (FileNotFoundException e) {
-							Log.e("DM2","Error: "+ e.toString());
-						} catch (IOException e) {
-							Log.e("DM3","Error: "+ e.toString());
-						}
-		            }else {
-		            	Toast.makeText(getApplicationContext(), "No hay SD montada", Toast.LENGTH_LONG).show();
-		            }
-					try {
-						this.finalize();
-					} catch (Throwable e) {
-						Log.e("little town","Error: "+ e.toString());
-					}
-				}
-			}
-		).start();
-    	new Thread(new Runnable() {
-    		@Override
-    		public void run() {
-    			while(progress != 100) {
-				    // publishing the progress....
-		            mBuilder.setProgress(100, progress, false);
-		            mNotifyManager.notify(0, mBuilder.build());
-    			
-		            try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						Log.e("2nd thread","Error: "+ e.toString());
-					}
-    			}
-    			
+                            output.flush();
+                            output.close();
+                            input.close();
+                        } catch (MalformedURLException e) {
+                            Log.e("DM1","Error: "+ e.toString());
+                        } catch (FileNotFoundException e) {
+                            Log.e("DM2","Error: "+ e.toString());
+                        } catch (IOException e) {
+                            Log.e("DM3","Error: "+ e.toString());
+                        }
+                    }else {
+                        Toast.makeText(getApplicationContext(), "No hay SD montada", Toast.LENGTH_LONG).show();
+                    }
+                    try {
+                        this.finalize();
+                    } catch (Throwable e) {
+                        Log.e("little town","Error: "+ e.toString());
+                    }
+                }
+            }
+        ).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(progress != 100) {
+                    // publishing the progress....
+                    mBuilder.setProgress(100, progress, false);
+                    mNotifyManager.notify(0, mBuilder.build());
+                
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        Log.e("2nd thread","Error: "+ e.toString());
+                    }
+                }
+                
 
-	        	mBuilder.setContentText("Descarga completa")
-	            // Removes the progress bar
-	                    .setProgress(0,0,false)
+                mBuilder.setContentText("Descarga completa")
+                // Removes the progress bar
+                        .setProgress(0,0,false)
                 //Removes fixed notify, ensure to be deleted by user
-	                    .setOngoing(false);
-	            mNotifyManager.notify(0, mBuilder.build());
-	            try {
-					this.finalize();
-				} catch (Throwable e) {
-					Log.e("2nd thread","Error: "+ e.toString());
-				}
-    		}
-    	}).start();
+                        .setOngoing(false);
+                mNotifyManager.notify(0, mBuilder.build());
+                try {
+                    this.finalize();
+                } catch (Throwable e) {
+                    Log.e("2nd thread","Error: "+ e.toString());
+                }
+            }
+        }).start();
     }
     
     @Override
     protected void onDestroy() {
-    	super.onDestroy();
-    	H = false;
+        super.onDestroy();
+        H = false;
     }
     
     @Override
     public void onPause() {
-    	super.onPause();
-    	e = false;
+        super.onPause();
+        e = false;
     }
     
     @Override
     public void onResume() {
-    	super.onResume();
-    	e = true;
+        super.onResume();
+        e = true;
     }
     
     private void o() {
-    	Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
-    	Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
-    	Drawable pause = getResources().getDrawable(R.drawable.ic_pause);
-    	ImageButton but = (ImageButton) findViewById(R.id.play);
-    	but.setTag("pause");
-    	but.startAnimation(animAlpha);
-		but.setImageDrawable(pause);
-		but.startAnimation(alphaAnim);
-		n = false;
+        Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
+        Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
+        Drawable pause = getResources().getDrawable(R.drawable.ic_pause);
+        ImageButton but = (ImageButton) findViewById(R.id.play);
+        but.setTag("pause");
+        but.startAnimation(animAlpha);
+        but.setImageDrawable(pause);
+        but.startAnimation(alphaAnim);
+        n = false;
     }
 }
