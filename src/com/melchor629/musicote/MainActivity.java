@@ -155,7 +155,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         if(!mDbHelper.ifTableExists(db, "canciones"))
             async();
         else
-            cursordb();
+            cursordb(db);
         
         db.close();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -493,7 +493,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     /**
      * Si solo carga desde la base de datos
      */
-    private void cursordb() {
+    private void cursordb(SQLiteDatabase db) {
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {

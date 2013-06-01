@@ -98,7 +98,7 @@ public class LoginActivity extends Activity {
     @Override
     public void finish(){
         super.finish();
-            Intent intent = new Intent(this, DisplayMessageActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("email", mEmail);
             intent.putExtra("user", mUser);
             startActivity(intent);
