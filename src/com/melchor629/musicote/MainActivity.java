@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
-import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -32,12 +31,8 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.provider.BaseColumns;
-import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
@@ -47,7 +42,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
 
 /**
  * Musicote App
@@ -74,7 +68,7 @@ import android.app.SearchManager;
  * @author melchor
  */
 
-public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
+public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener {
 
     public final static String EXTRA_MESSAGE = "com.melchor629.musicote.MESSAGE";
     public final static String Last_STRING = "asdasda";
@@ -85,13 +79,12 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
     private ProgressDialog progressDialog;
     private Toast tostado;
-    private SuggestionsAdapter mSuggestionsAdapter;
+    private String oldText = "";
 
     // contacts JSONArray
     private static JSONArray contacts = null;
     private ArrayList<HashMap<String, String>> contactList;
 
-    TextView mTextView; // Member variable for text view in the layout
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // Set the user interface layout for this Activity
@@ -238,33 +231,17 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.main, menu);
-        
-        //TODO http://developer.android.com/intl/es/guide/topics/search/search-dialog.html
+        //TODO mirar porque solo salen dos iconos
         //Create the search view
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
         searchView.setQueryHint(getResources().getString(R.string.menu_search));
         searchView.setOnQueryTextListener(this);
-        searchView.setOnSuggestionListener(this);
-        searchView.setSuggestionsAdapter(mSuggestionsAdapter);
-        
-        String[] COLUMNS = {
-            BaseColumns._ID,
-            SearchManager.SUGGEST_COLUMN_TEXT_1,
-        };
-        
-        if (mSuggestionsAdapter == null) {
-            MatrixCursor cursor = new MatrixCursor(COLUMNS);
-            cursor.addRow(new String[]{"1", "'Murica"});
-            cursor.addRow(new String[]{"2", "Canada"});
-            cursor.addRow(new String[]{"3", "Denmark"});
-            mSuggestionsAdapter = new SuggestionsAdapter(getSupportActionBar().getThemedContext(), cursor);
-        }
         
         menu.add("Search")
             .setIcon(R.drawable.abs__ic_search)
             .setActionView(searchView)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        getSupportMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -278,6 +255,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             case R.id.parar:
                 Intent intento = new Intent(MainActivity.this, ReproductorGrafico.class);
                 startActivity(intento);
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -404,48 +382,54 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
     //SearchBar methods
     @Override
-    public boolean onSuggestionSelect(int position) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean onSuggestionClick(int position) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
     public boolean onQueryTextSubmit(String query) {
-        // TODO Auto-generated method stub
+        DB dbs = new DB(this);
+        SQLiteDatabase db = dbs.getReadableDatabase();
+        Cursor c = dbs.get(db, query);
+        contactList = new ArrayList<HashMap<String, String>>();
+        c.moveToFirst();
+        Log.d("onQueryTextSubmit", "Cantidad: "+c.getCount());
+        if(c.getCount() > 0) {
+	        do {
+	            // creating new HashMap
+	            HashMap<String, String> map = new HashMap<String, String>();
+	
+	            long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ID));
+	            String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_TITULO));
+	            String artista = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARTISTA));
+	            String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ALBUM));
+	            String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARCHIVO));
+	            String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DURACION));
+	
+	            // adding each child node to HashMap key => value
+	            map.put("id", ""+id);
+	            map.put("titulo", titulo);
+	            map.put("artista", artista);
+	            map.put("album", album);
+	            map.put("archivo", "http://" + url + "" + archivo);
+	            map.put("duracion", duracion);
+	
+	            contactList.add(map);
+	        } while(c.moveToNext());
+        }
+        sis();
+        c.close();
+        db.close();
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        // TODO Auto-generated method stub
+    	if(newText.length() == 0 && oldText.length() > 0) {
+			Log.d("chamado", "llamado");
+			SQLiteDatabase db = new DB(MainActivity.this).getReadableDatabase();
+    		cursordb(db);
+    		db.close();
+    	} else {
+    		onQueryTextSubmit(newText); //TODO comprobar si aguanta en en movil nuestro
+    	}
+    	oldText = newText;
         return false;
-    }
-
-    private class SuggestionsAdapter extends CursorAdapter {
-
-        public SuggestionsAdapter(Context context, Cursor c) {
-            super(context, c, 0);
-        }
-
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View v = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-            return v;
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            TextView tv = (TextView) view;
-            final int textIndex = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1);
-            tv.setText(cursor.getString(textIndex));
-        }
     }
 
     //Desastre de la carga de datos
@@ -510,7 +494,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         DB_entry.COLUMN_NAME_ID + " ASC";
 
         Cursor c = db.query(
-                            DB_entry.TABLE_CANCIONES,                    // The table to query
+                            DB_entry.TABLE_CANCIONES,                 // The table to query
                             projection,                               // The columns to return
                             null,                                     // The columns for the WHERE clause
                             null,                                     // The values for the WHERE clause

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.melchor629.musicote.basededatos;
 
 import android.content.ContentValues;
@@ -147,5 +144,22 @@ public class DB extends SQLiteOpenHelper {
         Log.d("DB", "Is necesary upgrade table contents? "
         + (((ahora - ultimo) > diff) == true ? "True" : "False, will be in " + ((ahora - ultimo) / 60l / 1000l)) + " of " + diff/60l/1000l + " minutes.");
         return (ahora - ultimo) >  diff;
+    }
+    
+    public Cursor get(SQLiteDatabase db, String query) {
+        String sortOrder = DB_entry.COLUMN_NAME_ID + " ASC";
+        String which = DB_entry.COLUMN_NAME_TITULO + " LIKE ? OR " + DB_entry.COLUMN_NAME_ARTISTA + " LIKE ? OR " + DB_entry.COLUMN_NAME_ALBUM + " LIKE ?";
+        String[] where = {"%"+query+"%", "%"+query+"%", "%"+query+"%"};
+
+        Cursor c = db.query(
+            DB_entry.TABLE_CANCIONES,                 // The table to query
+            null,                                     // The columns to return
+            which,                                    // The columns for the WHERE clause
+            where,                                    // The values for the WHERE clause
+            null,                                     // don't group the rows
+            null,                                     // don't filter by row groups
+            sortOrder                                 // The sort order
+        );
+    	return c;
     }
 }
