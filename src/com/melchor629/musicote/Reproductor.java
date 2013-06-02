@@ -197,7 +197,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     /**
      * Comprueba si hay otra canción después de la actual
      */
-    public boolean isNextSong() {
+    public static boolean isNextSong() {
         try {
             Log.d("Reproductor", "Left "+(playlist.size()-1)+" "+(playlist.size() > 1 ? "Hay una siguiente canción" : "No hay una siguiente canción"));
             return playlist.size() > 1;

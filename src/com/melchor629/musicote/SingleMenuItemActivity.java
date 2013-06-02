@@ -1,6 +1,7 @@
 package com.melchor629.musicote;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -219,6 +220,11 @@ public class SingleMenuItemActivity extends SherlockActivity {
             but.setTag("pause");
             
             url = archivo; //TODO comprobar si existe el archivo en la carpeta música, entonces la canción será la descargada
+            
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString()+"/"+archivo);
+            if(file.exists())
+            	url = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString()+"/"+archivo;
+            
             // Starting new intent
             Intent in = new Intent(getApplicationContext(), Reproductor.class);
             in.putExtra("titulo", name);

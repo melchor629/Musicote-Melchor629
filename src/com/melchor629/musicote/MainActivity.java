@@ -70,9 +70,6 @@ import android.app.ProgressDialog;
 
 public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener {
 
-    public final static String EXTRA_MESSAGE = "com.melchor629.musicote.MESSAGE";
-    public final static String Last_STRING = "asdasda";
-
     public static String Last_String = "";
     public static volatile int response = 0;
     public static String url;
@@ -91,11 +88,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         // The layout file is defined in the project res/layout/main.xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        // Check whether we're recreating a previously destroyed instance
-        if (savedInstanceState != null) {
-            // Restore value of members from saved state
-            Last_String = savedInstanceState.getString(Last_STRING);
-        }
         
         // La app prueba en busca de la dirección correcta
         WifiManager mw = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -192,7 +184,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 try{
                     datos = contactList.get(position);
                 }catch(Exception e){
-                    Log.e("com.melchor629.musicote", "250<<"+e.toString()); e.printStackTrace();
+                    Log.e("com.melchor629.musicote", "187<<"+e.toString()); e.printStackTrace();
                 }
                 String name = getString(R.string.vacio);
                 String cost = getString(R.string.vacio);
@@ -236,7 +228,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
         searchView.setQueryHint(getResources().getString(R.string.menu_search));
         searchView.setOnQueryTextListener(this);
-        
+
         menu.add("Search")
             .setIcon(R.drawable.abs__ic_search)
             .setActionView(searchView)
@@ -260,16 +252,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 return super.onOptionsItemSelected(item);
         }
         return true;
-    }
-
-    // Intento de guardar lo ultimo enviado al otro .class
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the user's current game state
-        savedInstanceState.putString(Last_STRING, EXTRA_MESSAGE);
-
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(savedInstanceState);
     }
 
     /**
@@ -459,7 +441,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                             try {
                                 this.finalize();
                             } catch (Throwable e) {
-                                Log.e(MainActivity.EXTRA_MESSAGE, "Error: "+ e.toString());
+                                Log.e(MainActivity.class.getName(), "Error: "+ e.toString());
                             }
                         }
                     }

@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListActivity;
@@ -147,6 +148,15 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             stopService(in);
             playpauseActual.setImageResource(R.drawable.ic_stat_name);
             playpauseActual.setTag("play");
+        }
+    }
+    
+    public void next(View v) {
+        if(Reproductor.isNextSong()) {
+            Log.d("ReproductorGráfico", "Siguiente canción");
+            Reproductor.reproductor.seekTo(Reproductor.reproductor.getDuration() - 1);
+        } else {
+            Toast.makeText(this, "No hay siguiente canción", Toast.LENGTH_LONG).show();
         }
     }
     
