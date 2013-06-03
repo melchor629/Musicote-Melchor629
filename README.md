@@ -3,12 +3,12 @@ Musicote App
 [![Build Status](https://travis-ci.org/melchor629/Musicote-Melchor629.png?branch=ActionBarSherlock)](https://travis-ci.org/melchor629/Musicote-Melchor629) [![Coverage Status](https://coveralls.io/repos/melchor629/Musicote-Melchor629/badge.png)](https://coveralls.io/r/melchor629/Musicote-Melchor629)
 
 Una sencilla aplicación para android 2.3, montado con el SDK de android **17** (platform 17)
-Descarga el contenido emitido por un servidor web del archivo "_api.py_", lo procesa y carga en una lista en el que puedes apretar una canción, ver su información básica y reproducir. También incluye Scrobbler para Last.FM, disponible en el menú de ajustes.
+Descarga el contenido emitido por un servidor web del archivo _"api.py"_, lo procesa y carga en una lista en el que puedes apretar una canción, ver su información básica y reproducir. También incluye Scrobbler para Last.FM, disponible en el menú de ajustes.
 Para editar este projecto se recomienda usar Eclipse, con el plugin de Android instalado
 Aqui guardaré todo lo avanzado sobre esta app
 
 An app for android 2.3 and higger, writted with the android **SDK 17**
-It downloads the content created by the "_api.py_" and a web server then it process the content and loads it in a list. You can touch a song in the list and see some basic information and listen to it. Also it includes a Last.FM Scrobbler available in the settings menu.
+It downloads the content created by the _"api.py"_ and a web server then it process the content and loads it in a list. You can touch a song in the list and see some basic information and listen to it. Also it includes a Last.FM Scrobbler available in the settings menu.
 To edit this project, use Eclipse with android's plugin or maven
 Here I will save all my changes of this app
 
