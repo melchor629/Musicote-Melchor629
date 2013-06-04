@@ -10,6 +10,7 @@ import java.util.HashMap;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -38,7 +39,7 @@ import com.melchor629.musicote.scrobbler.Album;
  * El reproductor, en modo gráfico para que pueda el usuario controlarlo mejor
  * @author melchor9000
  */
-public class ReproductorGrafico extends SherlockListActivity implements Runnable {
+public class ReproductorGrafico extends SherlockListActivity implements Runnable, SeekBar.OnSeekBarChangeListener {
 
     //Importing all the layout stuff into Java code for use it easely
     private TextView tituloActual;
@@ -46,8 +47,6 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     private TextView albumActual;
     private SeekBar playingUbication;
     private ImageButton playpauseActual;
-    private ImageButton stopActual;
-    private ImageButton nextActual;
     private ListView playlist;
     private ActionBar ab;
     
@@ -80,9 +79,9 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
         albumActual = (TextView) findViewById(R.id.albumActual);
         playingUbication = (SeekBar) findViewById(R.id.playingUbication);
         playpauseActual = (ImageButton) findViewById(R.id.playpauseActual);
-        stopActual = (ImageButton) findViewById(R.id.stopActual);
-        nextActual = (ImageButton) findViewById(R.id.nextActual);
         playlist = getListView();
+        
+        playingUbication.setOnSeekBarChangeListener(this);
         
         if(Reproductor.a != -1) {
             setThings();
@@ -163,16 +162,20 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     @SuppressLint("NewApi")
     @SuppressWarnings("deprecation")
     private void setBackground(Drawable d) {
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
-            getWindow().getDecorView().setBackground(d);
-        else
-            getWindow().getDecorView().setBackgroundDrawable(d);
+        if(d == null)
+            getWindow().getDecorView().setBackgroundColor(Color.BLACK);
+        else {
+            if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+                getWindow().getDecorView().setBackground(d);
+            else
+                getWindow().getDecorView().setBackgroundDrawable(d);
+        }
         sease = false;
         d = null;
         Log.d("ReproductorGráfico", "Cambiando fondo");
     }
     
-    private Drawable background() { //TODO Esta actividad ocupa demasiado procesador y memoria
+    private Drawable background() {
         Album album = new Album(Reproductor.art, Reproductor.alb);
         String albumart = album.getAlbumUrl(album.getInfo(), 4);
         InputStream is;
@@ -184,10 +187,11 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             
             return d;
         } catch (MalformedURLException e) {
-            Log.e("ReproductorGráfico","Error: "+ e.toString());
+            Log.e("ReproductorGráfico","Error: "+ e.toString() + " (Posiblemente no haya enlace)");
         } catch (IOException e) {
             Log.e("ReproductorGráfico","Error: "+ e.toString());
         }
+        sease = true;
         return null;
     }
     
@@ -250,5 +254,32 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see android.widget.SeekBar.OnSeekBarChangeListener#onProgressChanged(android.widget.SeekBar, int, boolean)
+     */
+    @Override
+    public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
+        if(fromUser) {
+            //TODO Add the code to change the position of the song
+            
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see android.widget.SeekBar.OnSeekBarChangeListener#onStartTrackingTouch(android.widget.SeekBar)
+     */
+    @Override
+    public void onStartTrackingTouch(SeekBar bar) {
+        Reproductor.reproductor.pause();
+    }
+
+    /* (non-Javadoc)
+     * @see android.widget.SeekBar.OnSeekBarChangeListener#onStopTrackingTouch(android.widget.SeekBar)
+     */
+    @Override
+    public void onStopTrackingTouch(SeekBar bar) {
+        Reproductor.reproductor.pause();
     }
 }
