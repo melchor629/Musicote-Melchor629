@@ -66,6 +66,8 @@ public class Album {
             return albumUrl;
         } catch (JSONException e) {
             Log.e("Last.FM->Album","Error: "+ e.toString());
+        } catch (NullPointerException e) {
+            Log.e("Last.FM->Album", "Last.FM no ha encontrado el álbum");
         }
         return null;
     }

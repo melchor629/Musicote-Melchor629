@@ -254,6 +254,10 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
            reproductor.release();
        nm.cancelAll();
        a = -1;
+       tit = null;
+       art = null;
+       alb = null;
+       url = null;
     }
 
     /**

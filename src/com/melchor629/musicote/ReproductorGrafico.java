@@ -55,6 +55,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     private volatile String song;
     private volatile boolean sease;
     private volatile Drawable d;
+    private volatile boolean isSeeking = false;
     
     @SuppressLint("InlinedApi")
     @Override
@@ -207,7 +208,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                     @Override
                     public void run() {
                         playingUbication.setMax(1000);
-                        playingUbication.setProgress((int)(Reproductor.a * 10d));
+                        if(!isSeeking)
+                            playingUbication.setProgress((int)(Reproductor.a * 10d));
                         setThings();
 
                         if(sease) 
@@ -261,9 +263,13 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
      */
     @Override
     public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
-        if(fromUser) {
-            //TODO Add the code to change the position of the song
-            
+        if(fromUser && Reproductor.a != -1) {
+            float posicion = (progress/1000f) * (float)Reproductor.reproductor.getDuration();
+            if((float)(progress / 1000f) >= 0.98f)
+                Reproductor.reproductor.seekTo(Math.round(posicion) - 100);
+            else
+                Reproductor.reproductor.seekTo(Math.round(posicion));
+            Reproductor.reproductor.pause();
         }
     }
 
@@ -272,7 +278,9 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
      */
     @Override
     public void onStartTrackingTouch(SeekBar bar) {
-        Reproductor.reproductor.pause();
+        //Reproductor.reproductor.pause();
+        isSeeking = true;
+        Log.d("Reproductor Gráfico", "Lo estan moviendo");
     }
 
     /* (non-Javadoc)
@@ -280,6 +288,9 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
      */
     @Override
     public void onStopTrackingTouch(SeekBar bar) {
-        Reproductor.reproductor.pause();
+        if(!Reproductor.paused)
+            Reproductor.reproductor.start();
+        isSeeking = false;
+        Log.d("Reproductor Gráfico", "Lo han dejado de mover");
     }
 }
