@@ -17,6 +17,8 @@ You can compile the project by Eclipse, easy way, or by Maven. In Eclipse you wi
 ```
 mvn install:install-file -Dfile=$PWD/libs/android-support-v4.jar -DgroupId=com.google.android -DartifactId=support-v5 -Dversion=r7
 -Dpackagin=jar
+mvn install:install-file -Dfile=$PWD/libs/android-async-http.jar -DgroupId=com.loopj.android.http -DartifactId=async-http -Dversion=1
+-Dpackagin=jar
 ```
 Where ```$PWD``` is the current directory in _*nix_ terminals. If the current directory isn't the main directory of the project, ```$PWD``` must be replaced with the relative path to this file. And finally, build the project:
 ```

@@ -21,6 +21,12 @@
         <scope>provided</scope>
     </dependency>
     <dependency>
+        <groupId>com.loopj.android.http</groupId>
+        <artifactId>asyncHttp</artifactId>
+        <version>1</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
 		<groupId>com.actionbarsherlock</groupId>
   		<artifactId>actionbarsherlock</artifactId>
   		<version>4.3.1</version>
