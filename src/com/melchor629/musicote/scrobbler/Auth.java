@@ -1,5 +1,6 @@
 package com.melchor629.musicote.scrobbler;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -63,9 +64,9 @@ public class Auth {
      * Crea la petición para hacer la petición de autenticación
      * @return out Petición creada
      */
-    private static String sign(){
+    private static HashMap<String, String> sign(){
         Map<String, String> datos = Peticiones.map("method","auth.getMobileSession","username",username,"password", password);
-        String request = Peticiones.request(datos);
+        HashMap<String, String> request = Peticiones.request(datos);
         return request;
     }
 

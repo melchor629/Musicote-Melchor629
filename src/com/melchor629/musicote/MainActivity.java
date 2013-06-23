@@ -11,6 +11,7 @@ import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.loopj.android.http.*;
 import com.melchor629.musicote.R;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DB_entry;
@@ -148,6 +149,17 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         
         db.close();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//TODO PENE 8==============D
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("title", "Alguien está usando musicote");
+        params.put("description", "jajajajaja xD");
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get("http://" + url, new RequestParams(params), new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(String response) {
+                System.out.println(response);
+            }
+        });
     }
     
     private void sis(){

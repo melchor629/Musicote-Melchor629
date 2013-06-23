@@ -10,6 +10,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.Buffer;
+import java.nio.IntBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -25,6 +27,10 @@ import javax.net.ssl.X509TrustManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import android.os.StrictMode;
 import android.util.Log;
@@ -80,15 +86,28 @@ public class Peticiones {
      * @param request Petición creada a través de {@link sign}
      * @return out String con el xml/json de la petición
      */
-    public static String HTTPSpost(String request){
+    public static String HTTPSpost(HashMap<String, String> params){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+        StringBuilder builder = new StringBuilder(200);
+        for (Iterator<Entry<String, String>> it = params.entrySet().iterator(); it.hasNext();) {
+            Entry<String, String> entry = it.next();
+            builder.append(entry.getKey());
+            builder.append('=');
+            try {
+                builder.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                Log.e(TAG,"Error: "+ e.toString());
+            }
+            if (it.hasNext())
+                builder.append('&');
+        }
+        String request = builder.toString();
 
         String out = null;
         InputStream is = null;
         HttpsURLConnection conn = null;
         try {
-            request += "&format=json";
             java.net.URL Url = new URL(null, url);
             trustAllHosts();
             HttpsURLConnection.setFollowRedirects(true);
@@ -140,13 +159,36 @@ public class Peticiones {
     }
 
     /**
-     * Envia una petición a Last.FM por HTTP y POST
+     * Envia una petición a Last.FM por HTTP y POST. Usa en todo caso:<br>
+     * <code>
+     *   AsyncHttpClient client = new AsyncHttpClient();<br>
+     *   client.post(uRl, new RequestParams(request), new AsyncHttpResponseHandler() {<br>
+     *       Override<br>
+     *       public void onSuccess(String response) {<br>
+     *           Log.d(TAG, response);<br>
+     *       }<br>
+     *   });</code>
      * @param request Petición creada a través de {@link sign}
      * @return out String con el xml/json de la petición
      */
-    public static String HTTPpost(String request){
+    @Deprecated
+    public static String HTTPpost(final HashMap<String, String> params){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+        StringBuilder builder = new StringBuilder(200);
+        for (Iterator<Entry<String, String>> it = params.entrySet().iterator(); it.hasNext();) {
+            Entry<String, String> entry = it.next();
+            builder.append(entry.getKey());
+            builder.append('=');
+            try {
+                builder.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                Log.e(TAG,"Error: "+ e.toString());
+            }
+            if (it.hasNext())
+                builder.append('&');
+        }
+        String request = builder.toString();
 
         String out = null;
         InputStream is = null;
@@ -198,7 +240,6 @@ public class Peticiones {
             }
         }
 
-        Log.d(TAG,out);
         return out;
     }
 
@@ -206,10 +247,10 @@ public class Peticiones {
      * Crea la <i>api_sig</i> y el texto a enviar. Tienes que ponerlo del en un <code>Map&lt;String,
      *  String></code> con todo lo necesario menos la api_key y el secret (<b>IMPORTANTE</b> SK no
      * incluido)
-     * @param Map<String,String> s
-     * @return String
+     * @param s A map with the data
+     * @return String the String with all the Data
      */
-    public static String request(Map<String,String> s){
+    public static HashMap<String, String> request(Map<String,String> s){
         TreeMap <String, String> params = new TreeMap<String, String>(s);
         params.put("api_key", APIkey);
         StringBuilder b = new StringBuilder(100);
@@ -240,7 +281,9 @@ public class Peticiones {
         }
 
         params.put("api_sig", d.toString());
+        params.put("format", "json");
         StringBuilder builder = new StringBuilder(200);
+        HashMap<String, String> p = new HashMap<String, String>();
         for (Iterator<Entry<String, String>> it = params.entrySet().iterator(); it.hasNext();) {
             Entry<String, String> entry = it.next();
             builder.append(entry.getKey());
@@ -252,8 +295,10 @@ public class Peticiones {
             }
             if (it.hasNext())
                 builder.append('&');
+            p.put(entry.getKey(), entry.getValue());
         }
-        return builder.toString();
+        //return builder.toString();
+        return p;
     }
     
     /**
@@ -270,6 +315,7 @@ public class Peticiones {
                 out = jObj.getInt("error");
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
+            e.printStackTrace();
         }
         return out;
     }

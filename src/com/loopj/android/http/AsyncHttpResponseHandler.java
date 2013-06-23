@@ -18,6 +18,7 @@
 
 package com.loopj.android.http;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -29,10 +30,6 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
-
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 
 /**
  * Used to intercept and handle the responses from requests made using 
@@ -80,6 +77,7 @@ public class AsyncHttpResponseHandler {
     /**
      * Creates a new AsyncHttpResponseHandler
      */
+    @SuppressLint("HandlerLeak")
     public AsyncHttpResponseHandler() {
         // Set up a handler to post events back to the correct thread if possible
         if(Looper.myLooper() != null) {
@@ -157,7 +155,7 @@ public class AsyncHttpResponseHandler {
     //
 
     protected void sendSuccessMessage(int statusCode, Header[] headers, String responseBody) {
-        sendMessage(obtainMessage(SUCCESS_MESSAGE, new Object[]{new Integer(statusCode), headers, responseBody}));
+        sendMessage(obtainMessage(SUCCESS_MESSAGE, new Object[]{Integer.valueOf(statusCode), headers, responseBody}));
     }
 
     protected void sendFailureMessage(Throwable e, String responseBody) {
