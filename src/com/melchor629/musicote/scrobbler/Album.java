@@ -7,10 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
 import android.util.Log;
 
 /**
@@ -23,8 +19,7 @@ public class Album {
     public String album;
     public String artista;
     public String albumUrl;
-    
-    private AsyncHttpClient client = new AsyncHttpClient();
+
     private final String TAG = "Scrobbler->Album";
     
     /**
@@ -42,34 +37,24 @@ public class Album {
     /**
      * Gets info from an album
      */
-    public JSONObject getInfo() {
-        final HashMap<String, String> sign = sign(artista, album);
-        client.post(Peticiones.uRl, new RequestParams(sign), new AsyncHttpResponseHandler() {
-        @SuppressWarnings("deprecation")
-        @Override
-           public void onSuccess(String response) {
-               Log.d(TAG, response);
-               int status = Peticiones.error(response);
-               if(status != 0) {
-                   switch(status) {
-                       case 8:
-                       case 16:
-                           Peticiones.HTTPpost(sign);
-                           break;
-                   }
-               }
-               
-               JSONObject j = null;
-               try {
-                   j = Peticiones.getJSONObject(response);
-
-                   JSONObject album = j.getJSONObject("album");
-                   String alb = getAlbumUrl(album, 3);
-               } catch (JSONException e) {
-                   Log.e("Last.FM->Album","Error: "+ e.toString());
-               }
-           }
-        });//TODO hacer que esta parte funcione a la perfección
+    @SuppressWarnings("deprecation")
+    public String getInfo() {
+        HashMap<String, String> sign = sign(artista, album);
+        String request = Peticiones.HTTPpost(sign);
+        JSONObject j = null;
+        try {
+            j = Peticiones.getJSONObject(request);
+        
+            JSONObject album = j.getJSONObject("album");
+            
+            JSONArray image = album.getJSONArray("image");
+            JSONObject images = image.getJSONObject(4);
+            albumUrl = images.getString("#text");
+            Log.d(TAG, albumUrl);
+            return albumUrl;
+        } catch (JSONException e) {
+            Log.e("Last.FM->Album","Error: "+ e.toString());
+        }
         return null;
     }
     

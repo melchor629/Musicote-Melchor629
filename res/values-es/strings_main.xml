@@ -11,4 +11,5 @@
     <string name="added_to_playlist"> añadida a la lista de reproducción</string>
     <string name="and_after">Y después…</string>
     <string name="menu_search">Busca una canción…</string>
+    <string name="next">Siguiente canción</string>
 </resources>

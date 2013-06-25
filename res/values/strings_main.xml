@@ -11,4 +11,5 @@
     <string name="added_to_playlist"> added to playlist</string>
     <string name="and_after">And after…</string>
     <string name="menu_search">Search a song…</string>
+    <string name="next">Next</string>
 </resources>

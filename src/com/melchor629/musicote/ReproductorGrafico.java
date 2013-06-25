@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -53,9 +54,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     private volatile boolean H;
     private Handler h;
     private volatile String song;
-    private volatile boolean sease;
-    private volatile Drawable d;
     private volatile boolean isSeeking = false;
+    private volatile int width, height;
     
     @SuppressLint("InlinedApi")
     @Override
@@ -126,6 +126,9 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                 }
             });
         }
+        
+        width = getWindow().getDecorView().getWidth();
+        height = getWindow().getDecorView().getHeight();
     }
     
     public void playpause(View v) {
@@ -164,35 +167,35 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     @SuppressWarnings("deprecation")
     private void setBackground(Drawable d) {
         if(d == null)
-            getWindow().getDecorView().setBackgroundColor(Color.BLACK);
+            getWindow().getDecorView().setBackgroundResource(R.drawable.graphical_player);
         else {
             if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
                 getWindow().getDecorView().setBackground(d);
             else
                 getWindow().getDecorView().setBackgroundDrawable(d);
         }
-        sease = false;
-        d = null;
         Log.d("ReproductorGráfico", "Cambiando fondo");
     }
     
-    private Drawable background() {
+    private Drawable background(int width, int height) {
+        Log.d("ReproductorGráfico", "Cambiando fondo...");
         Album album = new Album(Reproductor.art, Reproductor.alb);
-        String albumart = album.getAlbumUrl(album.getInfo(), 4);
+        String albumart = album.getInfo();
         InputStream is;
         try {
-            is = (InputStream) new URL(albumart).getContent();
+            String url = "http://" + MainActivity.url + "/fotoMusicote.php?url=" + URLEncoder.encode(albumart, "UTF_8") + "&width="
+                    + width + "&height=" + height;
+            Log.d("ReproductorGráfico", url);
+            is = (InputStream) new URL(url).getContent();
             Drawable d = Drawable.createFromStream(is, "src name");
             is.close();
-            sease = true;
-            
+
             return d;
         } catch (MalformedURLException e) {
             Log.e("ReproductorGráfico","Error: "+ e.toString() + " (Posiblemente no haya enlace)");
         } catch (IOException e) {
             Log.e("ReproductorGráfico","Error: "+ e.toString());
         }
-        sease = true;
         return null;
     }
     
@@ -200,8 +203,6 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     public void run() {
         Looper.prepare();
         song = "";
-        sease = false;
-        d = null;
         while(H) {
             h.post(
                 new Runnable() {
@@ -211,16 +212,15 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                         if(!isSeeking)
                             playingUbication.setProgress((int)(Reproductor.a * 10d));
                         setThings();
-
-                        if(sease) 
-                            setBackground(d);
                     }
                 }
             );
-            if(Reproductor.tit != null && !song.equals(Reproductor.tit)) {
-                if(Reproductor.alb != "" && Reproductor.alb != null)
-                    d = background();
-                song = Reproductor.tit;
+            synchronized(this) {
+                if(Reproductor.tit != null && !song.equals(Reproductor.tit) && width != 0 && height != 0) {
+                    if(Reproductor.alb != "" && Reproductor.alb != null)
+                        new Background().execute(width, height);
+                    song = Reproductor.tit;
+                }
             }
             try {
                 Thread.sleep(100);
@@ -248,7 +248,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
         case 16908332:
             finish();
             break;
-        case R.id.ajustesm:
+        case R.id.settings:
             Intent intent = new Intent(this, Ajustes.class);
             startActivity(intent);
             break;
@@ -292,5 +292,24 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             Reproductor.reproductor.start();
         isSeeking = false;
         Log.d("Reproductor Gráfico", "Lo han dejado de mover");
+    }
+    
+    private class Background extends AsyncTask<Integer, Void, Void> {
+
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#doInBackground(Params[])
+         */
+        @Override
+        protected Void doInBackground(Integer... params) {
+            synchronized(this) {
+                final Drawable d = background(params[0], params[1]);
+                h.post(new Runnable() {
+                    @Override
+                    public void run() {setBackground(d);}
+                });
+            }
+            return null;
+        }
+        
     }
 }

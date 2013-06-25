@@ -58,6 +58,7 @@
             android:id="@+id/nextActual"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/next"
             android:onClick="next"
             android:src="@drawable/ic_next" />
 
