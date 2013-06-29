@@ -45,6 +45,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     private NotificationManager nm;
     private volatile static ArrayList<String[]> playlist;
     private volatile boolean True = true;
+    private PowerManager.WakeLock wl;
 
     public volatile static double a = -1;
 
@@ -52,6 +53,9 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         playlist = new ArrayList<String[]>();
         String [] eso = addSong(intent.getStringExtra("titulo"), intent.getStringExtra("artista"), intent.getStringExtra("archivo"), intent.getStringExtra("album"));
         initMediaPlayer(eso);
+        PowerManager mgr = (PowerManager)getBaseContext().getSystemService(Context.POWER_SERVICE);
+        wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Musicote");
+        wl.acquire();
         return START_STICKY;
     }
 
@@ -248,6 +252,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
    @Override
    public void onDestroy() {
+       wl.release();
        if(!cosa.getState().toString().equals("NEW"))
            cosa.interrupt();
        if (reproductor != null)

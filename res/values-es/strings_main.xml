@@ -12,4 +12,6 @@
     <string name="and_after">Y después…</string>
     <string name="menu_search">Busca una canción…</string>
     <string name="next">Siguiente canción</string>
+    <string name="download">Descargar</string>
+    <string name="add_to_playlist">Añadir a la playlist</string>
 </resources>

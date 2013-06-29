@@ -12,4 +12,6 @@
     <string name="and_after">And after…</string>
     <string name="menu_search">Search a song…</string>
     <string name="next">Next</string>
+    <string name="download">Download</string>
+    <string name="add_to_playlist">Add to playlist</string>
 </resources>

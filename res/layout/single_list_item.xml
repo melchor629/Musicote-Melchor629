@@ -70,6 +70,7 @@
           android:id="@+id/play"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:contentDescription="@string/Play"
           android:onClick="PlaySong"
           android:src="@drawable/ic_stat_name"
           android:tag="play" />
@@ -78,6 +79,7 @@
           android:id="@+id/playpauseActual"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:contentDescription="@string/menu_parar"
           android:onClick="StopSong"
           android:src="@drawable/ic_stop" />
 
@@ -85,6 +87,7 @@
           android:id="@+id/stopActual"
           android:layout_width="41dp"
           android:layout_height="41dp"
+          android:contentDescription="@string/download"
           android:onClick="download"
           android:src="@drawable/download" />
 
@@ -92,8 +95,9 @@
           android:id="@+id/addToPlaylist"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:contentDescription="@string/add_to_playlist"
           android:onClick="addToPlaylist"
-          android:text="+ playlist" />
+          android:text="@string/add_to_playlist" />
 
   </LinearLayout>
 
