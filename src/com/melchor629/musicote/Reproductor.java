@@ -25,8 +25,7 @@ import android.widget.Toast;
 
 /**
  * Reproductor del Musicote 0.1
- * TODO Añadir interfaz gráfica para manejar el reproductor
- * @author melchor
+ * @author melchor629
  */
 public class Reproductor extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
@@ -70,12 +69,12 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         art = song[1];
         url = song[2];
         alb = song[3];
-        
+
         reproductor = newPlayer(song);
-        
+
         notification();
     }
-    
+
     /**
      * Configura un reproductor
      */
@@ -98,7 +97,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         reproductor.prepareAsync(); // prepare async to not block main thread
         return reproductor;
     }
-    
+
     /**
      * Notificación de la canción
      */
@@ -111,7 +110,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                 .setContentTitle("Musicote")
                 .setContentText(getResources().getString(R.string.playing)+" "+tit+" "+getResources().getString(R.string.playing_of)+" "+art)
                 .setOngoing(true);
-        
+
         if(playlist.size() > 1){
             NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
             inbox.setBigContentTitle(getResources().getString(R.string.playing)+" "+tit+" "+getResources().getString(R.string.playing_of)+" "+art);
@@ -157,7 +156,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             cosa.run(player, pref, nm);
         }}).start();
     }
-    
+
     /**
      * Pause or resume the song
      */
@@ -174,7 +173,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             Log.d("Reproductor", "Se ha invocado el pause, aunque el reproductor está cerrado");
         }
     }
-    
+
     /**
      * Add a song into playlist
      * @return eso A String[] for use, if you want
@@ -188,7 +187,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         Log.d("Reproductor", titulo + " añadida a la lista de reproducción con ID " + SongID);
         return eso;
     }
-    
+
     /**
      * Delete a song from the playlist
      * @param id of the song
@@ -197,7 +196,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         Log.d("Reproductor", playlist.get(id)[0] + " eliminada de la lista de reproducción");
         playlist.remove(id);
     }
-    
+
     /**
      * Comprueba si hay otra canción después de la actual
      */
@@ -210,7 +209,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             return false;
         }
     }
-    
+
     /**
      * Pasa a la siguiente canción
      */
@@ -221,7 +220,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         reproductor = null;
         initMediaPlayer(playlist.get(0));
     }
-    
+
     /**
      * Gets the playlist array
      * @return playlist An ArrayList{String[]}
@@ -229,17 +228,13 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     public static ArrayList<String[]> getPlaylist() {
         return playlist;
     }
-    
+
     @Override
     public void onCompletion(MediaPlayer mp) {
         Log.d("Reproductor", "Canción lista");
         True = false;
         tit = art = url = null;
-        if(isNextSong()){
-            nextSong();
-        } else {
-            onDestroy();
-        }
+        if(isNextSong()) nextSong(); else onDestroy();
     }
 
     /* (non-Javadoc)
@@ -268,7 +263,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     /**
      * Class for manage the current position of the song, and send the scrobbling
      * @author melchor9000
-     *
      */
     class coso extends Thread {
         public void run(MediaPlayer player, SharedPreferences pref, NotificationManager nm){
@@ -290,9 +284,9 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                                 Log.d("Scrobbler", "Error: "+e+"\nMessage: "+Peticiones.errorM[e]);
                             }
                         }
-                        
+
                         Thread.sleep(100);
-                        
+
                         if(player.getCurrentPosition() >= player.getDuration()){
                             a = 0;
                             player.stop();
@@ -300,7 +294,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                             this.finalize();
                             this.interrupt();
                         }
-                        
+
                         if(count != playlist.size()) {
                             notification();
                             count = playlist.size();

@@ -50,13 +50,14 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     private ImageButton playpauseActual;
     private ListView playlist;
     private ActionBar ab;
-    
+
     private volatile boolean H;
     private Handler h;
     private volatile String song;
     private volatile boolean isSeeking = false;
     private volatile int width, height;
-    
+    private volatile boolean doThings = false;
+
     @SuppressLint("InlinedApi")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,14 +67,14 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-        
+
         if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             //If possible Hardware accelerated
             getWindow().setFlags(
                     WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                     WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         }
-        
+
         //Starting layout variables
         tituloActual = (TextView) findViewById(R.id.tituloActual);
         artistaActual = (TextView) findViewById(R.id.artistaActual);
@@ -81,20 +82,20 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
         playingUbication = (SeekBar) findViewById(R.id.playingUbication);
         playpauseActual = (ImageButton) findViewById(R.id.playpauseActual);
         playlist = getListView();
-        
+
         playingUbication.setOnSeekBarChangeListener(this);
-        
+
         if(Reproductor.a != -1) {
             setThings();
             playpauseActual.setImageResource(R.drawable.ic_pause);
             playpauseActual.setTag("pause");
         }
-        
+
         H = true;
         h = new Handler();
         new Thread(this).start();
     }
-    
+
     private void setThings() {
         tituloActual.setText(Reproductor.tit);
         artistaActual.setText(Reproductor.art);
@@ -109,13 +110,13 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                 map.put("album", playlist.get(i)[3]);
                 toPlaylistView.add(map);
             }
-            
+
             ListAdapter adapter = new SimpleAdapter(this, toPlaylistView, R.layout.list_item,
                     new String[] { "titulo", "artista", "album" },
                     new int[] { R.id.name, R.id.email, R.id.mobile });
             
             setListAdapter(adapter);
-            
+
             this.playlist.setLongClickable(true);
             this.playlist.setOnItemLongClickListener(new OnItemLongClickListener() {
                 @Override
@@ -125,12 +126,13 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                     return false;
                 }
             });
+            doThings = false;
         }
-        
+
         width = getWindow().getDecorView().getWidth();
         height = getWindow().getDecorView().getHeight();
     }
-    
+
     public void playpause(View v) {
         if(Reproductor.a != -1){
             if(!Reproductor.paused) {
@@ -140,11 +142,11 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                 playpauseActual.setImageResource(R.drawable.ic_pause);
                 playpauseActual.setTag("pause");
             }
-    
+
             Reproductor.pause();
         }
     }
-    
+
     public void stop(View v) {
         if(Reproductor.a != -1) {
             Intent in = new Intent(getApplicationContext(), Reproductor.class);
@@ -153,16 +155,15 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             playpauseActual.setTag("play");
         }
     }
-    
+
     public void next(View v) {
         if(Reproductor.isNextSong()) {
-            Log.d("ReproductorGráfico", "Siguiente canción");
             Reproductor.reproductor.seekTo(Reproductor.reproductor.getDuration() - 1);
         } else {
             Toast.makeText(this, "No hay siguiente canción", Toast.LENGTH_LONG).show();
         }
     }
-    
+
     @SuppressLint("NewApi")
     @SuppressWarnings("deprecation")
     private void setBackground(Drawable d) {
@@ -176,29 +177,35 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
         }
         Log.d("ReproductorGráfico", "Cambiando fondo");
     }
-    
+
     private Drawable background(int width, int height) {
         Log.d("ReproductorGráfico", "Cambiando fondo...");
-        Album album = new Album(Reproductor.art, Reproductor.alb);
-        String albumart = album.getInfo();
-        InputStream is;
-        try {
-            String url = "http://" + MainActivity.url + "/fotoMusicote.php?url=" + URLEncoder.encode(albumart, "UTF_8") + "&width="
-                    + width + "&height=" + height;
-            Log.d("ReproductorGráfico", url);
-            is = (InputStream) new URL(url).getContent();
-            Drawable d = Drawable.createFromStream(is, "src name");
-            is.close();
+        if(Reproductor.alb.length() != 0 && Reproductor.alb != null) {
+            Album album = new Album(Reproductor.art, Reproductor.alb);
+            String albumart = album.getInfo();
+            InputStream is;
+            try {
+                String url = "http://" + MainActivity.url + "/fotoMusicote.php?url=" + URLEncoder.encode(albumart, "UTF_8") + "&width="
+                        + width + "&height=" + height;
+                Log.d("ReproductorGráfico", url);
+                is = (InputStream) new URL(url).getContent();
+                Drawable d = Drawable.createFromStream(is, "src name");
+                is.close();
 
+                return d;
+            } catch (MalformedURLException e) {
+                Log.e("ReproductorGráfico","Error: "+ e.toString() + " (Posiblemente no haya enlace)");
+            } catch (IOException e) {
+                Log.e("ReproductorGráfico","Error: "+ e.toString());
+            }
+        } else {
+            Log.d("ReproductorGráfico", "No hay artista, cargando imágen predeterminada...");
+            Drawable d = getResources().getDrawable(R.drawable.graphical_player);
             return d;
-        } catch (MalformedURLException e) {
-            Log.e("ReproductorGráfico","Error: "+ e.toString() + " (Posiblemente no haya enlace)");
-        } catch (IOException e) {
-            Log.e("ReproductorGráfico","Error: "+ e.toString());
         }
         return null;
     }
-    
+
     @Override
     public void run() {
         Looper.prepare();
@@ -211,15 +218,17 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                         playingUbication.setMax(1000);
                         if(!isSeeking)
                             playingUbication.setProgress((int)(Reproductor.a * 10d));
-                        setThings();
+                        if(doThings || (width == 0 && height == 0))
+                            setThings();
                     }
                 }
             );
             synchronized(this) {
-                if(Reproductor.tit != null && !song.equals(Reproductor.tit) && width != 0 && height != 0) {
-                    if(Reproductor.alb != "" && Reproductor.alb != null)
+                if(Reproductor.tit != null && width != 0 && height != 0 && !song.equals(Reproductor.tit)) {
+                    if(Reproductor.alb != "" && Reproductor.alb != null) //TODO else con el predeterminado
                         new Background().execute(width, height);
                     song = Reproductor.tit;
+                    doThings = true;
                 }
             }
             try {
@@ -229,19 +238,19 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             }
         }
     }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         H = false;
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.activity_reproductor_grafico, menu);
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
@@ -278,7 +287,6 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
      */
     @Override
     public void onStartTrackingTouch(SeekBar bar) {
-        //Reproductor.reproductor.pause();
         isSeeking = true;
         Log.d("Reproductor Gráfico", "Lo estan moviendo");
     }
@@ -293,9 +301,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
         isSeeking = false;
         Log.d("Reproductor Gráfico", "Lo han dejado de mover");
     }
-    
-    private class Background extends AsyncTask<Integer, Void, Void> {
 
+    private class Background extends AsyncTask<Integer, Void, Void> {
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */
