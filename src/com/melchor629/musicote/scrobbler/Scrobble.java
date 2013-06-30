@@ -32,6 +32,11 @@ public class Scrobble {
     private String artista = null;
 
     /**
+     * The status code for a petition
+     */
+    private int statusCode = 0;
+
+    /**
      * Constructor for the class <i>Scrobble</i>
      * @param Titulo <i>Song title</i>
      * @param Artista <i>Song artist</i>
@@ -40,7 +45,7 @@ public class Scrobble {
         titulo = Titulo;
         artista = Artista;
     }
-    
+
     private final String TAG = "Scrobbler->Scrobble";
     private AsyncHttpClient client = new AsyncHttpClient();
 
@@ -49,30 +54,35 @@ public class Scrobble {
      * @return status Estado resultante del Scrobbling
      */
     public int scrobble(){
-        int status = 0;
         long timestamp = System.currentTimeMillis()/1000;
         final HashMap<String, String> sign = sign(titulo, artista, timestamp);
         client.post(Peticiones.uRl, new RequestParams(sign), new AsyncHttpResponseHandler() {
-        @SuppressWarnings("deprecation")
-        @Override
-           public void onSuccess(String response) {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onSuccess(String response) {
                Log.d(TAG, response);
-               int status = Peticiones.error(response);
-               if(status != 0) {
-                   switch(status) {
+               statusCode = Peticiones.error(response);
+               if(statusCode != 0) {
+                   switch(statusCode) {
                        case 8:
                        case 16:
                            Peticiones.HTTPpost(sign);
                            break;
                    }
                }
-           }
+            }
+            @Override
+            public void onFailure(Throwable error, String content) {
+                Log.e(TAG, "No se ha podido completar el pedido:");
+                Log.e(TAG, content + ";");
+                error.printStackTrace();
+            }
         });
         this.nowPlaying();
         //Make this variables again null for other uses
         titulo = null;
         artista = null;
-        return status;
+        return statusCode;
     }
 
     /**
@@ -80,25 +90,30 @@ public class Scrobble {
      * @return status Estado resultante del updateNowPlaying
      */
     public int nowPlaying(){
-        int status = 0;
         final HashMap<String, String> sign = sign(titulo, artista);
         client.post(Peticiones.uRl, new RequestParams(sign), new AsyncHttpResponseHandler() {
-        @SuppressWarnings("deprecation")
-        @Override
-           public void onSuccess(String response) {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onSuccess(String response) {
                Log.d(TAG, response);
-               int status = Peticiones.error(response);
-               if(status != 0) {
-                   switch(status) {
+               statusCode = Peticiones.error(response);
+               if(statusCode != 0) {
+                   switch(statusCode) {
                        case 8:
                        case 16:
                            Peticiones.HTTPpost(sign);
                            break;
                    }
                }
-           }
+            }
+            @Override
+            public void onFailure(Throwable error, String content) {
+                Log.e(TAG, "No se ha podido completar el pedido:");
+                Log.e(TAG, content + ";");
+                error.printStackTrace();
+            }
         });
-        return status;
+        return statusCode;
     }
 
     private HashMap<String, String> sign(String titulo, String artista, long time){
