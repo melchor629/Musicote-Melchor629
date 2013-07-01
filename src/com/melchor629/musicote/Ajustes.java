@@ -6,13 +6,13 @@ import android.preference.PreferenceActivity;
 /**
  * Actividad de preferencias
  * También es la actividad para los ajustes
- * @author melchor
  *
+ * @author melchor
  */
 public class Ajustes extends PreferenceActivity {
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings ("deprecation")
     @Override
-    public void onCreate(Bundle savedInstancedState){
+    public void onCreate(Bundle savedInstancedState) {
         super.onCreate(savedInstancedState);
         addPreferencesFromResource(R.xml.ajustes);
     }

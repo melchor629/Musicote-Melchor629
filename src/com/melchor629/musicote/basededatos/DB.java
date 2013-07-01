@@ -25,9 +25,9 @@ import android.util.Log;
  * // Insert the new row, returning the primary key value of the new row<br>
  * long newRowId;<br>
  * newRowId = db.insert(<br>
- *          DB_entry.FeedEntry.TABLE_NAME,<br>
- *          DB_entry.FeedEntry.COLUMN_NAME_NULLABLE,<br>
- *          values);<br></code><br>
+ * DB_entry.FeedEntry.TABLE_NAME,<br>
+ * DB_entry.FeedEntry.COLUMN_NAME_NULLABLE,<br>
+ * values);<br></code><br>
  * <b>Read information:</b><br>
  * <code>
  * SQLiteDatabase db = mDbHelper.getReadableDatabase();<br>
@@ -35,25 +35,25 @@ import android.util.Log;
  * // Define a projection that specifies which columns from the database<br>
  * // you will actually use after this query.<br>
  * String[] projection = {<br>
- *     DB_entry.FeedEntry._ID,<br>
- *     DB_entry.FeedEntry.COLUMN_NAME_TITLE,<br>
- *     DB_entry.FeedEntry.COLUMN_NAME_UPDATED,<br>
- *     ...<br>
- *     };<br>
+ * DB_entry.FeedEntry._ID,<br>
+ * DB_entry.FeedEntry.COLUMN_NAME_TITLE,<br>
+ * DB_entry.FeedEntry.COLUMN_NAME_UPDATED,<br>
+ * ...<br>
+ * };<br>
  * <br>
  * // How you want the results sorted in the resulting Cursor<br>
  * String sortOrder =<br>
- *     DB_entry.FeedEntry.COLUMN_NAME_UPDATED + " DESC";<br>
+ * DB_entry.FeedEntry.COLUMN_NAME_UPDATED + " DESC";<br>
  * <br>
  * Cursor c = db.query(<br>
- *     DB_entry.FeedEntry.TABLE_NAME,  // The table to query<br>
- *     projection,                               // The columns to return<br>
- *     selection,                                // The columns for the WHERE clause<br>
- *     selectionArgs,                            // The values for the WHERE clause<br>
- *     null,                                     // don't group the rows<br>
- *     null,                                     // don't filter by row groups<br>
- *     sortOrder                                 // The sort order<br>
- *     );</code><br><br>
+ * DB_entry.FeedEntry.TABLE_NAME,  // The table to query<br>
+ * projection,                               // The columns to return<br>
+ * selection,                                // The columns for the WHERE clause<br>
+ * selectionArgs,                            // The values for the WHERE clause<br>
+ * null,                                     // don't group the rows<br>
+ * null,                                     // don't filter by row groups<br>
+ * sortOrder                                 // The sort order<br>
+ * );</code><br><br>
  * <b>Delete information:</b><br>
  * <code>
  * // Define 'where' part of query.<br>
@@ -75,22 +75,22 @@ import android.util.Log;
  * String[] selectionArgs = { String.valueOf(rowId) };<br>
  * <br>
  * int count = db.update(<br>
- *     DB_entry.FeedEntry.TABLE_NAME,<br>
- *     values,<br>
- *     selection,<br>
- *     selectionArgs);</code>
- * @author melchor9000
+ * DB_entry.FeedEntry.TABLE_NAME,<br>
+ * values,<br>
+ * selection,<br>
+ * selectionArgs);</code>
  *
+ * @author melchor9000
  */
 public class DB extends SQLiteOpenHelper {
-    
+
     private static int db_version = DB_entry.DATABASE_VERSION;
     private static String db_musicote = DB_entry.DATABASE_MUSICOTE;
-    
+
     public DB(Context context) {
         super(context, db_musicote, null, db_version);
     }
-    
+
     public void onCreate(SQLiteDatabase db) {
         //db.execSQL(DB_entry.CREATE_CANCIONES); se hace en MainActivity
         db.execSQL(DB_entry.CREATE_ACCESO);
@@ -98,7 +98,7 @@ public class DB extends SQLiteOpenHelper {
         values.put("tabla", "canciones");
         values.put("fecha", System.currentTimeMillis());
     }
-    
+
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
@@ -106,60 +106,60 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL(DB_entry.DELETE_ACCESO);
         onCreate(db);
     }
-    
+
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
-    
+
     public boolean ifTableExists(SQLiteDatabase db, String tableName) {
-        if (tableName == null || db == null || !db.isOpen())
+        if(tableName == null || db == null || !db.isOpen())
             return false;
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", tableName});
-        if (!cursor.moveToFirst() || cursor.getCount() == 0)
+        if(!cursor.moveToFirst() || cursor.getCount() == 0)
             return false;
         int count = cursor.getInt(0);
         cursor.close();
-        Log.d("DB", "If table exists> Count: "+count);
+        Log.d("DB", "If table exists> Count: " + count);
         return count > 0;
     }
-    
+
     public void actualizarAcceso(SQLiteDatabase db, String tabla, long time) {
         db.execSQL(DB_entry.CREATE_ACCESO);
         ContentValues values = new ContentValues();
         values.put("fecha", time);
         db.update("acceso", values, "tabla = ?", new String[] {tabla});
     }
-    
+
     public long obtenerAcceso(SQLiteDatabase db, String tabla) {
         Cursor c = db.query("acceso", new String[] {"fecha"}, "tabla = ?", new String[] {tabla}, null, null, null);
         c.moveToFirst();
         long Short = c.getLong(c.getColumnIndexOrThrow("fecha"));
         return Short;
     }
-    
+
     public boolean isNecesaryUpgrade(SQLiteDatabase db, SharedPreferences pref) {
         long ultimo = obtenerAcceso(db, "canciones");
-        long ahora = System.currentTimeMillis();        
-        long diff = Long.parseLong(pref.getString("updateTime", "15"), 10)*60l*1000l;
+        long ahora = System.currentTimeMillis();
+        long diff = Long.parseLong(pref.getString("updateTime", "15"), 10) * 60l * 1000l;
         Log.d("DB", "Is necesary upgrade table contents? "
-        + (((ahora - ultimo) > diff) == true ? "True" : "False, will be in " + ((ahora - ultimo) / 60l / 1000l)) + " of " + diff/60l/1000l + " minutes.");
-        return (ahora - ultimo) >  diff;
+                + (((ahora - ultimo) > diff) == true ? "True" : "False, will be in " + ((ahora - ultimo) / 60l / 1000l)) + " of " + diff / 60l / 1000l + " minutes.");
+        return (ahora - ultimo) > diff;
     }
-    
+
     public Cursor get(SQLiteDatabase db, String query) {
         String sortOrder = DB_entry.COLUMN_NAME_ID + " ASC";
         String which = DB_entry.COLUMN_NAME_TITULO + " LIKE ? OR " + DB_entry.COLUMN_NAME_ARTISTA + " LIKE ? OR " + DB_entry.COLUMN_NAME_ALBUM + " LIKE ?";
-        String[] where = {"%"+query+"%", "%"+query+"%", "%"+query+"%"};
+        String[] where = {"%" + query + "%", "%" + query + "%", "%" + query + "%"};
 
         Cursor c = db.query(
-            DB_entry.TABLE_CANCIONES,                 // The table to query
-            null,                                     // The columns to return
-            which,                                    // The columns for the WHERE clause
-            where,                                    // The values for the WHERE clause
-            null,                                     // don't group the rows
-            null,                                     // don't filter by row groups
-            sortOrder                                 // The sort order
+                DB_entry.TABLE_CANCIONES,                 // The table to query
+                null,                                     // The columns to return
+                which,                                    // The columns for the WHERE clause
+                where,                                    // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
         );
-    	return c;
+        return c;
     }
 }
