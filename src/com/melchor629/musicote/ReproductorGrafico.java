@@ -82,7 +82,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             setThings();
             playpauseActual.setImageResource(R.drawable.ic_pause);
             playpauseActual.setTag("pause");
-        }
+        } else
+            setBackground(getResources().getDrawable(R.drawable.graphical_player));
 
         H = true;
         h = new Handler();
@@ -173,7 +174,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
 
     private Drawable background(int width, int height) {
         Log.d("ReproductorGráfico", "Cambiando fondo...");
-        if(Reproductor.alb.length() != 0 && Reproductor.alb != null) {
+        if(Reproductor.alb != null && Reproductor.alb.length() != 0) {
             Album album = new Album(Reproductor.art, Reproductor.alb);
             String albumart = album.getInfo();
             InputStream is;

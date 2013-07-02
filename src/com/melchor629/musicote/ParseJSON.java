@@ -122,7 +122,7 @@ public class ParseJSON {
         int response = 0;
 
         try {
-            URL urlhttp = new URL("http://" + host + "/cgi-bin/archivos.py");
+            URL urlhttp = new URL("http://" + host + "/py/api.py");
             HttpURLConnection http = (HttpURLConnection)urlhttp.openConnection();
             response = http.getResponseCode();
         } catch (Exception e) {

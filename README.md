@@ -27,6 +27,5 @@ This file is the pseudo-json file that a webserver creates for the app. You need
 You will need to modify the lines 13 & 14, because you need to configure this two variables (``` path ``` & ``` webpath ```) acording to the little description near the variable.
 
 ##DOWNLOAD APK
-Some commits would be uploaded, the apk, to this Dropbox folder, you can select the snapshots builds or releases builds.
-[Snapshots builds](https://www.dropbox.com/sh/r1bbzfxzzmhx5b3/kBqPib5-lH)
-[Release builds](https://www.dropbox.com/sh/ooork6bn8j94rf4/-taeA3hJ7Y)
+With the new _Releases_ system, the builds would be there. This is a good change :D
+[Builds](https://github.com/melchor629/Musicote-Melchor629/releases)
