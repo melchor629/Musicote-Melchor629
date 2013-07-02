@@ -26,9 +26,6 @@ import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DB_entry;
 import org.json.JSONArray;
@@ -144,17 +141,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
         db.close();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//TODO PENE 8==============D
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("title", "Alguien está usando musicote");
-        params.put("description", "jajajajaja xD");
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get("http://" + url, new RequestParams(params), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(String response) {
-                System.out.println(response);
-            }
-        });
     }
 
     private void sis() {
@@ -202,17 +188,15 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 String cost = getString(R.string.vacio);
                 String description = getString(R.string.vacio);
                 String album = "-00:00";
-                String archivo = "http://" + url + "/multimedia/escucha.php";
+                String archivo = "http://" + url + "/musica";
                 try {
                     name = ((TextView)view.findViewById(R.id.name)).getText().toString();
                     cost = ((TextView)view.findViewById(R.id.email)).getText().toString();
                     description = ((TextView)view.findViewById(R.id.mobile)).getText().toString();
                     album = datos.get("duracion");
                     archivo = datos.get("archivo");
-                    //album = datos.getString("duracion");
-                    //archivo = datos.getString("archivo");
                 } catch (Exception e) {
-                    Log.e("com.melchor629.musicote", e.toString());
+                    Log.e("MainActivity", e.toString());
                 }
 
                 // Starting new intent
@@ -292,7 +276,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
                     publishProgress(25);
                     if(response == 200) {
-                        JSONObject json = jParser.getJSONFromUrl("http://" + MainActivity.url + "/cgi-bin/archivos.py");
+                        JSONObject json = jParser.getJSONFromUrl("http://" + MainActivity.url + "/py/api.py");
                         publishProgress(30);
                         try {
                             // Getting Array of Songs
@@ -347,7 +331,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                             dbHelper.actualizarAcceso(db, "canciones", System.currentTimeMillis());
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.i("com.melchor629.musicote", "Excepción encontrada: " + e.toString());
+                            Log.i("MainActivity", "Excepción encontrada: " + e.toString());
                         }
                         publishProgress(90);
                     }
