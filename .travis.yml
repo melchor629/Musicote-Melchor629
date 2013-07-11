@@ -10,8 +10,6 @@ before_install:
   # use ~/builds/[Github username]/[project]/android-sdk-linux
   - export ANDROID_HOME=$PWD/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
-  # For coveralls
-  - export serviceName=travis-ci
   # only update the sdk for the tools and platform-tools (1,2) and whatever api level
   # you are building for android (run "android list sdk" to get the full list.  9 = 2.3.3 or API level 10
   - android update sdk --filter platform-tools,android-17,extra-android-support,android-17,sysimg-17 --no-ui --force
