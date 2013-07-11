@@ -65,7 +65,8 @@
         <artifactId>coveralls-maven-plugin</artifactId>
         <version>1.2.0</version>
         <configuration>
-        	<repoToken>VLsi8w5GRjliHYTknXfWRud8XHJWsKwru</repoToken>
+            <repoToken>VLsi8w5GRjliHYTknXfWRud8XHJWsKwru</repoToken>
+            <serviceName>travis-ci</serviceName>
         </configuration>
       </plugin>
     </plugins>
