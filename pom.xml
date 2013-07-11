@@ -60,6 +60,14 @@
           <extensions>true</extensions>
           <version>3.5.0</version>
       </plugin>
+      <plugin>
+        <groupId>org.eluder.coveralls</groupId>
+        <artifactId>coveralls-maven-plugin</artifactId>
+        <version>1.2.0</version>
+        <configuration>
+        	<repoToken>VLsi8w5GRjliHYTknXfWRud8XHJWsKwru</repoToken>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
