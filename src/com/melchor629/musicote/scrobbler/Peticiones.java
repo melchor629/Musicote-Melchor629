@@ -91,8 +91,7 @@ public class Peticiones {
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Accept-Charset", "utf-8");
-            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset=utf-8");
             conn.setDoOutput(true);
             conn.setDoInput(true);
 
@@ -178,8 +177,7 @@ public class Peticiones {
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Accept-Charset", "utf-8");
-            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset=utf-8");
             conn.setDoOutput(true);
             conn.setDoInput(true);
 
