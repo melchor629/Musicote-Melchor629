@@ -20,4 +20,4 @@ after_success:
 after_failure:
   - curl "http://reinoslokos.no-ip.org/index.php?title=Travis.ci&description=Buld%20$TRAVIS_BUILD_NUMBER%20($TRAVIS_BUILD_ID)%20ha%20fallado"
 
-script: mvn -Pcobertura clean cobertura:cobertura coveralls:cobertura
+script: mvn -Pcobertura cobertura:cobertura coveralls:cobertura
