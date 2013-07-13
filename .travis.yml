@@ -15,11 +15,10 @@ before_install:
   - android update sdk --filter platform-tools,android-17,extra-android-support,android-17,sysimg-17 --no-ui --force
   - mvn install:install-file -Dfile=$PWD/libs/android-support-v4.jar -DgroupId=com.google.android -DartifactId=support-v5 -Dversion=r7 -Dpackaging=jar
   #- mvn install --quiet -DskipTests=true -B -X
-  - for file in ./target/*; do echo $file; echo "\n"; done;
 
 after_success:
   - curl "http://reinoslokos.no-ip.org/index.php?title=Travis.ci&description=Build%20$TRAVIS_BUILD_NUMBER%20($TRAVIS_BUILD_ID)%20completado%20correctamente"
 after_failure:
   - curl "http://reinoslokos.no-ip.org/index.php?title=Travis.ci&description=Build%20$TRAVIS_BUILD_NUMBER%20($TRAVIS_BUILD_ID)%20ha%20fallado"
 
-script: mvn -Pcobertura cobertura:cobertura coveralls:cobertura
+#script: mvn -Pcobertura cobertura:cobertura coveralls:cobertura
