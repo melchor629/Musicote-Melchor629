@@ -119,7 +119,6 @@ public class DB extends SQLiteOpenHelper {
             return false;
         int count = cursor.getInt(0);
         cursor.close();
-        Log.d("DB", "If table exists> Count: " + count);
         return count > 0;
     }
 

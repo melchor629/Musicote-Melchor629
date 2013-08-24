@@ -151,6 +151,11 @@ public class SingleMenuItemActivity extends SherlockActivity {
         description = in.getStringExtra(TAG_PHONE_MOBILE);
         duracion = in.getStringExtra(TAG_DURACIONS);
         archivo = in.getStringExtra(TAG_FILE);
+        //If the Activity started from a crash, close the activity, avoiding another crash, and open the Main Activity
+        if(name == null || cost == null || description == null || duracion == null || archivo == null) {
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            finish();
+        }
 
         //Setting the activity title
         ab.setTitle(name);
@@ -186,7 +191,8 @@ public class SingleMenuItemActivity extends SherlockActivity {
                 startActivity(intent);
                 break;
             case R.id.parar:
-                Intent intento = new Intent(SingleMenuItemActivity.this, ReproductorGrafico.class); //TODO Cambiar esto por la actividad del reproductor UI
+                Intent intento = new Intent(SingleMenuItemActivity.this, ReproductorGrafico.class);
+                intento.putExtra("button", true);
                 startActivity(intento);
                 break;
             default:
@@ -198,8 +204,6 @@ public class SingleMenuItemActivity extends SherlockActivity {
     /**
      * PlaySong
      * Al apretar el enlace para reproducir canción aparece un servicio dificil de manejar
-     * TODO Añadir una interfaz al servicio...
-     *
      * @param v
      */
     public void PlaySong(final View v) {
@@ -216,10 +220,13 @@ public class SingleMenuItemActivity extends SherlockActivity {
             but.setTag("pause");
 
             url = archivo; //TODO comprobar si existe el archivo en la carpeta música, entonces la canción será la descargada
+            String archivo = SingleMenuItemActivity.archivo.replace("http://"+MainActivity.url+"/musica/", "");
 
             File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo);
             if(file.exists())
-                url = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo;
+                url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo;
+            Log.d("SingleMenuItem", url);
+            Log.d("SingleMenuItem", archivo);
 
             // Starting new intent
             Intent in = new Intent(getApplicationContext(), Reproductor.class);
@@ -288,7 +295,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
                 new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("Download", "Descargando " + archivo + "...");
+                        Log.d("Download", "Descargando " + archivo + "...");
                         if(Environment.MEDIA_MOUNTED.equals("mounted")) {
                             try {
                                 URL url = new URL(archivo.replace(" ", "%20"));
@@ -314,6 +321,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
                                 output.flush();
                                 output.close();
                                 input.close();
+                                Log.d("Download", "Arhivo " + archivo + " descargado completamente");
                             } catch (MalformedURLException e) {
                                 Log.e("DM1", "Error: " + e.toString());
                             } catch (FileNotFoundException e) {

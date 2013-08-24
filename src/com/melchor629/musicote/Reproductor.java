@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -78,7 +79,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         MediaPlayer reproductor = new MediaPlayer(); // initialize it here
         reproductor.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            reproductor.setDataSource(url.replace(" ", "%20"));
+            reproductor.setDataSource(getApplicationContext(), Uri.parse(url));
         } catch (Exception e) {
             Log.e("Reproductor", "Error al descargar: " + e.toString());
             if(e.toString().equals("(1, -1004"))
@@ -240,7 +241,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     @Override
     public void onDestroy() {
         wl.release();
-        if(!cosa.getState().toString().equals("NEW"))
+        if(cosa != null && !cosa.getState().toString().equals("NEW"))
             cosa.interrupt();
         if(reproductor != null)
             reproductor.release();

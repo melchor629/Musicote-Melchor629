@@ -50,6 +50,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     private volatile boolean isSeeking = false;
     private volatile int width, height;
     private volatile boolean doThings = false;
+    private boolean button;
 
     @SuppressLint ("InlinedApi")
     @Override
@@ -60,6 +61,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
+        button = getIntent().getBooleanExtra("button", false);
 
         if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             //If possible Hardware accelerated
@@ -249,7 +251,13 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 16908332:
-                finish();
+                if(button)
+                    finish();
+                else {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
                 break;
             case R.id.settings:
                 Intent intent = new Intent(this, Ajustes.class);

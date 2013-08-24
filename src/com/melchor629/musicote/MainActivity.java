@@ -242,6 +242,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 break;
             case R.id.parar:
                 Intent intento = new Intent(MainActivity.this, ReproductorGrafico.class);
+                intento.putExtra("button", true);
                 startActivity(intento);
                 break;
             default:
