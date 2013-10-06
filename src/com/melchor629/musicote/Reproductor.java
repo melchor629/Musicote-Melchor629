@@ -79,7 +79,11 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         MediaPlayer reproductor = new MediaPlayer(); // initialize it here
         reproductor.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            reproductor.setDataSource(getApplicationContext(), Uri.parse(url));
+            url = url.replace(" ", "%20");
+            if(url.startsWith("http"))
+                reproductor.setDataSource(url);
+            else
+                reproductor.setDataSource(getApplicationContext(), Uri.parse(url));
         } catch (Exception e) {
             Log.e("Reproductor", "Error al descargar: " + e.toString());
             if(e.toString().equals("(1, -1004"))

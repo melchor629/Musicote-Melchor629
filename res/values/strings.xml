@@ -3,5 +3,7 @@
     <string name="app_name">Musicote</string>
     <string name="version">1.0.6</string>
     <string name="app_description">Music everywhere</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 </resources>

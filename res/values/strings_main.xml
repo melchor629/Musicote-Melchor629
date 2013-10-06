@@ -13,5 +13,11 @@
     <string name="menu_search">Search a song…</string>
     <string name="next">Next</string>
     <string name="download">Download</string>
+    <string name="download_info">Downlad this song into mobile</string>
     <string name="add_to_playlist">Add to playlist</string>
+    <string name="sure">Are you sure&#8230;?</string>
+    <string name="sure_delete">Are you sure you want to delete this song?</string>
+    <string name="done_delete">Successfully deleted</string>
+    <string name="err_delete">Cannot delete song</string>
+    <string name="delete_info">Delete this song from mobile</string>
 </resources>
