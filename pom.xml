@@ -32,6 +32,13 @@
       <artifactId>library</artifactId>
       <version>0.8</version>
       <type>apklib</type>
+    </dependency>
+    <dependency>
+      <groupId>com.github.chrisbanes.actionbarpulltorefresh</groupId>
+      <artifactId>extra-abs</artifactId>
+      <version>0.8</version>
+      <type>apklib</type>
+    </dependency>
   </dependencies>
 
     <properties>
