@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -69,8 +68,6 @@ public class SingleMenuItemActivity extends SherlockActivity {
 
     private TextView texto;
     private ProgressBar barra;
-    NotificationManager mNotifyManager;
-    Builder mBuilder;
     public volatile int progress;
     private Handler h = new Handler();
     private boolean H = true;
@@ -290,7 +287,9 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * @param v
      */
     public void addToPlaylist(View v) {
-        Reproductor.addSong(name, cost, archivo, description);
+        String url = archivo;
+        if(isDownloaded) url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo;
+        Reproductor.addSong(name, cost, url, description);
         Toast.makeText(this, name + " " + this.getResources().getString(R.string.added_to_playlist), Toast.LENGTH_LONG).show();
     }
 
@@ -302,8 +301,8 @@ public class SingleMenuItemActivity extends SherlockActivity {
      */
     public void download(View v) {
         if(!isDownloaded) { //Only if it isn't downloaded
-            mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            mBuilder = new NotificationCompat.Builder(getApplication());
+            final NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplication());
             mBuilder.setContentTitle("Descargando " + name + " de " + cost)
                     .setContentText("Descargando musicote...")
                     .setSmallIcon(R.drawable.download)

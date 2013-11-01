@@ -1,9 +1,11 @@
 package com.melchor629.musicote;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -13,25 +15,32 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DB_entry;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshAttacher;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.OnRefreshListener;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -56,20 +65,18 @@ import java.util.HashMap;
 
 /**
  * Actividad principal de la App, hace muchas cosas<br>
- * <b>TODO</b> añadir la función de Inicio de sesión
- *
  * @author melchor
  */
-
 public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener {
 
     public static String Last_String = "";
     public static volatile int response = 0;
     public static String url;
 
-    private ProgressDialog progressDialog;
+    private NotificationManager nm;
     private Toast tostado;
     private String oldText = "";
+    private PullToRefreshAttacher mPullToRefreshAttacher;
 
     // contacts JSONArray
     private static JSONArray contacts = null;
@@ -81,12 +88,37 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         // The layout file is defined in the project res/layout/main.xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        mPullToRefreshAttacher = PullToRefreshAttacher.get(this);
+        mPullToRefreshAttacher.addRefreshableView(findViewById(android.R.id.list), new OnRefreshListener() {
+            @Override
+            public void onRefreshStarted(View view) {
+                if(ParseJSON.HostTest(MainActivity.url) == 200) {
+                    //Revisa la base de datos
+                    DB mDbHelper = new DB(getBaseContext());
+                    SQLiteDatabase db = mDbHelper.getWritableDatabase();
+                    if(mDbHelper.ifTableExists(db, "canciones") == false || mDbHelper.ifTableExists(db, "acceso") == false) {
+                        db.execSQL(DB_entry.CREATE_ACCESO);
+                        ContentValues values = new ContentValues();
+                        values.put("tabla", "canciones");
+                        values.put("fecha", System.currentTimeMillis());
+                        Log.e("newDB", "Dado " + db.insert("acceso", "null", values));
+                    }
+                    db.execSQL(DB_entry.DELETE_CANCIONES);
+    
+                    db.close();
+                    async();
+                } else {
+                    mPullToRefreshAttacher.setRefreshComplete();
+                    Toast.makeText(MainActivity.this, "No se ha podido conectar con el servidor", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         // La app prueba en busca de la dirección correcta
         WifiManager mw = (WifiManager)getSystemService(Context.WIFI_SERVICE);
         WifiInfo wi = mw.getConnectionInfo();
         String SSID = wi.getSSID();
-        Log.d("MainActivity", "Wifi conectado: " + SSID);
+        Log.i("MainActivity", "Wifi conectado: " + SSID);
         if(SSID == null) {
             SSID = "";
             Toast.makeText(this, "No está usando WIFI, se recomienda utilizar la app con WIFI", Toast.LENGTH_LONG).show();
@@ -96,25 +128,12 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         } else {
             MainActivity.url = "reinoslokos.no-ip.org";
         }
-        Log.d("MainActivity", "url: " + url);
+        Log.i("MainActivity", "url: " + url);
 
-        //Create a new progress dialog
-        progressDialog = new ProgressDialog(MainActivity.this);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setTitle("Musicote en camino...");
-        progressDialog.setMessage("Cargando datos del servidor, espere...");
-        progressDialog.setCancelable(false);
-        if(VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
-            progressDialog.setIndeterminate(false);
-            progressDialog.setMax(100);
-            progressDialog.setProgress(0);
-        } else {
-            progressDialog.setIndeterminate(true);
-        }
-        progressDialog.show();
+        nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         //Deletes the notification if remains (BUG)
-        NotificationManager mn = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mn = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if(Reproductor.a == -1)
             mn.cancel(1);
 
@@ -123,6 +142,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         if(mDbHelper.ifTableExists(db, "canciones") == false || mDbHelper.ifTableExists(db, "acceso") == false) {
             db.execSQL(DB_entry.CREATE_ACCESO);
+            db.execSQL(DB_entry.CREATE_CANCIONES);
             ContentValues values = new ContentValues();
             values.put("tabla", "canciones");
             values.put("fecha", System.currentTimeMillis());
@@ -131,13 +151,12 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
         //Actualización de la lista
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(mDbHelper.isNecesaryUpgrade(db, pref))
+        cursordb(db);
+        if(mDbHelper.isNecesaryUpgrade(db, pref) && ParseJSON.HostTest(url) == 200)
             db.execSQL(DB_entry.DELETE_CANCIONES);
 
         if(!mDbHelper.ifTableExists(db, "canciones"))
             async();
-        else
-            cursordb(db);
 
         db.close();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -166,22 +185,19 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
         // selecting single ListView item
         ListView lv = getListView();
-
         lv.setFastScrollEnabled(true);
 
         // Launching new screen on Selecting Single ListItem
         lv.setOnItemClickListener(new OnItemClickListener() {
-
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // getting values from selected ListItem
-                //JSONObject datos = null;
                 HashMap<String, String> datos = null;
                 try {
                     datos = contactList.get(position);
                 } catch (Exception e) {
-                    Log.e("com.melchor629.musicote", "187<<" + e.toString());
+                    Log.e("com.melchor629.musicote", "" + e.toString());
                     e.printStackTrace();
                 }
                 String name = getString(R.string.vacio);
@@ -210,6 +226,51 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 startActivity(in);
             }
         });
+
+        lv.setLongClickable(true);
+        lv.setOnItemLongClickListener(new OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, final View v, final int which, long id) {
+                final File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/"
+                        + contactList.get(which).toString().replace("http://" + MainActivity.url + "/musica/", ""));
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle(((TextView) v.findViewById(R.id.name)).getText().toString())
+                    .setItems(file.exists() ? R.array.song_options_array2 : R.array.song_options_array, new OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if(which == 0) {
+                                String url = "http://" + MainActivity.url + "/musica/" + contactList.get(which).toString().replace("http://" + MainActivity.url + "/musica/", "");
+                                if(file.exists()) url = file.toString();
+                                Intent in = new Intent(getApplicationContext(), Reproductor.class);
+                                in.putExtra("titulo", ((TextView) v.findViewById(R.id.name)).getText().toString());
+                                in.putExtra("artista", ((TextView) v.findViewById(R.id.email)).getText().toString());
+                                in.putExtra("album", ((TextView) v.findViewById(R.id.mobile)).getText().toString());
+                                in.putExtra("archivo", url);
+
+                                stopService(in);
+                                startService(in);
+
+                                Reproductor.a = 0;
+                            } else if(which == 1) {
+                                if(file.exists()) {
+                                    
+                                } else {
+                                    
+                                }
+                            } else if(which == 2) {
+                                String url = "http://" + MainActivity.url + "/musica/" + file.getName();
+                                if(file.exists()) url = file.toString();
+                                Reproductor.addSong(((TextView) v.findViewById(R.id.name)).getText().toString(),
+                                        ((TextView) v.findViewById(R.id.email)).getText().toString(), url,
+                                        ((TextView) v.findViewById(R.id.mobile)).getText().toString());
+                            }
+                        }
+                    })
+                    .create().show();
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -271,7 +332,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 publishProgress(2);
                 if(MainActivity.url != null) {
                     // getting JSON string from URL
-                    response = jParser.HostTest(MainActivity.url);
+                    response = ParseJSON.HostTest(MainActivity.url);
 
                     Log.d("MainActivity", "Response code: " + response);
 
@@ -330,6 +391,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                                 db.insert(DB_entry.TABLE_CANCIONES, "null", values);
                             }
                             dbHelper.actualizarAcceso(db, "canciones", System.currentTimeMillis());
+                            db.close();
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.i("MainActivity", "Excepción encontrada: " + e.toString());
@@ -347,16 +409,13 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
         @Override
         protected void onProgressUpdate(Integer... progress) {
-            progressDialog.setProgress(progress[0]);
+            super.onProgressUpdate(progress);
         }
 
         @Override
         protected void onPostExecute(ArrayList<HashMap<String, String>> result) {
             super.onPostExecute(result);
-            try {
-                publishProgress(99);
-            } catch (Exception e) {
-            }
+            nm.cancel(3);
         }
     }
 
@@ -368,7 +427,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         Cursor c = dbs.get(db, query);
         contactList = new ArrayList<HashMap<String, String>>();
         c.moveToFirst();
-        Log.d("onQueryTextSubmit", "Cantidad: " + c.getCount());
         if(c.getCount() > 0) {
             do {
                 // creating new HashMap
@@ -401,21 +459,28 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     @Override
     public boolean onQueryTextChange(String newText) {
         if(newText.length() == 0 && oldText.length() > 0) {
-            Log.d("chamado", "llamado");
             SQLiteDatabase db = new DB(MainActivity.this).getReadableDatabase();
             cursordb(db);
             db.close();
         } else {
-            onQueryTextSubmit(newText); //TODO comprobar si aguanta en en movil nuestro
+            onQueryTextSubmit(newText);
         }
         oldText = newText;
         return false;
     }
 
-    //Desastre de la carga de datos
-
     /** Si tiene que hacer la descarga */
     private void async() {
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
+        notification
+                .setSmallIcon(R.drawable.altavoz)
+                .setContentTitle("Musicote")
+                .setContentText("Actualizando base de datos...")
+                .setProgress(100, 0, true)
+                .setOngoing(true);
+        nm.cancel(3);
+        nm.notify(3, notification.build());
+        mPullToRefreshAttacher.setRefreshing(true);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -431,20 +496,16 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                     e.printStackTrace();
                 }
                 MainActivity.this.runOnUiThread(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                sis();
-                                try {
-                                    this.finalize();
-                                } catch (Throwable e) {
-                                    Log.e(MainActivity.class.getName(), "Error: " + e.toString());
-                                }
-                            }
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            sis();
+                            mPullToRefreshAttacher.setRefreshComplete();
                         }
+                    }
                 );
                 try {
-                    progressDialog.dismiss();
+                    nm.cancel(3);
                     this.finalize();
                 } catch (Throwable e) {
                     Log.e("UIUpdate", "Error: " + e.toString());
@@ -513,7 +574,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 Log.e("error", "Error: " + e1.toString());
             }
         }
-        progressDialog.dismiss();
         c.close();
         sis();
     }

@@ -9,12 +9,12 @@
   <description>An app to listen PC music in your Smartphone</description>
 
   <dependencies>
-  	<dependency>
-  		<groupId>com.google.android</groupId>
-  		<artifactId>android</artifactId>
-  		<version>4.1.1.4</version>
-  		<scope>provided</scope>
-  	</dependency>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android</artifactId>
+      <version>4.1.1.4</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
         <groupId>com.google.android</groupId>
         <artifactId>support-v5</artifactId>
@@ -22,11 +22,16 @@
         <scope>provided</scope>
     </dependency>
     <dependency>
-		<groupId>com.actionbarsherlock</groupId>
-  		<artifactId>actionbarsherlock</artifactId>
-  		<version>4.3.1</version>
-  		<type>apklib</type>
-	</dependency>
+      <groupId>com.actionbarsherlock</groupId>
+      <artifactId>actionbarsherlock</artifactId>
+      <version>4.3.1</version>
+      <type>apklib</type>
+    </dependency>
+    <dependency>
+      <groupId>com.github.chrisbanes.actionbarpulltorefresh</groupId>
+      <artifactId>library</artifactId>
+      <version>0.8</version>
+      <type>apklib</type>
   </dependencies>
 
     <properties>
@@ -53,7 +58,7 @@
         <version>3.0</version>
         <configuration>
             <compilerArgument>-verbose</compilerArgument>
-      	</configuration>
+        </configuration>
       </plugin>-->
       <plugin>
           <groupId>com.jayway.maven.plugins.android.generation2</groupId>

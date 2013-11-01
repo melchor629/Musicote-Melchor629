@@ -118,12 +118,12 @@ public class ParseJSON {
      * @param host
      * @return int response
      */
-    public int HostTest(String host) {
+    public static int HostTest(String host) {
         int response = 0;
 
         try {
             URL urlhttp = new URL("http://" + host + "/py/api.py");
-            HttpURLConnection http = (HttpURLConnection)urlhttp.openConnection();
+            HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
             response = http.getResponseCode();
         } catch (Exception e) {
             Log.e("Comprobando", "Excepción HTTPURL: " + e.toString());
