@@ -6,7 +6,7 @@ before_install:
   # download the latest android sdk and unzip
   - wget http://dl.google.com/android/android-sdk_r22.3-linux.tgz
   #- wget http://dl.google.com/android/android-sdk_r21.0.1-linux.tgz
-  - tar xzf android-sdk_r21.0.1-linux.tgz
+  - tar xzf android-sdk_r22.3-linux.tgz
   # setup your ANDROID_HOME and PATH environment variables
   # use ~/builds/[Github username]/[project]/android-sdk-linux
   - export ANDROID_HOME=$PWD/android-sdk-linux
