@@ -1,26 +1,23 @@
 language: java
 jdk: oraclejdk7
 before_install:
+  # Install some needed libs and don't print anything meanwhile
   - sudo apt-get update -qq
   - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch >/dev/null; fi
-  # download the latest android sdk and unzip
+  # Download the latest android sdk and unzip it
   - wget http://dl.google.com/android/android-sdk_r22.3-linux.tgz
-  #- wget http://dl.google.com/android/android-sdk_r21.0.1-linux.tgz
   - tar xzf android-sdk_r22.3-linux.tgz
-  # setup your ANDROID_HOME and PATH environment variables
-  # use ~/builds/[Github username]/[project]/android-sdk-linux
+  # Setup ANDROID_HOME and PATH environment variables
   - export ANDROID_HOME=$PWD/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
-  # only update the sdk for the tools and platform-tools (1,2) and whatever api level
-  # you are building for android (run "android list sdk" to get the full list.  9 = 2.3.3 or API level 10
-  # - android update sdk --force --no-ui
+  # Install Android SDK an other tools
+  #- echo yes | android update sdk --force --no-ui
   - echo yes | android update sdk --filter platform-tools --no-ui --force
   - echo yes | android update sdk --filter extra-android-support --no-ui --force
   - echo yes | android update sdk --filter extra-android-m2repository --no-ui --force
   - echo yes | android update sdk --filter android-18 --force --no-ui
+  - echo yes | android update sdk --filter android-17 --force --no-ui
   - echo yes | android update sdk --filter sysimg-18 --force --no-ui
-  #- mvn install:install-file -Dfile=$PWD/libs/android-support-v4.jar -DgroupId=com.android.support -DartifactId=support-v4 -Dversion=18.0 -Dpackaging=jar
-  #- mvn install --quiet -DskipTests=true -B -X
 
 after_success:
   - curl "http://reinoslokos.no-ip.org/index.php?title=Travis.ci&description=Build%20$TRAVIS_BUILD_NUMBER%20($TRAVIS_BUILD_ID)%20completado%20correctamente"
