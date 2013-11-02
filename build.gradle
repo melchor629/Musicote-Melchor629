@@ -1,0 +1,48 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://github.com/mosabua/maven-android-sdk-deployer'
+        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.5+'
+    }
+}
+
+apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:13.0.+'
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'com.github.chrisbanes.actionbarpulltorefresh:library:0.8'
+    compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abs:0.8'
+}
+
+android {
+    compileSdkVersion 'android-18'
+    buildToolsVersion '17.0.0'
+    sourceSets {
+        main {
+            manifest {
+                srcFile 'AndroidManifest.xml'
+            }
+            java {
+                srcDir 'src'
+            }
+            res {
+                srcDir 'res'
+            }
+            assets {
+                srcDir 'assets'
+            }
+            resources {
+                srcDir 'src'
+            }
+        }
+    }
+}
