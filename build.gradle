@@ -1,9 +1,6 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url 'https://github.com/mosabua/maven-android-sdk-deployer'
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.5+'
