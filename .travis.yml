@@ -18,7 +18,7 @@ before_install:
   - echo yes | android update sdk --filter extra-android-support --no-ui --force
   - echo yes | android update sdk --filter extra-android-m2repository --no-ui --force
   - echo yes | android update sdk --filter android-18 --force --no-ui
-  - echo yes | android update sdk --filter sysimg-18 -- force --no-ui
+  - echo yes | android update sdk --filter sysimg-18 --force --no-ui
   #- mvn install:install-file -Dfile=$PWD/libs/android-support-v4.jar -DgroupId=com.android.support -DartifactId=support-v4 -Dversion=18.0 -Dpackaging=jar
   #- mvn install --quiet -DskipTests=true -B -X
 
