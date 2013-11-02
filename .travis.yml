@@ -19,7 +19,7 @@ before_install:
   - echo yes | android update sdk --filter android-14 --force --no-ui
   - echo yes | android update sdk --filter build-tools-19.0.0 --force --no-ui
   - echo yes | android update sdk --filter sysimg-18 --force --no-ui
-  - ls $ANDROID_HOME/build_tools/
+  - ls $ANDROID_HOME/build-tools/
 
 after_success:
   - curl "http://reinoslokos.no-ip.org/index.php?title=Travis.ci&description=Build%20$TRAVIS_BUILD_NUMBER%20($TRAVIS_BUILD_ID)%20completado%20correctamente"
