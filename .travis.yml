@@ -14,8 +14,11 @@ before_install:
   # only update the sdk for the tools and platform-tools (1,2) and whatever api level
   # you are building for android (run "android list sdk" to get the full list.  9 = 2.3.3 or API level 10
   # - android update sdk --force --no-ui
-  - echo yes | android update sdk --filter platform-tools,extra-android-support,extra-android-m2repository --no-ui --force
+  - echo yes | android update sdk --filter platform-tools --no-ui --force
+  - echo yes | android update sdk --filter extra-android-support --no-ui --force
+  - echo yes | android update sdk --filter extra-android-m2repository --no-ui --force
   - echo yes | android update sdk --filter android-18 --force --no-ui
+  - echo yes | android update sdk --filter sysimg-18 -- force --no-ui
   #- mvn install:install-file -Dfile=$PWD/libs/android-support-v4.jar -DgroupId=com.android.support -DartifactId=support-v4 -Dversion=18.0 -Dpackaging=jar
   #- mvn install --quiet -DskipTests=true -B -X
 
