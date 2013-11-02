@@ -22,6 +22,7 @@ dependencies {
 
 android {
     compileSdkVersion 'android-18'
+    buildToolsVersion '19.0.0'
     sourceSets {
         main {
             manifest {
