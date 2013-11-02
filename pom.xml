@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.melchor629.musicote</groupId>
   <artifactId>Musicote-Melchor629</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.6-SNAPSHOT</version>
   <packaging>apk</packaging>
   <name>Musicote de Melchor629</name>
   <description>An app to listen PC music in your Smartphone</description>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>com.google.android</groupId>
       <artifactId>support-v4</artifactId>
-      <version>r7</version>
+      <version>18.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
