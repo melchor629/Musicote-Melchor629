@@ -1,7 +1,6 @@
 package com.melchor629.musicote.scrobbler;
 
 import android.util.Log;
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -39,7 +38,6 @@ public class Scrobble {
     }
 
     private final String TAG = "Scrobbler->Scrobble";
-    private AsyncHttpClient client = new AsyncHttpClient();
 
     /**
      * Envia el scrobbling a Last.FM
@@ -49,7 +47,7 @@ public class Scrobble {
     public int scrobble() {
         long timestamp = System.currentTimeMillis() / 1000;
         final HashMap<String, String> sign = sign(titulo, artista, timestamp);
-        client.post(Peticiones.uRl, new RequestParams(sign), new AsyncHttpResponseHandler() {
+        Peticiones.post("", new RequestParams(sign), new AsyncHttpResponseHandler() {
             @SuppressWarnings ("deprecation")
             @Override
             public void onSuccess(String response) {
@@ -86,7 +84,7 @@ public class Scrobble {
      */
     public int nowPlaying() {
         final HashMap<String, String> sign = sign(titulo, artista);
-        client.post(Peticiones.uRl, new RequestParams(sign), new AsyncHttpResponseHandler() {
+        Peticiones.post("", new RequestParams(sign), new AsyncHttpResponseHandler() {
             @SuppressWarnings ("deprecation")
             @Override
             public void onSuccess(String response) {

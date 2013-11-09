@@ -3,6 +3,11 @@ package com.melchor629.musicote;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.AsyncTask;
@@ -14,6 +19,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.*;
 import android.widget.AdapterView.OnItemLongClickListener;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
@@ -24,13 +30,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * El reproductor, en modo gráfico para que pueda el usuario controlarlo mejor
- *
  * @author melchor9000
  */
 public class ReproductorGrafico extends SherlockListActivity implements Runnable, SeekBar.OnSeekBarChangeListener {
@@ -51,24 +55,25 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     private volatile int width, height;
     private volatile boolean doThings = false;
     private boolean button;
+    private final String TAG = "Reproductor Gráfico";
 
     @SuppressLint ("InlinedApi")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reproductor_grafico);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
-        button = getIntent().getBooleanExtra("button", false);
-
         if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             //If possible Hardware accelerated
             getWindow().setFlags(
                     WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                     WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         }
+
+        setContentView(R.layout.activity_reproductor_grafico);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        button = getIntent().getBooleanExtra("button", false);
 
         //Starting layout variables
         tituloActual = (TextView)findViewById(R.id.tituloActual);
@@ -84,8 +89,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             setThings();
             playpauseActual.setImageResource(R.drawable.ic_pause);
             playpauseActual.setTag("pause");
-        } else
-            setBackground(getResources().getDrawable(R.drawable.graphical_player));
+        }
+        setBackground(getResources().getDrawable(R.drawable.graphical_player));
 
         H = true;
         h = new Handler();
@@ -125,8 +130,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             doThings = false;
         }
 
-        width = getWindow().getDecorView().getWidth();
-        height = getWindow().getDecorView().getHeight();
+        width = findViewById(R.id.activityReproductorGrafico).getMeasuredWidth();
+        height = findViewById(R.id.activityReproductorGrafico).getMeasuredHeight();
     }
 
     public void playpause(View v) {
@@ -171,33 +176,34 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             else
                 getWindow().getDecorView().setBackgroundDrawable(d);
         }
-        Log.d("ReproductorGráfico", "Cambiando fondo");
     }
 
-    private Drawable background(int width, int height) {
-        Log.d("ReproductorGráfico", "Cambiando fondo...");
+    private Drawable compoundDrawable(int width, int height) {
         if(Reproductor.alb != null && Reproductor.alb.length() != 0) {
             Album album = new Album(Reproductor.art, Reproductor.alb);
             String albumart = album.getInfo();
             InputStream is;
             try {
-                String url = "http://" + MainActivity.url + "/fotoMusicote.php?url=" + URLEncoder.encode(albumart, "UTF_8") + "&width="
-                        + width + "&height=" + height;
-                Log.d("ReproductorGráfico", url);
-                is = (InputStream)new URL(url).getContent();
-                Drawable d = Drawable.createFromStream(is, "src name");
-                is.close();
-
-                return d;
+                //Download the image content
+                is = (InputStream) new URL(albumart).getContent();
+                //Make Bitmaps from resources & the downloaded image
+                Bitmap fondo2 = BitmapFactory.decodeResource(getResources(), R.drawable.graphical_player);
+                Bitmap fondo = BitmapFactory.decodeResource(getResources(), R.drawable.graphical_player_frame);
+                Bitmap albumdraw = BitmapFactory.decodeStream(is);
+                //Create the compound image and its canvas
+                Bitmap background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(background);
+                //Paint on canvas
+                canvas.drawBitmap(fondo2, new Rect(0, 0, 720, 1280), new Rect(0, 0, width, height), null);
+                canvas.drawBitmap(albumdraw, new Rect(0, 0, albumdraw.getWidth(), albumdraw.getHeight()),
+                        new Rect(0, height/6, width, width + (height/12)), null); //La mitad mas un tercio | la mitad mas un tercio entre la mitad
+                canvas.drawBitmap(fondo, new Rect(0, 0, 720, 1280), new Rect(0, 0, width, height), null);
+                return new BitmapDrawable(getResources(), background).getCurrent();
             } catch (MalformedURLException e) {
-                Log.e("ReproductorGráfico", "Error: " + e.toString() + " (Posiblemente no haya enlace)");
+                Log.e(TAG,"Error en el enlace: "+ e.toString() + "(" + albumart + ")");
             } catch (IOException e) {
-                Log.e("ReproductorGráfico", "Error: " + e.toString());
+                Log.e(TAG,"Error: "+ e.toString());
             }
-        } else {
-            Log.d("ReproductorGráfico", "No hay artista, cargando imágen predeterminada...");
-            Drawable d = getResources().getDrawable(R.drawable.graphical_player);
-            return d;
         }
         return null;
     }
@@ -213,7 +219,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                     public void run() {
                         playingUbication.setMax(1000);
                         if(!isSeeking)
-                            playingUbication.setProgress((int)(Reproductor.a * 10d));
+                            playingUbication.setProgress((int) (Reproductor.a * 10d));
                         if(doThings || (width == 0 && height == 0))
                             setThings();
                     }
@@ -221,7 +227,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             );
             synchronized (this) {
                 if(Reproductor.tit != null && width != 0 && height != 0 && !song.equals(Reproductor.tit)) {
-                    if(Reproductor.alb != "" && Reproductor.alb != null) //TODO else con el predeterminado
+                    if(Reproductor.alb != "" && Reproductor.alb != null)
                         new Background().execute(width, height);
                     song = Reproductor.tit;
                     doThings = true;
@@ -230,7 +236,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                Log.e("ReproductorGrafico", "Error: " + e.toString());
+                Log.e(TAG, "Error: " + e.toString());
             }
         }
     }
@@ -290,7 +296,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     @Override
     public void onStartTrackingTouch(SeekBar bar) {
         isSeeking = true;
-        Log.d("Reproductor Gráfico", "Lo estan moviendo");
+        Log.d(TAG, "Lo estan moviendo");
     }
 
     /* (non-Javadoc)
@@ -301,7 +307,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
         if(!Reproductor.paused)
             Reproductor.reproductor.start();
         isSeeking = false;
-        Log.d("Reproductor Gráfico", "Lo han dejado de mover");
+        Log.d(TAG, "Lo han dejado de mover");
     }
 
     private class Background extends AsyncTask<Integer, Void, Void> {
@@ -311,7 +317,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
         @Override
         protected Void doInBackground(Integer... params) {
             synchronized (this) {
-                final Drawable d = background(params[0], params[1]);
+                final Drawable d = compoundDrawable(params[0], params[1]);
                 h.post(new Runnable() {
                     @Override
                     public void run() {

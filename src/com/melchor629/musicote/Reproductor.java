@@ -38,6 +38,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     public volatile static String art;
     public volatile static String alb;
     public volatile static boolean paused;
+    private static volatile Reproductor esto;
 
     private coso cosa;
     private NotificationManager nm;
@@ -48,6 +49,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     public volatile static double a = -1;
 
     public int onStartCommand(Intent intent, int flags, int StartID) {
+        esto = this;
         playlist = new ArrayList<String[]>();
         String[] eso = addSong(intent.getStringExtra("titulo"), intent.getStringExtra("artista"), intent.getStringExtra("archivo"), intent.getStringExtra("album"));
         initMediaPlayer(eso);
@@ -214,6 +216,14 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         reproductor.release();
         reproductor = null;
         initMediaPlayer(playlist.get(0));
+    }
+
+    public static void playNextSong() {
+        playlist.remove(0);
+        reproductor.release();
+        reproductor = null;
+        if(isNextSong())
+            esto.initMediaPlayer(playlist.get(0));
     }
 
     /**

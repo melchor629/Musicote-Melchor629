@@ -123,7 +123,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             SSID = "";
             Toast.makeText(this, "No está usando WIFI, se recomienda utilizar la app con WIFI", Toast.LENGTH_LONG).show();
         }
-        if(SSID.equals("wifi5eber") || System.getProperty("os.version").equals("2.6.29-gea477bb")) {
+        if(SSID.equals("wifi5eber") || System.getProperty("os.version").equals("3.4.0-gd853d22")) {
             MainActivity.url = "192.168.1.133";
         } else {
             MainActivity.url = "reinoslokos.no-ip.org";
@@ -239,18 +239,23 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if(which == 0) {
-                                String url = "http://" + MainActivity.url + "/musica/" + contactList.get(which).toString().replace("http://" + MainActivity.url + "/musica/", "");
-                                if(file.exists()) url = file.toString();
-                                Intent in = new Intent(getApplicationContext(), Reproductor.class);
-                                in.putExtra("titulo", ((TextView) v.findViewById(R.id.name)).getText().toString());
-                                in.putExtra("artista", ((TextView) v.findViewById(R.id.email)).getText().toString());
-                                in.putExtra("album", ((TextView) v.findViewById(R.id.mobile)).getText().toString());
-                                in.putExtra("archivo", url);
-
-                                stopService(in);
-                                startService(in);
-
-                                Reproductor.a = 0;
+                                if(Reproductor.a == -1) {
+                                    String url = contactList.get(which).get("archivo");
+                                    if(file.exists()) url = file.toString();
+                                    Intent in = new Intent(getApplicationContext(), Reproductor.class);
+                                    in.putExtra("titulo", ((TextView) v.findViewById(R.id.name)).getText().toString());
+                                    in.putExtra("artista", ((TextView) v.findViewById(R.id.email)).getText().toString());
+                                    in.putExtra("album", ((TextView) v.findViewById(R.id.mobile)).getText().toString());
+                                    in.putExtra("archivo", url);
+    
+                                    startService(in);
+                                } else {
+                                    String url = contactList.get(which).get("archivo");
+                                    Reproductor.addSong(((TextView) v.findViewById(R.id.name)).getText().toString(),
+                                            ((TextView) v.findViewById(R.id.email)).getText().toString(), url,
+                                            ((TextView) v.findViewById(R.id.mobile)).getText().toString());
+                                    Reproductor.playNextSong();
+                                }
                             } else if(which == 1) {
                                 if(file.exists()) {
                                     

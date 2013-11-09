@@ -11,7 +11,6 @@ before_install:
   - export ANDROID_HOME=$PWD/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   # Install Android SDK an other tools
-  #- echo yes | android update sdk --force --no-ui
   - echo yes | android update sdk --filter platform-tools --no-ui --force
   - echo yes | android update sdk --filter extra-android-support --no-ui --force
   - echo yes | android update sdk --filter extra-android-m2repository --no-ui --force
@@ -19,11 +18,8 @@ before_install:
   - echo yes | android update sdk --filter android-14 --force --no-ui
   - echo yes | android update sdk --filter build-tools-19.0.0 --force --no-ui
   - echo yes | android update sdk --filter sysimg-18 --force --no-ui
-  - ls $ANDROID_HOME/build-tools/
 
 after_success:
-  - curl "http://reinoslokos.no-ip.org/index.php?title=Travis.ci&description=Build%20$TRAVIS_BUILD_NUMBER%20($TRAVIS_BUILD_ID)%20completado%20correctamente"
+  - "curl 'http://reinoslokos.no-ip.org/index.php?title=Travis.ci&description=Build%20$TRAVIS_BUILD_NUMBER%20($TRAVIS_BUILD_ID)%20completado%20correctamente'"
 after_failure:
-  - curl "http://reinoslokos.no-ip.org/index.php?title=Travis.ci&description=Build%20$TRAVIS_BUILD_NUMBER%20($TRAVIS_BUILD_ID)%20ha%20fallado"
-
-#script: mvn -Pcobertura cobertura:cobertura coveralls:cobertura
+  - "curl 'http://reinoslokos.no-ip.org/index.php?title=Travis.ci&description=Build%20$TRAVIS_BUILD_NUMBER%20($TRAVIS_BUILD_ID)%20ha%20fallado'"

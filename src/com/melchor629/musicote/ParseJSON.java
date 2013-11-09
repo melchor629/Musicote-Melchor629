@@ -122,8 +122,11 @@ public class ParseJSON {
         int response = 0;
 
         try {
-            URL urlhttp = new URL("http://" + host + "/py/api.py");
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            URL urlhttp = new URL("http://" + host + "/");
             HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
+            http.setReadTimeout(1000);
             response = http.getResponseCode();
         } catch (Exception e) {
             Log.e("Comprobando", "Excepción HTTPURL: " + e.toString());

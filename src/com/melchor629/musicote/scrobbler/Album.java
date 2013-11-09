@@ -32,6 +32,7 @@ public class Album {
             new Throwable("Falta el álbum (" + album + ") o el artista (" + artista + ")");
         this.artista = artista;
         this.album = album;
+        this.albumUrl = null;
     }
 
     /** Gets info from an album */
@@ -45,13 +46,18 @@ public class Album {
 
             JSONObject album = j.getJSONObject("album");
 
-            JSONArray image = album.getJSONArray("image");
+            /*JSONArray image = album.getJSONArray("image");
             JSONObject images = image.getJSONObject(4);
             albumUrl = images.getString("#text");
-            Log.d(TAG, albumUrl);
-            return albumUrl;
+            return albumUrl;*/
+            for(int i = 5; i > 0; i--) {
+                if(albumUrl == null)
+                    albumUrl = getAlbumUrl(album, i);
+                else
+                    return albumUrl;
+            }
         } catch (JSONException e) {
-            Log.e("Last.FM->Album", "Error: " + e.toString());
+            Log.e(TAG, "Error: " + e.toString());
         }
         return null;
     }
@@ -72,9 +78,9 @@ public class Album {
             albumUrl = images.getString("#text");
             return albumUrl;
         } catch (JSONException e) {
-            Log.e("Last.FM->Album", "Error: " + e.toString());
+            return null;
         } catch (NullPointerException e) {
-            Log.e("Last.FM->Album", "Last.FM no ha encontrado el álbum");
+            Log.e(TAG, "Last.FM no ha encontrado el álbum");
         }
         return null;
     }

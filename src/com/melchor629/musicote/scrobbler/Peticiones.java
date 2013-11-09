@@ -2,13 +2,19 @@ package com.melchor629.musicote.scrobbler;
 
 import android.os.StrictMode;
 import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -50,11 +56,26 @@ public class Peticiones {
             "Rate limit exceeded - Your IP has made too many requests in a short period"
     };
 
+    /** Static HTTP Client **/
+    private static AsyncHttpClient client = new AsyncHttpClient();
+
     /** Tag for the Logging Android system */
     private static final String TAG = "Scrobbler->Peticiones";
 
     /** Secret API key */
     private static final String Secret = "8a5b2c73afdd9f1a585754d52449f0cd";
+
+    public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+        client.get(getAbsoluteUrl(url), params, responseHandler);
+    }
+
+    public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+        client.post(getAbsoluteUrl(url), params, responseHandler);
+    }
+
+    private static String getAbsoluteUrl(String relativeUrl) {
+        return uRl + relativeUrl;
+    }
 
     /**
      * Envia una petición a Last.FM por HTTPS y POST
