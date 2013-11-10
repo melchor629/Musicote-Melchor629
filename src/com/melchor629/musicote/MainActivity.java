@@ -72,6 +72,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     public static String Last_String = "";
     public static volatile int response = 0;
     public static String url;
+    public static Context appContext;
 
     private NotificationManager nm;
     private Toast tostado;
@@ -88,6 +89,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         // The layout file is defined in the project res/layout/main.xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        appContext = getApplicationContext();
         mPullToRefreshAttacher = PullToRefreshAttacher.get(this);
         mPullToRefreshAttacher.addRefreshableView(findViewById(android.R.id.list), new OnRefreshListener() {
             @Override

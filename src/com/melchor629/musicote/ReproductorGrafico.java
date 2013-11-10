@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -187,6 +188,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                 //Download the image content
                 is = (InputStream) new URL(albumart).getContent();
                 //Make Bitmaps from resources & the downloaded image
+                Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 Bitmap fondo2 = BitmapFactory.decodeResource(getResources(), R.drawable.graphical_player);
                 Bitmap fondo = BitmapFactory.decodeResource(getResources(), R.drawable.graphical_player_frame);
                 Bitmap albumdraw = BitmapFactory.decodeStream(is);
@@ -194,10 +196,10 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                 Bitmap background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(background);
                 //Paint on canvas
-                canvas.drawBitmap(fondo2, new Rect(0, 0, 720, 1280), new Rect(0, 0, width, height), null);
+                canvas.drawBitmap(fondo2, new Rect(0, 0, fondo2.getWidth(), fondo2.getHeight()), new Rect(0, 0, width, height), null);
                 canvas.drawBitmap(albumdraw, new Rect(0, 0, albumdraw.getWidth(), albumdraw.getHeight()),
-                        new Rect(0, height/6, width, width + (height/12)), null); //La mitad mas un tercio | la mitad mas un tercio entre la mitad
-                canvas.drawBitmap(fondo, new Rect(0, 0, 720, 1280), new Rect(0, 0, width, height), null);
+                        new Rect(0, height/6, width, width + (height/12)), paint); //La mitad mas un tercio | la mitad mas un tercio entre la mitad
+                canvas.drawBitmap(fondo, new Rect(0, 0, fondo.getWidth(), fondo.getHeight()), new Rect(0, 0, width, height), null);
                 return new BitmapDrawable(getResources(), background).getCurrent();
             } catch (MalformedURLException e) {
                 Log.e(TAG,"Error en el enlace: "+ e.toString() + "(" + albumart + ")");

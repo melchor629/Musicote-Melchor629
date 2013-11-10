@@ -112,34 +112,33 @@ public class SingleMenuItemActivity extends SherlockActivity {
                         while(H) {
                             if(e) {
                                 h.post(
-                                        new Runnable() {
-                                            public void run() {
-                                                if(Reproductor.a != -1) {
-                                                    if(n || (Reproductor.a != -1 && n))
-                                                        o();
-                                                    barra.setProgress((int)(Reproductor.a * 10d));
-                                                    texto.setText(getResources().getString(R.string.playing) + " " + Reproductor.tit + " " + getResources().getString(R.string.playing_of) + " " + Reproductor.art);
-                                                } else {
-                                                    if(!n) {
-                                                        Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
-                                                        ImageButton but = (ImageButton)findViewById(R.id.play);
-                                                        but.setTag("play");
-                                                        but.startAnimation(animAlpha);
-                                                        but.setImageDrawable(play);
-                                                        but.startAnimation(alphaAnim);
-                                                        n = true;
-                                                    }
-                                                    barra.setProgress((int)(Reproductor.a * 10d));
-                                                    texto.setText(getResources().getString(R.string.playing_no));
+                                    new Runnable() {
+                                        public void run() {
+                                            if(Reproductor.a != -1) {
+                                                if(n || (Reproductor.a != -1 && n))
+                                                    o();
+                                                barra.setProgress((int)(Reproductor.a * 10d));
+                                                texto.setText(getResources().getString(R.string.playing) + " " + Reproductor.tit + " " + getResources().getString(R.string.playing_of) + " " + Reproductor.art);
+                                            } else {
+                                                if(!n) {
+                                                    Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
+                                                    ImageButton but = (ImageButton)findViewById(R.id.play);
+                                                    but.setTag("play");
+                                                    but.startAnimation(animAlpha);
+                                                    but.setImageDrawable(play);
+                                                    but.startAnimation(alphaAnim);
+                                                    n = true;
                                                 }
+                                                barra.setProgress((int)(Reproductor.a * 10d));
+                                                texto.setText(getResources().getString(R.string.playing_no));
                                             }
                                         }
+                                    }
                                 );
                             }
                             try {
                                 Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                            }
+                            } catch (InterruptedException e) { }
                         }
                     }
                 }
@@ -177,7 +176,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
         //TODO Poner una carátula de álbum
 
         //Comoprueba si está descargada la canción
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo.replace("http://" + MainActivity.url + "/musica/", ""));
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo.substring(archivo.lastIndexOf("/")+1));
         isDownloaded = file.exists();
         if(isDownloaded)
             ((ImageButton) findViewById(R.id.stopActual)).setImageResource(R.drawable.delete);
@@ -191,6 +190,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
                 return true;
             }
         });
+        System.out.println("Using file:" + (isDownloaded ? file.getAbsolutePath() : archivo));
     }
 
     @Override
@@ -238,7 +238,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
             but.setTag("pause");
 
             url = archivo;
-            String archivo = SingleMenuItemActivity.archivo.replace("http://" + MainActivity.url + "/musica/", "");
+            String archivo = SingleMenuItemActivity.archivo.substring(SingleMenuItemActivity.archivo.lastIndexOf("/")+1);
 
             if(isDownloaded)
                 url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo;
@@ -288,7 +288,8 @@ public class SingleMenuItemActivity extends SherlockActivity {
      */
     public void addToPlaylist(View v) {
         String url = archivo;
-        if(isDownloaded) url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo;
+        if(isDownloaded)
+            url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo;
         Reproductor.addSong(name, cost, url, description);
         Toast.makeText(this, name + " " + this.getResources().getString(R.string.added_to_playlist), Toast.LENGTH_LONG).show();
     }
