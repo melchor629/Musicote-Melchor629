@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -27,6 +28,8 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.special.ResideMenu.menu.ResideMenu;
+import com.special.ResideMenu.menu.ResideMenuItem;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -57,7 +60,7 @@ import java.net.URLConnection;
  *
  * @author Melchor
  */
-public class SingleMenuItemActivity extends SherlockActivity {
+public class SingleMenuItemActivity extends SherlockActivity implements OnClickListener {
 
     // JSON node keys
     private static final String TAG_NAME = "titulo";
@@ -74,6 +77,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
     private boolean n = false;
     private boolean e = true;
     private boolean isDownloaded = false;
+    private ResideMenu resideMenu;
 
     public static String url;
     public static String name;
@@ -91,6 +95,20 @@ public class SingleMenuItemActivity extends SherlockActivity {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
+
+        //ResideMenu
+        resideMenu = new ResideMenu(this);
+        resideMenu.setBackground(R.drawable.blurred_background);
+        resideMenu.attachToActivity(this);
+        String titles[] = { "Home", "Settings", "Playlist", "About" };
+        int icon[] = { R.drawable.ic_home, R.drawable.cogwheels, R.drawable.playlist, R.drawable.ic_launcher };
+
+        for (int i = 0; i < titles.length; i++){
+            ResideMenuItem item = new ResideMenuItem(this, icon[i], titles[i]);
+            item.setOnClickListener(this);
+            item.setTag(i);
+            resideMenu.addMenuItem(item);
+        }
 
         android.view.animation.Interpolator on = new android.view.animation.DecelerateInterpolator();
 
@@ -190,7 +208,6 @@ public class SingleMenuItemActivity extends SherlockActivity {
                 return true;
             }
         });
-        System.out.println("Using file:" + (isDownloaded ? file.getAbsolutePath() : archivo));
     }
 
     @Override
@@ -289,7 +306,8 @@ public class SingleMenuItemActivity extends SherlockActivity {
     public void addToPlaylist(View v) {
         String url = archivo;
         if(isDownloaded)
-            url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo;
+            url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() +
+                "/" + archivo.substring(archivo.lastIndexOf("/")+1);
         Reproductor.addSong(name, cost, url, description);
         Toast.makeText(this, name + " " + this.getResources().getString(R.string.added_to_playlist), Toast.LENGTH_LONG).show();
     }
@@ -320,6 +338,9 @@ public class SingleMenuItemActivity extends SherlockActivity {
                         Looper.prepare();
                         Log.d("SingleMenuItem", "Descargando " + archivo + "...");
                         if(Environment.MEDIA_MOUNTED.equals("mounted")) {
+                            //Create music directory if doesn't exist
+                            if(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).isDirectory())
+                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).mkdirs();
                             try {
                                 URL url = new URL(archivo.replace(" ", "%20"));
                                 String arch = archivo.substring(archivo.lastIndexOf("/") + 1);
@@ -330,7 +351,8 @@ public class SingleMenuItemActivity extends SherlockActivity {
     
                                 // download the file
                                 InputStream input = new BufferedInputStream(url.openStream());
-                                OutputStream output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + arch);
+                                File songFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), arch);
+                                OutputStream output = new FileOutputStream(songFile);
     
                                 byte data[] = new byte[1024];
                                 long total = 0;
@@ -350,10 +372,13 @@ public class SingleMenuItemActivity extends SherlockActivity {
                                 Toast.makeText(getApplicationContext(), "Descarga lista", Toast.LENGTH_LONG).show();
                                 Log.d("SingleMenuItem", "Arhivo " + archivo + " descargado completamente");
                             } catch (MalformedURLException e) {
+                                progress = -1;
                                 Log.e("SingleMenuItem", "Error: " + e.toString());
                             } catch (FileNotFoundException e) {
+                                progress = -1;
                                 Log.e("SingleMenuItem", "Error: " + e.toString());
                             } catch (IOException e) {
+                                progress = -1;
                                 Log.e("SingleMenuItem", "Error: " + e.toString());
                             }
                         } else {
@@ -371,28 +396,32 @@ public class SingleMenuItemActivity extends SherlockActivity {
                 @Override
                 public void run() {
                     Looper.prepare();
-                    while(progress < 100) {
+                    while(progress < 100 && progress != -1) {
                         // publishing the progress...
                         mBuilder.setProgress(100, progress, false);
                         mNotifyManager.notify(2, mBuilder.build());
     
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(500);
                         } catch (InterruptedException e) {
                             Log.e("SingleMenuItem", "Error: " + e.toString());
                         }
                     }
-    
-                    mBuilder.setContentText("Descarga completa")
-                            // Removes the progress bar
-                            .setProgress(0, 0, false)
-                            //Removes fixed notify, ensure to be deleted by user
-                            .setOngoing(false);
-                    mNotifyManager.notify(2, mBuilder.build());
-                    try {
-                        this.finalize();
-                    } catch (Throwable e) {
-                        Log.e("SingleMenuItem", "Error: " + e.toString());
+
+                    if(progress != -1) {
+                        mBuilder.setContentText("Descarga completa")
+                                // Removes the progress bar
+                                .setProgress(0, 0, false)
+                                //Removes fixed notify, ensure to be deleted by user
+                                .setOngoing(false);
+                        mNotifyManager.notify(2, mBuilder.build());
+                    } else if(progress == -1){
+                        mBuilder.setContentText("Error al descargar")
+                                // Removes the progress bar
+                                .setProgress(0, 0, false)
+                                //Removes fixed notify, ensure to be deleted by user
+                                .setOngoing(false);
+                        mNotifyManager.notify(2, mBuilder.build());
                     }
                 }
             }).start();
@@ -452,5 +481,32 @@ public class SingleMenuItemActivity extends SherlockActivity {
         but.setImageDrawable(pause);
         but.startAnimation(alphaAnim);
         n = false;
+    }
+
+    /* (non-Javadoc)
+     * @see android.view.View.OnClickListener#onClick(android.view.View)
+     */
+    @Override
+    public void onClick(View view) {
+        ResideMenuItem item = (ResideMenuItem) view;
+        int which = (Integer) item.getTag();
+        switch(which) {
+            case 0:
+                finish();
+            case 1:
+                Intent intent = new Intent(this, Ajustes.class);
+                startActivity(intent);
+                resideMenu.closeMenu();
+                break;
+            case 2:
+                Intent intento = new Intent(this, ReproductorGrafico.class);
+                intento.putExtra("button", true);
+                startActivity(intento);
+                resideMenu.closeMenu();
+                break;
+            case 3:
+                resideMenu.closeMenu();
+                break;
+        }
     }
 }

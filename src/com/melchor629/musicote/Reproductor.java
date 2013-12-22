@@ -28,7 +28,7 @@ import java.util.ArrayList;
  *
  * @author melchor629
  */
-public class Reproductor extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+public class Reproductor extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
     /** Static variable for the Media Player */
     static MediaPlayer reproductor = new MediaPlayer();
@@ -95,6 +95,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         }
         reproductor.setOnPreparedListener(this);
         reproductor.setOnCompletionListener(this);
+        reproductor.setOnErrorListener(this);
         reproductor.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         reproductor.prepareAsync(); // prepare async to not block main thread
         return reproductor;
@@ -138,14 +139,18 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     /** Se llama cuando el reproductor está listo */
     public void onPrepared(final MediaPlayer player) {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(pref.getBoolean("lastact", false)) {
-            Auth auth = new Auth(pref.getString("usuario", null), pref.getString("contraseña", null));
-            auth.getSK();
-            Scrobble scr = new Scrobble(tit, art);
-            scr.nowPlaying();
-        } else {
-            Log.d("Scrobbler", "Nada de Scrobblings...");
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                if(pref.getBoolean("lastact", false)) {
+                    Auth auth = new Auth(pref.getString("usuario", null), pref.getString("contraseña", null));
+                    auth.getSK();
+                    Scrobble scr = new Scrobble(tit, art);
+                    scr.nowPlaying(player.getDuration()/1000);
+                } else {
+                    Log.d("Scrobbler", "Nada de Scrobblings...");
+                }
+            }
+        }).start();
 
         new Thread(new Runnable() {
             @Override
@@ -237,11 +242,25 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d("Reproductor", "Canción lista");
+        cosa.interrupt();
         True = false;
         tit = art = url = null;
         if(isNextSong()) nextSong();
         else onDestroy();
+    }
+
+    /* (non-Javadoc)
+     * @see android.media.MediaPlayer.OnErrorListener#onError(android.media.MediaPlayer, int, int)
+     */
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        if(extra == -1004) {
+            Log.e("Reproductor", "No se ha podido cargar el archivo: "+url);
+            Toast.makeText(getApplicationContext(), "Cannot load '" + tit + "'", Toast.LENGTH_LONG).show();
+        }
+        if(isNextSong()) nextSong();
+        else onDestroy();
+        return true;
     }
 
     /* (non-Javadoc)
@@ -254,6 +273,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         wl.release();
         if(cosa != null && !cosa.getState().toString().equals("NEW"))
             cosa.interrupt();
@@ -277,39 +297,27 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             Looper.prepare();
             try {
                 boolean o = true;
-                int count = playlist.size();
 
                 while(True) {
                     try {
                         a = (player.getCurrentPosition() / (player.getDuration() / 100d));
-                        if((int)a == 50 && o) {
+                        if((int) a >= 50 && o) {
                             if(pref.getBoolean("lastact", false)) {
                                 o = false;
-                                Scrobble scr = new Scrobble(tit, art);
-                                int e = scr.scrobble();
-                                if(e != 0)
-                                    Toast.makeText(Reproductor.this, "Last.FM: " + Peticiones.errorM[e], Toast.LENGTH_LONG).show();
-                                Log.d("Scrobbler", "Error: " + e + "\nMessage: " + Peticiones.errorM[e]);
+                                new Thread(new Runnable() {
+                                    public void run() {
+                                        Scrobble scr = new Scrobble(tit, art);
+                                        int e = scr.scrobble();
+                                        if(e != 0)
+                                            Toast.makeText(Reproductor.this, "Last.FM: " + Peticiones.errorM[e], Toast.LENGTH_LONG).show();
+                                    }
+                                }).start();
                             }
                         }
 
                         Thread.sleep(100);
-
-                        if(player.getCurrentPosition() >= player.getDuration()) {
-                            a = 0;
-                            player.stop();
-                            True = false;
-                            this.finalize();
-                            this.interrupt();
-                        }
-
-                        if(count != playlist.size()) {
-                            notification();
-                            count = playlist.size();
-                        }
                     } catch (Exception e) {
-                        if(True)
-                            Log.e("Reproductor", "No se sabe porqué pero se ha cerrado...\n" + e.getMessage());
+                        if(!(e instanceof IllegalStateException)) e.printStackTrace();
                         True = false;
                         this.finalize();
                     }

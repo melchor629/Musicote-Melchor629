@@ -21,6 +21,7 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
@@ -32,13 +33,15 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DB_entry;
+import com.special.ResideMenu.menu.ResideMenu;
+import com.special.ResideMenu.menu.ResideMenuItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshAttacher;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.OnRefreshListener;
+import uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -64,10 +67,11 @@ import java.util.HashMap;
  **/
 
 /**
- * Actividad principal de la App, hace muchas cosas<br>
+ * Actividad principal de la App, hace muchas cosas<br><i>tag:^(?!.*(EGL_emulation|dalvik)).*$</i>
  * @author melchor
  */
-public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener {
+public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener,
+        uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener, android.view.View.OnClickListener {
 
     public static String Last_String = "";
     public static volatile int response = 0;
@@ -77,11 +81,17 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     private NotificationManager nm;
     private Toast tostado;
     private String oldText = "";
-    private PullToRefreshAttacher mPullToRefreshAttacher;
+    private PullToRefreshLayout mPullToRefreshAttacher;
+    private ResideMenu resideMenu;
 
     // contacts JSONArray
     private static JSONArray contacts = null;
     private ArrayList<HashMap<String, String>> contactList;
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return resideMenu.onInterceptTouchEvent(ev) || super.dispatchTouchEvent(ev);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,42 +100,37 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         appContext = getApplicationContext();
-        mPullToRefreshAttacher = PullToRefreshAttacher.get(this);
-        mPullToRefreshAttacher.addRefreshableView(findViewById(android.R.id.list), new OnRefreshListener() {
-            @Override
-            public void onRefreshStarted(View view) {
-                if(ParseJSON.HostTest(MainActivity.url) == 200) {
-                    //Revisa la base de datos
-                    DB mDbHelper = new DB(getBaseContext());
-                    SQLiteDatabase db = mDbHelper.getWritableDatabase();
-                    if(mDbHelper.ifTableExists(db, "canciones") == false || mDbHelper.ifTableExists(db, "acceso") == false) {
-                        db.execSQL(DB_entry.CREATE_ACCESO);
-                        ContentValues values = new ContentValues();
-                        values.put("tabla", "canciones");
-                        values.put("fecha", System.currentTimeMillis());
-                        Log.e("newDB", "Dado " + db.insert("acceso", "null", values));
-                    }
-                    db.execSQL(DB_entry.DELETE_CANCIONES);
-    
-                    db.close();
-                    async();
-                } else {
-                    mPullToRefreshAttacher.setRefreshComplete();
-                    Toast.makeText(MainActivity.this, "No se ha podido conectar con el servidor", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        mPullToRefreshAttacher = (PullToRefreshLayout) findViewById(R.id.mainLayout);
+        ActionBarPullToRefresh.from(this)
+            .theseChildrenArePullable(android.R.id.list)
+            .listener(this)
+            .setup(mPullToRefreshAttacher);
+
+        resideMenu = new ResideMenu(this);
+        resideMenu.setBackground(R.drawable.blurred_background);
+        resideMenu.attachToActivity(this);
+
+        // create menu items;
+        String titles[] = { "Settings", "Playlist", "About" };
+        int icon[] = { R.drawable.cogwheels, R.drawable.playlist, R.drawable.ic_launcher };
+
+        for (int i = 0; i < titles.length; i++){
+            ResideMenuItem item = new ResideMenuItem(this, icon[i], titles[i]);
+            item.setOnClickListener(this);
+            item.setTag(i);
+            resideMenu.addMenuItem(item);
+        }
 
         // La app prueba en busca de la dirección correcta
         WifiManager mw = (WifiManager)getSystemService(Context.WIFI_SERVICE);
         WifiInfo wi = mw.getConnectionInfo();
         String SSID = wi.getSSID();
-        Log.i("MainActivity", "Wifi conectado: " + SSID);
+        Log.i("MainActivity", "Wifi conectado: " + SSID + " " + (SSID != null ? SSID.equals("wifi5eber") : ""));
         if(SSID == null) {
             SSID = "";
             Toast.makeText(this, "No está usando WIFI, se recomienda utilizar la app con WIFI", Toast.LENGTH_LONG).show();
         }
-        if(SSID.equals("wifi5eber") || System.getProperty("os.version").equals("3.4.0-gd853d22")) {
+        if(SSID.equals("wifi5eber") || SSID.contains("wifi5eber") || System.getProperty("os.version").equals("3.4.0-gd853d22")) {
             MainActivity.url = "192.168.1.133";
         } else {
             MainActivity.url = "reinoslokos.no-ip.org";
@@ -138,6 +143,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         NotificationManager mn = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if(Reproductor.a == -1)
             mn.cancel(1);
+        mn.cancel(3);
 
         //Revisa la base de datos
         DB mDbHelper = new DB(getBaseContext());
@@ -233,23 +239,23 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         lv.setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, final View v, final int which, long id) {
-                final File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/"
-                        + contactList.get(which).toString().replace("http://" + MainActivity.url + "/musica/", ""));
+                final File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+                        contactList.get(which).get("archivo").substring(contactList.get(which).get("archivo").lastIndexOf("/")+1));
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle(((TextView) v.findViewById(R.id.name)).getText().toString())
                     .setItems(file.exists() ? R.array.song_options_array2 : R.array.song_options_array, new OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if(which == 0) {
+                        public void onClick(DialogInterface dialog, int which2) {
+                            if(which2 == 0) {
                                 if(Reproductor.a == -1) {
                                     String url = contactList.get(which).get("archivo");
-                                    if(file.exists()) url = file.toString();
+                                    if(file.exists()) url = file.getAbsolutePath();
                                     Intent in = new Intent(getApplicationContext(), Reproductor.class);
                                     in.putExtra("titulo", ((TextView) v.findViewById(R.id.name)).getText().toString());
                                     in.putExtra("artista", ((TextView) v.findViewById(R.id.email)).getText().toString());
                                     in.putExtra("album", ((TextView) v.findViewById(R.id.mobile)).getText().toString());
                                     in.putExtra("archivo", url);
-    
+
                                     startService(in);
                                 } else {
                                     String url = contactList.get(which).get("archivo");
@@ -258,15 +264,15 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                                             ((TextView) v.findViewById(R.id.mobile)).getText().toString());
                                     Reproductor.playNextSong();
                                 }
-                            } else if(which == 1) {
+                            } else if(which2 == 1) {
                                 if(file.exists()) {
                                     
                                 } else {
                                     
                                 }
-                            } else if(which == 2) {
-                                String url = "http://" + MainActivity.url + "/musica/" + file.getName();
-                                if(file.exists()) url = file.toString();
+                            } else if(which2 == 2) {
+                                String url = contactList.get(which).get("archivo");
+                                if(file.exists()) url = file.getAbsolutePath();
                                 Reproductor.addSong(((TextView) v.findViewById(R.id.name)).getText().toString(),
                                         ((TextView) v.findViewById(R.id.email)).getText().toString(), url,
                                         ((TextView) v.findViewById(R.id.mobile)).getText().toString());
@@ -487,7 +493,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 .setOngoing(true);
         nm.cancel(3);
         nm.notify(3, notification.build());
-        mPullToRefreshAttacher.setRefreshing(true);
+        //FIXME mPullToRefreshAttacher.setRefreshing(true);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -511,12 +517,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                         }
                     }
                 );
-                try {
-                    nm.cancel(3);
-                    this.finalize();
-                } catch (Throwable e) {
-                    Log.e("UIUpdate", "Error: " + e.toString());
-                }
+                nm.cancel(3);
             }
         }).start();
     }
@@ -583,5 +584,56 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         }
         c.close();
         sis();
+    }
+
+    /* (non-Javadoc)
+     * @see uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener#onRefreshStarted(android.view.View)
+     */
+    @Override
+    public void onRefreshStarted(View view) {
+        if(ParseJSON.HostTest(MainActivity.url) == 200) {
+            //Revisa la base de datos
+            DB mDbHelper = new DB(getBaseContext());
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            if(mDbHelper.ifTableExists(db, "canciones") == false || mDbHelper.ifTableExists(db, "acceso") == false) {
+                db.execSQL(DB_entry.CREATE_ACCESO);
+                ContentValues values = new ContentValues();
+                values.put("tabla", "canciones");
+                values.put("fecha", System.currentTimeMillis());
+                Log.e("newDB", "Dado " + db.insert("acceso", "null", values));
+            }
+            db.execSQL(DB_entry.DELETE_CANCIONES);
+
+            db.close();
+            async();
+        } else {
+            mPullToRefreshAttacher.setRefreshComplete();
+            Toast.makeText(MainActivity.this, "No se ha podido conectar con el servidor", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see android.view.View.OnClickListener#onClick(android.view.View)
+     */
+    @Override
+    public void onClick(View view) {
+        ResideMenuItem item = (ResideMenuItem) view;
+        int which = (Integer) item.getTag();
+        switch(which) {
+            case 0:
+                Intent intent = new Intent(MainActivity.this, Ajustes.class);
+                startActivity(intent);
+                resideMenu.closeMenu();
+                break;
+            case 1:
+                Intent intento = new Intent(MainActivity.this, ReproductorGrafico.class);
+                intento.putExtra("button", true);
+                startActivity(intento);
+                resideMenu.closeMenu();
+                break;
+            case 2:
+                resideMenu.closeMenu();
+                break;
+        }
     }
 }

@@ -5,34 +5,65 @@
     android:orientation="vertical"
     android:id="@+id/activityReproductorGrafico" >
 
-    <TextView
-        android:id="@+id/tituloActual"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/artistaActual"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/albumActual"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <SeekBar
-        android:id="@+id/playingUbication"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:layout_margin="5dp"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        <!-- android:background="#99FFFFFF" -->
+
+        <TextView
+            android:id="@+id/tituloActual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/artistaActual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/albumActual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/currentPlayingPosition"
+            android:layout_width="98dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingLeft="5dp"
+            android:paddingTop="11dp" />
+
+        <SeekBar
+            android:id="@+id/playingUbication"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/currentPlayingDuration"
+            android:layout_width="99dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:paddingRight="5dp"
+            android:paddingTop="11dp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

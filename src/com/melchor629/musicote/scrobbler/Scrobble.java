@@ -1,11 +1,9 @@
 package com.melchor629.musicote.scrobbler;
 
-import android.util.Log;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import android.util.Log;
 
 /**
  * Envia scrobblings
@@ -47,30 +45,8 @@ public class Scrobble {
     public int scrobble() {
         long timestamp = System.currentTimeMillis() / 1000;
         final HashMap<String, String> sign = sign(titulo, artista, timestamp);
-        Peticiones.post("", new RequestParams(sign), new AsyncHttpResponseHandler() {
-            @SuppressWarnings ("deprecation")
-            @Override
-            public void onSuccess(String response) {
-                Log.d(TAG, response);
-                statusCode = Peticiones.error(response);
-                if(statusCode != 0) {
-                    switch (statusCode) {
-                        case 8:
-                        case 16:
-                            Peticiones.HTTPpost(sign);
-                            break;
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable error, String content) {
-                Log.e(TAG, "No se ha podido completar el pedido:");
-                Log.e(TAG, content + ";");
-                error.printStackTrace();
-            }
-        });
-        this.nowPlaying();
+        statusCode = Peticiones.error(Peticiones.HTTPSpost(sign));
+        Log.d(TAG, "Scrobbling enviado");
         //Make this variables again null for other uses
         titulo = null;
         artista = null;
@@ -79,34 +55,13 @@ public class Scrobble {
 
     /**
      * Envia a Last.FM que estás escuchando dicha canción
-     *
+     * @param duration Duration of the song, in seconds
      * @return status Estado resultante del updateNowPlaying
      */
-    public int nowPlaying() {
-        final HashMap<String, String> sign = sign(titulo, artista);
-        Peticiones.post("", new RequestParams(sign), new AsyncHttpResponseHandler() {
-            @SuppressWarnings ("deprecation")
-            @Override
-            public void onSuccess(String response) {
-                Log.d(TAG, response);
-                statusCode = Peticiones.error(response);
-                if(statusCode != 0) {
-                    switch (statusCode) {
-                        case 8:
-                        case 16:
-                            Peticiones.HTTPpost(sign);
-                            break;
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable error, String content) {
-                Log.e(TAG, "No se ha podido completar el pedido:");
-                Log.e(TAG, content + ";");
-                error.printStackTrace();
-            }
-        });
+    public int nowPlaying(int duration) {
+        final HashMap<String, String> sign = sign(titulo, artista, duration);
+        statusCode = Peticiones.error(Peticiones.HTTPSpost(sign));
+        Log.d(TAG, "nowPlaying canviado");
         return statusCode;
     }
 
@@ -116,8 +71,8 @@ public class Scrobble {
         return peticion;
     }
 
-    private HashMap<String, String> sign(String titulo, String artista) {
-        Map<String, String> datos = Peticiones.map("method", "track.updateNowPlaying", "track", titulo, "artist", artista, "sk", SK);
+    private HashMap<String, String> sign(String titulo, String artista, int duration) {
+        Map<String, String> datos = Peticiones.map("method", "track.updateNowPlaying", "track", titulo, "artist", artista, "duration", "" + duration, "sk", SK);
         HashMap<String, String> peticion = Peticiones.request(datos);
         return peticion;
     }

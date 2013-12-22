@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.5+'
+        classpath 'com.android.tools.build:gradle:0.7+'
     }
 }
 
@@ -16,8 +16,10 @@ repositories {
 dependencies {
     compile 'com.android.support:support-v4:13.0.+'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
-    compile 'com.github.chrisbanes.actionbarpulltorefresh:library:0.8'
-    compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abs:0.8'
+    compile 'com.github.chrisbanes.actionbarpulltorefresh:library:0.9+'
+    compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abs:0.9+'
+    compile 'com.loopj.android:android-async-http:1.4.4'
+    compile files('libs/nineoldandroids-library-2.4.0.jar', 'libs/colorart.jar')
 }
 
 android {

@@ -6,10 +6,6 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -46,7 +42,7 @@ public class Peticiones {
 
     /** Array with all descriptions for every error that could give Last.FM */
     public static String[] errorM = {
-            "Correcto", "", "Invalid service - This service does not exist", "Invalid Method - No method with that name in this package",
+            "Correcto", "Unknown Error", "Invalid service - This service does not exist", "Invalid Method - No method with that name in this package",
             "Authentication Failed - You do not have permissions to access the service", "Invalid format - This service doesn't exist in that format",
             "Invalid parameters - Your request is missing a required parameter", "Invalid resource specified", "Operation failed - Something else went wrong",
             "Invalid session key - Please re-authenticate", "Invalid API key - You must be granted a valid key by last.fm",
@@ -55,27 +51,11 @@ public class Peticiones {
             "Suspended API key - Access for your account has been suspended, please contact Last.fm", "", "",
             "Rate limit exceeded - Your IP has made too many requests in a short period"
     };
-
-    /** Static HTTP Client **/
-    private static AsyncHttpClient client = new AsyncHttpClient();
-
     /** Tag for the Logging Android system */
     private static final String TAG = "Scrobbler->Peticiones";
 
     /** Secret API key */
     private static final String Secret = "8a5b2c73afdd9f1a585754d52449f0cd";
-
-    public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        client.get(getAbsoluteUrl(url), params, responseHandler);
-    }
-
-    public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        client.post(getAbsoluteUrl(url), params, responseHandler);
-    }
-
-    private static String getAbsoluteUrl(String relativeUrl) {
-        return uRl + relativeUrl;
-    }
 
     /**
      * Envia una petición a Last.FM por HTTPS y POST
@@ -151,7 +131,6 @@ public class Peticiones {
             }
         }
 
-        Log.e(TAG, out);
         return out;
     }
 
@@ -282,19 +261,19 @@ public class Peticiones {
 
         params.put("api_sig", d.toString());
         params.put("format", "json");
-        StringBuilder builder = new StringBuilder(200);
+        //StringBuilder builder = new StringBuilder(200);
         HashMap<String, String> p = new HashMap<String, String>();
         for(Iterator<Entry<String, String>> it = params.entrySet().iterator(); it.hasNext(); ) {
             Entry<String, String> entry = it.next();
-            builder.append(entry.getKey());
+            /*builder.append(entry.getKey());
             builder.append('=');
             try {
                 builder.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                Log.e(TAG, "Error: " + e.toString());
+            } catch (Exception e) {
+                Log.e(TAG, "Error: " + e.toString() + " (" + entry.getKey() + "-" + entry.getValue() + ")");
             }
             if(it.hasNext())
-                builder.append('&');
+                builder.append('&');*/
             p.put(entry.getKey(), entry.getValue());
         }
         //return builder.toString();

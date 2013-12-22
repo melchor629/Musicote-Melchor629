@@ -33,7 +33,6 @@ public class Auth {
      * @param pass <i>Password for the username</i>
      */
     public Auth(String user, String pass) {
-        Log.d(TAG, "Llamado");
         if(user != null && pass != null) {
             username = user;
             password = pass;
@@ -46,7 +45,6 @@ public class Auth {
      * @return SK el código de sesión
      */
     public String getSK() {
-        Log.d(TAG, "Last.FM sesión iniciada");
         if(SK == null) {
             SK = AuthParser(Peticiones.HTTPSpost(sign()));
             Log.d("Scrobbler->Auth", "Renovando SK");
