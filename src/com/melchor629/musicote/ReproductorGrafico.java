@@ -277,7 +277,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                         new Background().execute(width, height);
                     song = Reproductor.tit;
                     doThings = true;
-                } else if(Reproductor.tit == null) {
+                } else if(Reproductor.tit == null && song != null) {
+                    song = null;
                     h.post(new Runnable() {
                         public void run() {
                             tituloActual.setText("");

@@ -20,7 +20,6 @@ import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,13 +68,7 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
     private static final String TAG_DURACIONS = "duracion";
     private static final String TAG_FILE = "archivo";
 
-    private TextView texto;
-    private ProgressBar barra;
     public volatile int progress;
-    private Handler h = new Handler();
-    private boolean H = true;
-    private boolean n = false;
-    private boolean e = true;
     private boolean isDownloaded = false;
     private ResideMenu resideMenu;
 
@@ -109,58 +102,6 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
             item.setTag(i);
             resideMenu.addMenuItem(item);
         }
-
-        android.view.animation.Interpolator on = new android.view.animation.DecelerateInterpolator();
-
-        texto = (TextView)findViewById(R.id.playingNow);
-        barra = (ProgressBar)findViewById(R.id.progressBar1);
-        barra.setMax(1000);
-        barra.setInterpolator(on);
-        barra.setSecondaryProgress(500);
-
-        final Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
-        final Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
-
-        if(Reproductor.a != -1)
-            n = true;
-
-        new Thread(
-                new Runnable() {
-                    public void run() {
-                        while(H) {
-                            if(e) {
-                                h.post(
-                                    new Runnable() {
-                                        public void run() {
-                                            if(Reproductor.a != -1) {
-                                                if(n || (Reproductor.a != -1 && n))
-                                                    o();
-                                                barra.setProgress((int)(Reproductor.a * 10d));
-                                                texto.setText(getResources().getString(R.string.playing) + " " + Reproductor.tit + " " + getResources().getString(R.string.playing_of) + " " + Reproductor.art);
-                                            } else {
-                                                if(!n) {
-                                                    Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
-                                                    ImageButton but = (ImageButton)findViewById(R.id.play);
-                                                    but.setTag("play");
-                                                    but.startAnimation(animAlpha);
-                                                    but.setImageDrawable(play);
-                                                    but.startAnimation(alphaAnim);
-                                                    n = true;
-                                                }
-                                                barra.setProgress((int)(Reproductor.a * 10d));
-                                                texto.setText(getResources().getString(R.string.playing_no));
-                                            }
-                                        }
-                                    }
-                                );
-                            }
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) { }
-                        }
-                    }
-                }
-        ).start();
 
         // getting intent data
         Intent in = getIntent();
@@ -270,7 +211,6 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
             startService(in);
 
             Reproductor.a = 0;
-            n = false;
         } else if(but.getTag().toString().equals("pause")) {
             but.setTag("playpause");
             but.startAnimation(animAlpha);
@@ -456,19 +396,16 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        H = false;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        e = false;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        e = true;
     }
 
     private void o() {
@@ -480,7 +417,6 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
         but.startAnimation(animAlpha);
         but.setImageDrawable(pause);
         but.startAnimation(alphaAnim);
-        n = false;
     }
 
     /* (non-Javadoc)

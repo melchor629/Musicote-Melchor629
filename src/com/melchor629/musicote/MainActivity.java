@@ -125,12 +125,12 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         WifiManager mw = (WifiManager)getSystemService(Context.WIFI_SERVICE);
         WifiInfo wi = mw.getConnectionInfo();
         String SSID = wi.getSSID();
-        Log.i("MainActivity", "Wifi conectado: " + SSID + " " + (SSID != null ? SSID.equals("wifi5eber") : ""));
+        Log.i("MainActivity", "Wifi conectado: " + SSID + " " + (SSID != null ? SSID.equals("Madrigal") : ""));
         if(SSID == null) {
             SSID = "";
             Toast.makeText(this, "No está usando WIFI, se recomienda utilizar la app con WIFI", Toast.LENGTH_LONG).show();
         }
-        if(SSID.equals("wifi5eber") || SSID.contains("wifi5eber") || System.getProperty("os.version").equals("3.4.0-gd853d22")) {
+        if(SSID.equals("Madrigal") || SSID.contains("Madrigal") || System.getProperty("os.version").equals("3.4.0-gd853d22")) {
             MainActivity.url = "192.168.1.133";
         } else {
             MainActivity.url = "reinoslokos.no-ip.org";

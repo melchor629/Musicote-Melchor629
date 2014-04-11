@@ -124,12 +124,13 @@ public class ParseJSON {
         try {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
-            URL urlhttp = new URL("http://" + host + "/");
+            URL urlhttp = new URL("http://" + host);
             HttpURLConnection http = (HttpURLConnection) urlhttp.openConnection();
             http.setReadTimeout(1000);
             response = http.getResponseCode();
+            http.disconnect();
         } catch (Exception e) {
-            Log.e("Comprobando", "Excepción HTTPURL: " + e.toString());
+            Log.e("Comprobando", "Excepción HTTPURL: " + e.toString() + " " + host);
         }
 
         return response;
