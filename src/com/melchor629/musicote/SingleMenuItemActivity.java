@@ -202,13 +202,7 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
                 url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo;
 
             // Starting new intent
-            Intent in = new Intent(getApplicationContext(), Reproductor.class);
-            in.putExtra("titulo", name);
-            in.putExtra("artista", cost);
-            in.putExtra("archivo", url);
-            in.putExtra("album", description);
-
-            startService(in);
+            PlaylistManager.self.startPlaying(name, cost, description, url);
 
             Reproductor.a = 0;
         } else if(but.getTag().toString().equals("pause")) {
@@ -233,8 +227,7 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
      * @param v
      */
     public void StopSong(View v) {
-        Intent in = new Intent(getApplicationContext(), Reproductor.class);
-        stopService(in);
+        PlaylistManager.self.stopPlaying();
     }
 
     /**
@@ -248,7 +241,7 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
         if(isDownloaded)
             url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() +
                 "/" + archivo.substring(archivo.lastIndexOf("/")+1);
-        Reproductor.addSong(name, cost, url, description);
+        PlaylistManager.self.addSong(name, cost, description, url);
         Toast.makeText(this, name + " " + this.getResources().getString(R.string.added_to_playlist), Toast.LENGTH_LONG).show();
     }
 

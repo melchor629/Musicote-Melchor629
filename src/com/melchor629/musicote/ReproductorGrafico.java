@@ -27,6 +27,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.melchor629.musicote.PlaylistManager.Song;
 import com.melchor629.musicote.scrobbler.Album;
 
 import java.io.IOException;
@@ -108,22 +109,22 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
 
         H = true;
         h = new Handler();
-        new Thread(this).start();
+        new Thread(this, "Player GUI").start();
     }
 
     private void setThings() {
-        tituloActual.setText(Reproductor.tit);
-        artistaActual.setText(Reproductor.art);
-        albumActual.setText(Reproductor.alb);
+        tituloActual.setText(PlaylistManager.self.get(0).title);
+        artistaActual.setText(PlaylistManager.self.get(0).artist);
+        albumActual.setText(PlaylistManager.self.get(0).album);
         positionActual.setText("0:00");
         durationActual.setText("0:00");
         ArrayList<HashMap<String, String>> toPlaylistView = new ArrayList<HashMap<String, String>>();
-        ArrayList<String[]> playlist = Reproductor.getPlaylist();
+        ArrayList<Song> playlist = PlaylistManager.self.getPlaylist();
         if(playlist != null) {
             for(int i = 1; i < playlist.size(); i++) {
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("titulo", playlist.get(i)[0]);
-                map.put("artista", playlist.get(i)[1]);
+                map.put("titulo", playlist.get(i).title);
+                map.put("artista", playlist.get(i).artist);
                 toPlaylistView.add(map);
             }
 
@@ -136,9 +137,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
             this.playlist.setLongClickable(true);
             this.playlist.setOnItemLongClickListener(new OnItemLongClickListener() {
                 @Override
-                public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                               int arg2, long arg3) {
-                    Reproductor.deleteSong(arg2 + 1);
+                public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                    PlaylistManager.self.deleteSong(arg2 + 1);
                     return false;
                 }
             });
@@ -167,15 +167,14 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
 
     public void stop(View v) {
         if(Reproductor.a != -1) {
-            Intent in = new Intent(getApplicationContext(), Reproductor.class);
-            stopService(in);
+            PlaylistManager.self.stopPlaying();
             playpauseActual.setImageResource(R.drawable.ic_stat_name);
             playpauseActual.setTag("play");
         }
     }
 
     public void next(View v) {
-        if(Reproductor.isNextSong()) {
+        if(PlaylistManager.self.isNextSong()) {
             Reproductor.reproductor.seekTo(Reproductor.reproductor.getDuration() - 1);
         } else {
             Toast.makeText(this, "No hay siguiente canción", Toast.LENGTH_LONG).show();
@@ -196,8 +195,8 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
     }
 
     private Object[] compoundDrawable(int width, int height) {
-        if(Reproductor.alb != null && Reproductor.alb.length() != 0) {
-            Album album = new Album(Reproductor.art, Reproductor.alb);
+        if(PlaylistManager.self.get(0).album != null && PlaylistManager.self.get(0).album.length() != 0) {
+            Album album = new Album(PlaylistManager.self.get(0).artist, PlaylistManager.self.get(0).album);
             String albumart = album.getInfo();
             InputStream is;
             try {
@@ -258,7 +257,7 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                         if(doThings || (width == 0 && height == 0))
                             setThings();
                         //Time stuff
-                        if(Reproductor.tit != null && Reproductor.reproductor.isPlaying() && Reproductor.a != -1) {
+                        if(PlaylistManager.self.get(0).title != null && Reproductor.a != -1 && Reproductor.reproductor.isPlaying()) {
                             int duration = Reproductor.reproductor.getDuration() / 1000;
                             int position = Reproductor.reproductor.getCurrentPosition() / 1000;
                             int minutes = position / 60;
@@ -272,12 +271,12 @@ public class ReproductorGrafico extends SherlockListActivity implements Runnable
                 }
             );
             synchronized (this) {
-                if(Reproductor.tit != null && width != 0 && height != 0 && !song.equals(Reproductor.tit)) {
-                    if(Reproductor.alb != "" && Reproductor.alb != null)
+                if(PlaylistManager.self.get(0).title != null && width != 0 && height != 0 && !song.equals(PlaylistManager.self.get(0).title)) {
+                    if(PlaylistManager.self.get(0).album != "" && PlaylistManager.self.get(0).album != null)
                         new Background().execute(width, height);
-                    song = Reproductor.tit;
+                    song = PlaylistManager.self.get(0).title;
                     doThings = true;
-                } else if(Reproductor.tit == null && song != null) {
+                } else if(PlaylistManager.self.get(0).title == null && song != null) {
                     song = null;
                     h.post(new Runnable() {
                         public void run() {

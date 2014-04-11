@@ -250,19 +250,16 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                                 if(Reproductor.a == -1) {
                                     String url = contactList.get(which).get("archivo");
                                     if(file.exists()) url = file.getAbsolutePath();
-                                    Intent in = new Intent(getApplicationContext(), Reproductor.class);
-                                    in.putExtra("titulo", ((TextView) v.findViewById(R.id.name)).getText().toString());
-                                    in.putExtra("artista", ((TextView) v.findViewById(R.id.email)).getText().toString());
-                                    in.putExtra("album", ((TextView) v.findViewById(R.id.mobile)).getText().toString());
-                                    in.putExtra("archivo", url);
-
-                                    startService(in);
+                                    PlaylistManager.self.startPlaying(((TextView) v.findViewById(R.id.name)).getText().toString(), 
+                                        ((TextView) v.findViewById(R.id.email)).getText().toString(),
+                                        ((TextView) v.findViewById(R.id.mobile)).getText().toString(), url);
                                 } else {
                                     String url = contactList.get(which).get("archivo");
-                                    Reproductor.addSong(((TextView) v.findViewById(R.id.name)).getText().toString(),
-                                            ((TextView) v.findViewById(R.id.email)).getText().toString(), url,
-                                            ((TextView) v.findViewById(R.id.mobile)).getText().toString());
-                                    Reproductor.playNextSong();
+                                    if(file.exists()) url = file.getAbsolutePath();
+                                    PlaylistManager.self.stopPlaying();
+                                    PlaylistManager.self.addSong(((TextView) v.findViewById(R.id.name)).getText().toString(),
+                                            ((TextView) v.findViewById(R.id.email)).getText().toString(),
+                                            ((TextView) v.findViewById(R.id.mobile)).getText().toString(), url);
                                 }
                             } else if(which2 == 1) {
                                 if(file.exists()) {
@@ -273,9 +270,9 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                             } else if(which2 == 2) {
                                 String url = contactList.get(which).get("archivo");
                                 if(file.exists()) url = file.getAbsolutePath();
-                                Reproductor.addSong(((TextView) v.findViewById(R.id.name)).getText().toString(),
-                                        ((TextView) v.findViewById(R.id.email)).getText().toString(), url,
-                                        ((TextView) v.findViewById(R.id.mobile)).getText().toString());
+                                PlaylistManager.self.addSong(((TextView) v.findViewById(R.id.name)).getText().toString(),
+                                        ((TextView) v.findViewById(R.id.email)).getText().toString(),
+                                        ((TextView) v.findViewById(R.id.mobile)).getText().toString(), url);
                             }
                         }
                     })

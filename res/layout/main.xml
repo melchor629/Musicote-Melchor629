@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/fondo"
+    android:background="#616A72"
     android:orientation="vertical"
-    tools:context=".MyFirstActivity"
-    android:id="@+id/mainLayout" >
+    tools:context=".MyFirstActivity" >
 
     <LinearLayout
         android:layout_width="match_parent"
