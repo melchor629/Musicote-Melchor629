@@ -15,7 +15,6 @@ import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -27,8 +26,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.special.ResideMenu.menu.ResideMenu;
-import com.special.ResideMenu.menu.ResideMenuItem;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -56,10 +53,9 @@ import java.net.URLConnection;
 
 /**
  * Crea la actividad de cuando seleccionas una cancion, SOLO UNA
- *
  * @author Melchor
  */
-public class SingleMenuItemActivity extends SherlockActivity implements OnClickListener {
+public class SingleMenuItemActivity extends SherlockActivity {
 
     // JSON node keys
     private static final String TAG_NAME = "titulo";
@@ -70,7 +66,6 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
 
     public volatile int progress;
     private boolean isDownloaded = false;
-    private ResideMenu resideMenu;
 
     public static String url;
     public static String name;
@@ -88,20 +83,6 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-
-        //ResideMenu
-        resideMenu = new ResideMenu(this);
-        resideMenu.setBackground(R.drawable.blurred_background);
-        resideMenu.attachToActivity(this);
-        String titles[] = { "Home", "Settings", "Playlist", "About" };
-        int icon[] = { R.drawable.ic_home, R.drawable.cogwheels, R.drawable.playlist, R.drawable.ic_launcher };
-
-        for (int i = 0; i < titles.length; i++){
-            ResideMenuItem item = new ResideMenuItem(this, icon[i], titles[i]);
-            item.setOnClickListener(this);
-            item.setTag(i);
-            resideMenu.addMenuItem(item);
-        }
 
         // getting intent data
         Intent in = getIntent();
@@ -410,32 +391,5 @@ public class SingleMenuItemActivity extends SherlockActivity implements OnClickL
         but.startAnimation(animAlpha);
         but.setImageDrawable(pause);
         but.startAnimation(alphaAnim);
-    }
-
-    /* (non-Javadoc)
-     * @see android.view.View.OnClickListener#onClick(android.view.View)
-     */
-    @Override
-    public void onClick(View view) {
-        ResideMenuItem item = (ResideMenuItem) view;
-        int which = (Integer) item.getTag();
-        switch(which) {
-            case 0:
-                finish();
-            case 1:
-                Intent intent = new Intent(this, Ajustes.class);
-                startActivity(intent);
-                resideMenu.closeMenu();
-                break;
-            case 2:
-                Intent intento = new Intent(this, ReproductorGrafico.class);
-                intento.putExtra("button", true);
-                startActivity(intento);
-                resideMenu.closeMenu();
-                break;
-            case 3:
-                resideMenu.closeMenu();
-                break;
-        }
     }
 }

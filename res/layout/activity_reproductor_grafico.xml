@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activityReproductorGrafico"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/activityReproductorGrafico" >
+    android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dip"
+        android:layout_weight="0.07"
         android:orientation="vertical" >
+
         <!-- android:background="#99FFFFFF" -->
 
         <TextView
@@ -34,6 +36,20 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:scaleType="fitXY" >
+
+	        <ImageView
+	            android:id="@+id/AlbumGP"
+	            android:layout_width="fill_parent"
+	            android:layout_height="match_parent" />
+	    </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -62,13 +78,13 @@
             android:layout_weight="1"
             android:paddingRight="5dp"
             android:paddingTop="11dp" />
-
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal" >
+        android:gravity="center_horizontal"
+        android:paddingBottom="5dp" >
 
         <ImageButton
             android:id="@+id/playpauseActual"
@@ -93,13 +109,6 @@
             android:contentDescription="@string/next"
             android:onClick="next"
             android:src="@drawable/ic_next" />
-
     </LinearLayout>
-
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </ListView>
 
 </LinearLayout>

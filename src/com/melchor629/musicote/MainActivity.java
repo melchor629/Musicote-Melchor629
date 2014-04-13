@@ -21,7 +21,6 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
@@ -33,8 +32,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DB_entry;
-import com.special.ResideMenu.menu.ResideMenu;
-import com.special.ResideMenu.menu.ResideMenuItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,7 +68,7 @@ import java.util.HashMap;
  * @author melchor
  */
 public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener,
-        uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener, android.view.View.OnClickListener {
+        uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener {
 
     public static String Last_String = "";
     public static volatile int response = 0;
@@ -82,16 +79,10 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     private Toast tostado;
     private String oldText = "";
     private PullToRefreshLayout mPullToRefreshAttacher;
-    private ResideMenu resideMenu;
 
     // contacts JSONArray
     private static JSONArray contacts = null;
     private ArrayList<HashMap<String, String>> contactList;
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        return resideMenu.onInterceptTouchEvent(ev) || super.dispatchTouchEvent(ev);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,21 +96,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             .theseChildrenArePullable(android.R.id.list)
             .listener(this)
             .setup(mPullToRefreshAttacher);
-
-        resideMenu = new ResideMenu(this);
-        resideMenu.setBackground(R.drawable.blurred_background);
-        resideMenu.attachToActivity(this);
-
-        // create menu items;
-        String titles[] = { "Settings", "Playlist", "About" };
-        int icon[] = { R.drawable.cogwheels, R.drawable.playlist, R.drawable.ic_launcher };
-
-        for (int i = 0; i < titles.length; i++){
-            ResideMenuItem item = new ResideMenuItem(this, icon[i], titles[i]);
-            item.setOnClickListener(this);
-            item.setTag(i);
-            resideMenu.addMenuItem(item);
-        }
 
         // La app prueba en busca de la dirección correcta
         WifiManager mw = (WifiManager)getSystemService(Context.WIFI_SERVICE);
@@ -490,7 +466,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 .setOngoing(true);
         nm.cancel(3);
         nm.notify(3, notification.build());
-        //FIXME mPullToRefreshAttacher.setRefreshing(true);
+        mPullToRefreshAttacher.setRefreshing(true); //FIXME Comrpobar si va bien
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -606,31 +582,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         } else {
             mPullToRefreshAttacher.setRefreshComplete();
             Toast.makeText(MainActivity.this, "No se ha podido conectar con el servidor", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see android.view.View.OnClickListener#onClick(android.view.View)
-     */
-    @Override
-    public void onClick(View view) {
-        ResideMenuItem item = (ResideMenuItem) view;
-        int which = (Integer) item.getTag();
-        switch(which) {
-            case 0:
-                Intent intent = new Intent(MainActivity.this, Ajustes.class);
-                startActivity(intent);
-                resideMenu.closeMenu();
-                break;
-            case 1:
-                Intent intento = new Intent(MainActivity.this, ReproductorGrafico.class);
-                intento.putExtra("button", true);
-                startActivity(intento);
-                resideMenu.closeMenu();
-                break;
-            case 2:
-                resideMenu.closeMenu();
-                break;
         }
     }
 }

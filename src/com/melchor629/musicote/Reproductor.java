@@ -70,6 +70,8 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
         reproductor = newPlayer();
         notification();
+        if(onEnd != null && beforeEnd != null)
+            self.callbacks();
     }
 
     /** Configura un reproductor */
@@ -187,8 +189,10 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         if(onEnd != null)
             onEnd.run();
         reproductor.release();
-        initMediaPlayer();
-        //this.stopSelf();
+        if(self.isNextSong())
+            initMediaPlayer();
+        else
+            this.stopSelf();
     }
 
     /* (non-Javadoc)
@@ -196,11 +200,10 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      */
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        if(extra == -1004) {
-            Log.e("Reproductor", "No se ha podido cargar el archivo: "+song.url);
-            Toast.makeText(getApplicationContext(), "Cannot load '" + song.title + "'", Toast.LENGTH_LONG).show();
-        }
-        onEnd.run();
+        Log.e("Reproductor", "No se ha podido cargar el archivo: "+song.url);
+        //Toast.makeText(getApplicationContext(), "Cannot load '" + song.title + "'", Toast.LENGTH_LONG).show();
+        if(onEnd != null)
+            onEnd.run();
         return true;
     }
 
@@ -225,11 +228,11 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         song = null;
         beforeEnd = null;
         onEnd = null;
+        Log.i("Reproductor", "onDestroy");
     }
 
     /**
      * Class for manage the current position of the song, and send the scrobbling
-     *
      * @author melchor9000
      */
     class coso extends Thread {

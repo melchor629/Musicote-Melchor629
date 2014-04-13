@@ -54,7 +54,9 @@ public class PlaylistManager {
      * @return Song info
      */
     public Song get(int i) {
-        return playlist.get(i);
+        if(isNextSong())
+            return playlist.get(i);
+        return null;
     }
 
     /**
@@ -109,6 +111,10 @@ public class PlaylistManager {
         Intent intent = new Intent(MainActivity.appContext, Reproductor.class);
         intent.putExtra("autostart", b1);
         MainActivity.appContext.startService(intent);
+        callbacks();
+    }
+
+    void callbacks() {
         Reproductor.beforeEnd = new callback() {
             @Override
             public void run() {
@@ -118,12 +124,16 @@ public class PlaylistManager {
             }
         };
         Reproductor.onEnd = new callback() {
+            public boolean runned = false;
             @Override
             public void run() {
+                if(runned) return;
                 Log.i("PlaylistManager", "onEnd called");
                 deleteSong(0);
+                Reproductor.a = -1;
                 if(!isNextSong()) return;
                 //Reproductor.start();
+                runned = true;
             }
         };
     }
