@@ -1,16 +1,14 @@
 package com.melchor629.musicote.scrobbler;
 
+import android.annotation.SuppressLint;
 import android.os.StrictMode;
 import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -37,11 +35,8 @@ public class Peticiones {
     /** Url for the https API */
     public static final String url = "https://ws.audioscrobbler.com/2.0/";
 
-    /** Url for the http API */
-    public static final String uRl = "http://ws.audioscrobbler.com/2.0/";
-
     /** Array with all descriptions for every error that could give Last.FM */
-    public static String[] errorM = {
+    public final static String[] errorM = {
             "Correcto", "Unknown Error", "Invalid service - This service does not exist", "Invalid Method - No method with that name in this package",
             "Authentication Failed - You do not have permissions to access the service", "Invalid format - This service doesn't exist in that format",
             "Invalid parameters - Your request is missing a required parameter", "Invalid resource specified", "Operation failed - Something else went wrong",
@@ -60,7 +55,7 @@ public class Peticiones {
     /**
      * Envia una petición a Last.FM por HTTPS y POST
      *
-     * @param request Petición creada a través de {@link sign}
+     * @param params Petición creada a través de {@link request(HashMap<String, String>)}
      * @return out String con el xml/json de la petición
      */
     public static String HTTPSpost(HashMap<String, String> params) {
@@ -145,10 +140,9 @@ public class Peticiones {
      * }<br>
      * });</code>
      *
-     * @param request Petición creada a través de {@link sign}
+     * @param params Petición creada a través de {@link sign}
      * @return out String con el xml/json de la petición
      */
-    @Deprecated
     public static String HTTPpost(final HashMap<String, String> params) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -261,22 +255,9 @@ public class Peticiones {
 
         params.put("api_sig", d.toString());
         params.put("format", "json");
-        //StringBuilder builder = new StringBuilder(200);
         HashMap<String, String> p = new HashMap<String, String>();
-        for(Iterator<Entry<String, String>> it = params.entrySet().iterator(); it.hasNext(); ) {
-            Entry<String, String> entry = it.next();
-            /*builder.append(entry.getKey());
-            builder.append('=');
-            try {
-                builder.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-            } catch (Exception e) {
-                Log.e(TAG, "Error: " + e.toString() + " (" + entry.getKey() + "-" + entry.getValue() + ")");
-            }
-            if(it.hasNext())
-                builder.append('&');*/
+        for(Entry<String, String> entry : params.entrySet())
             p.put(entry.getKey(), entry.getValue());
-        }
-        //return builder.toString();
         return p;
     }
 
@@ -321,6 +302,7 @@ public class Peticiones {
         return mp;
     }
 
+    @SuppressLint("TrulyRandom")
     private static void trustAllHosts() {
         // Create a trust manager that does not validate certificate chains
         TrustManager[] trustAllCerts = new TrustManager[] {

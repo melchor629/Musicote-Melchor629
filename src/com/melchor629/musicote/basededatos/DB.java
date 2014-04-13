@@ -84,11 +84,8 @@ import android.util.Log;
  */
 public class DB extends SQLiteOpenHelper {
 
-    private static int db_version = DB_entry.DATABASE_VERSION;
-    private static String db_musicote = DB_entry.DATABASE_MUSICOTE;
-
     public DB(Context context) {
-        super(context, db_musicote, null, db_version);
+        super(context, DB_entry.DATABASE_MUSICOTE, null, DB_entry.DATABASE_VERSION);
     }
 
     public void onCreate(SQLiteDatabase db) {
@@ -132,8 +129,7 @@ public class DB extends SQLiteOpenHelper {
     public long obtenerAcceso(SQLiteDatabase db, String tabla) {
         Cursor c = db.query("acceso", new String[] {"fecha"}, "tabla = ?", new String[] {tabla}, null, null, null);
         c.moveToFirst();
-        long Short = c.getLong(c.getColumnIndexOrThrow("fecha"));
-        return Short;
+        return c.getLong(c.getColumnIndexOrThrow("fecha"));
     }
 
     public boolean isNecesaryUpgrade(SQLiteDatabase db, SharedPreferences pref) {
@@ -141,7 +137,7 @@ public class DB extends SQLiteOpenHelper {
         long ahora = System.currentTimeMillis();
         long diff = Long.parseLong(pref.getString("updateTime", "15"), 10) * 60l * 1000l;
         Log.d("DB", "Is necesary upgrade table contents? "
-                + (((ahora - ultimo) > diff) == true ? "True" : "False, will be in " + ((ahora - ultimo) / 60l / 1000l)) + " of " + diff / 60l / 1000l + " minutes.");
+                + (((ahora - ultimo) > diff) ? "True" : "False, will be in " + ((ahora - ultimo) / 60l / 1000l)) + " of " + diff / 60l / 1000l + " minutes.");
         return (ahora - ultimo) > diff;
     }
 
@@ -150,7 +146,7 @@ public class DB extends SQLiteOpenHelper {
         String which = DB_entry.COLUMN_NAME_TITULO + " LIKE ? OR " + DB_entry.COLUMN_NAME_ARTISTA + " LIKE ? OR " + DB_entry.COLUMN_NAME_ALBUM + " LIKE ?";
         String[] where = {"%" + query + "%", "%" + query + "%", "%" + query + "%"};
 
-        Cursor c = db.query(
+        return db.query(
                 DB_entry.TABLE_CANCIONES,                 // The table to query
                 null,                                     // The columns to return
                 which,                                    // The columns for the WHERE clause
@@ -159,6 +155,5 @@ public class DB extends SQLiteOpenHelper {
                 null,                                     // don't filter by row groups
                 sortOrder                                 // The sort order
         );
-        return c;
     }
 }

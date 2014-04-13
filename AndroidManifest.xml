@@ -31,14 +31,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.melchor629.musicote.DisplayMessageActivity" />
         <activity android:name="com.melchor629.musicote.SingleMenuItemActivity"
-            	  android:label="Una simple canción..."></activity>
+            	  android:label="Una simple canción..." />
         <activity android:name="com.melchor629.musicote.Ajustes" />
         
         <service android:name="com.melchor629.musicote.Reproductor"
-            	 android:enabled="true"></service>
-        <activity android:name="com.melchor629.musicote.ReproductorGrafico"></activity>
+            	 android:enabled="true" />
+        <activity android:name="com.melchor629.musicote.ReproductorGrafico" />
     </application>
 
 </manifest>

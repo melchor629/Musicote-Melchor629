@@ -64,16 +64,15 @@ public class SingleMenuItemActivity extends SherlockActivity {
     private static final String TAG_DURACIONS = "duracion";
     private static final String TAG_FILE = "archivo";
 
-    public volatile int progress;
+    private volatile int progress;
     private boolean isDownloaded = false;
 
-    public static String url;
-    public static String name;
-    public static String cost;
-    public static String description;
-    public static String duracion;
-
-    private static String archivo;
+    private String url;
+    private String name;
+    private String cost;
+    private String description;
+    private String duracion;
+    private String archivo;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,7 +119,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
         isDownloaded = file.exists();
         if(isDownloaded)
             ((ImageButton) findViewById(R.id.stopActual)).setImageResource(R.drawable.delete);
-        ((ImageButton) findViewById(R.id.stopActual)).setOnLongClickListener(new OnLongClickListener() {
+        findViewById(R.id.stopActual).setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 if(!isDownloaded)
@@ -162,7 +161,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
     /**
      * PlaySong
      * Al apretar el enlace para reproducir canción aparece un servicio dificil de manejar
-     * @param v
+     * @param v view from android
      */
     public void PlaySong(final View v) {
         Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
@@ -177,7 +176,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
             but.setTag("pause");
 
             url = archivo;
-            String archivo = SingleMenuItemActivity.archivo.substring(SingleMenuItemActivity.archivo.lastIndexOf("/")+1);
+            String archivo = this.archivo.substring(this.archivo.lastIndexOf("/")+1);
 
             if(isDownloaded)
                 url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo;
@@ -205,7 +204,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * StopSong
      * Para el servicio del reproductor
      *
-     * @param v
+     * @param v view from android
      */
     public void StopSong(View v) {
         PlaylistManager.self.stopPlaying();
@@ -215,7 +214,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * addToPlaylist
      * Añade una canción a la lista de reproducción
      *
-     * @param v
+     * @param v view from android
      */
     public void addToPlaylist(View v) {
         String url = archivo;
@@ -230,7 +229,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * download
      * Descarga la canción seleccionada
      *
-     * @param v
+     * @param v view from android
      */
     public void download(View v) {
         if(!isDownloaded) { //Only if it isn't downloaded
@@ -298,11 +297,6 @@ public class SingleMenuItemActivity extends SherlockActivity {
                         } else {
                             Toast.makeText(getApplicationContext(), "No hay SD montada", Toast.LENGTH_LONG).show();
                         }
-                        try {
-                            this.finalize();
-                        } catch (Throwable e) {
-                            Log.e("SingleMenuItem", "Error: " + e.toString());
-                        }
                     }
                 }
             ).start();
@@ -365,21 +359,6 @@ public class SingleMenuItemActivity extends SherlockActivity {
             AlertDialog alert = builder.create();
             alert.show();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     private void o() {

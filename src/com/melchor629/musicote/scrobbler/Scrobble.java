@@ -67,13 +67,11 @@ public class Scrobble {
 
     private HashMap<String, String> sign(String titulo, String artista, long time) {
         Map<String, String> datos = Peticiones.map("method", "track.scrobble", "track", titulo, "artist", artista, "timestamp", "" + time, "sk", SK);
-        HashMap<String, String> peticion = Peticiones.request(datos);
-        return peticion;
+        return Peticiones.request(datos);
     }
 
     private HashMap<String, String> sign(String titulo, String artista, int duration) {
         Map<String, String> datos = Peticiones.map("method", "track.updateNowPlaying", "track", titulo, "artist", artista, "duration", "" + duration, "sk", SK);
-        HashMap<String, String> peticion = Peticiones.request(datos);
-        return peticion;
+        return Peticiones.request(datos);
     }
 }

@@ -15,9 +15,9 @@ import java.util.Map;
  */
 public class Album {
 
-    public String album;
-    public String artista;
-    public String albumUrl;
+    private String album;
+    private String artista;
+    private String albumUrl;
 
     private final String TAG = "Scrobbler->Album";
 
@@ -69,7 +69,7 @@ public class Album {
      * @param id    <i>ID of the image size [0-5]</i>
      * @return <i>The url in a String</i>
      */
-    public String getAlbumUrl(JSONObject album, int id) {
+    String getAlbumUrl(JSONObject album, int id) {
         if(id > 5 || id < 0)
             id = 3;
         try {
@@ -87,7 +87,6 @@ public class Album {
 
     private HashMap<String, String> sign(String artista, String album) {
         Map<String, String> datos = Peticiones.map("method", "album.getinfo", "artist", artista, "album", album);
-        HashMap<String, String> peticion = Peticiones.request(datos);
-        return peticion;
+        return Peticiones.request(datos);
     }
 }

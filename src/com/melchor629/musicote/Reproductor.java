@@ -59,10 +59,8 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
     /**
      * When the service is ready, start playing the song
-     *
-     * @param song a String array with all the data
      */
-    public void initMediaPlayer() {
+    private void initMediaPlayer() {
         if(autostart)
             song = self.get(0);
         else
@@ -100,7 +98,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     }
 
     /** Notificación de la canción */
-    public void notification() {
+    private void notification() {
         int mID = 1;
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
@@ -170,14 +168,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             }
         } catch (IllegalStateException e) {
             Log.d("Reproductor", "Se ha invocado el pause, aunque el reproductor está cerrado");
-        }
-    }
-    
-    public static void start() {
-        try {
-            reproductor.start();
-        } catch(NullPointerException e) {
-            Log.d("Reproductor", "Se ha invocado start cuando no debia");
         }
     }
 

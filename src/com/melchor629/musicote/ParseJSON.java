@@ -40,9 +40,9 @@ import java.net.URL;
  */
 public class ParseJSON {
 
-    static InputStream is = null;
-    static JSONObject jObj = null;
-    static String json = "";
+    private static InputStream is = null;
+    private static JSONObject jObj = null;
+    private static String json = "";
 
     // constructor
     public ParseJSON() {
@@ -56,7 +56,7 @@ public class ParseJSON {
      * Descarga y carga un JSON a JSONObject
      * Download & load a JSON to JSONObetct
      *
-     * @param url
+     * @param url Url with a JSON object
      * @return JSONObject jObj
      */
     public JSONObject getJSONFromUrl(String url) {
@@ -89,7 +89,8 @@ public class ParseJSON {
                 StringBuilder sb = new StringBuilder();
                 String line = null;
                 while((line = reader.readLine()) != null) {
-                    sb.append(line + "\n");
+                    sb.append(line);
+                    sb.append('\n');
                 }
                 is.close();
                 json = sb.toString();
@@ -115,7 +116,7 @@ public class ParseJSON {
      * Sirve para comprobar si está encendido el PC
      * Nothing to see here...
      *
-     * @param host
+     * @param host HOST IP
      * @return int response
      */
     public static int HostTest(String host) {

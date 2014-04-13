@@ -4,11 +4,11 @@
     android:id="@+id/mainLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#616A72"
     android:orientation="vertical"
     tools:context=".MyFirstActivity" >
 
     <LinearLayout
+        android:background="#616A72"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >

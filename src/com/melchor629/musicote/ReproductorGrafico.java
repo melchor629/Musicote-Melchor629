@@ -18,7 +18,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -42,9 +41,9 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
     private TextView albumActual;
     private TextView positionActual;
     private TextView durationActual;
+    private ImageView image;
     private SeekBar playingUbication;
     private ImageButton playpauseActual;
-    private ActionBar ab;
 
     private volatile boolean H;
     private Handler h;
@@ -62,8 +61,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
         setContentView(R.layout.activity_reproductor_grafico);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         button = getIntent().getBooleanExtra("button", false);
 
         //Starting layout variables
@@ -74,6 +72,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
         playpauseActual = (ImageButton) findViewById(R.id.playpauseActual);
         positionActual = (TextView) findViewById(R.id.currentPlayingPosition);
         durationActual = (TextView) findViewById(R.id.currentPlayingDuration);
+        image = (ImageView) findViewById(R.id.AlbumGP);
 
         playingUbication.setOnSeekBarChangeListener(this);
 
@@ -98,11 +97,10 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
         positionActual.setText("0:00");
         durationActual.setText("0:00");
 
-        ImageView a = (ImageView) findViewById(R.id.AlbumGP);
-        if(a.getMeasuredWidth() < a.getMeasuredHeight())
-            a.setLayoutParams(new android.widget.LinearLayout.LayoutParams(a.getMeasuredWidth(), a.getMeasuredWidth()));
-        if(a.getMeasuredWidth() > a.getMeasuredHeight())
-            a.setLayoutParams(new android.widget.LinearLayout.LayoutParams(a.getMeasuredHeight(), a.getMeasuredHeight()));
+        if(image.getMeasuredWidth() < image.getMeasuredHeight())
+            image.setLayoutParams(new android.widget.LinearLayout.LayoutParams(image.getMeasuredWidth(), image.getMeasuredWidth()));
+        if(image.getMeasuredWidth() > image.getMeasuredHeight())
+            image.setLayoutParams(new android.widget.LinearLayout.LayoutParams(image.getMeasuredHeight(), image.getMeasuredHeight()));
     }
 
     public void playpause(View v) {
@@ -153,15 +151,15 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
         final int time = 300;
         Animation a = AnimationUtils.loadAnimation(getApplicationContext(), id);
         a.setDuration(time);
-        ((ImageView) findViewById(R.id.AlbumGP)).startAnimation(a);
+        image.startAnimation(a);
         new Thread(new Runnable() {
             public void run() {
                 try {
                     Thread.sleep(type ? 1 : time);
                     h.post(new Runnable() {
                         public void run() {
-                            if(((ImageView) findViewById(R.id.AlbumGP)) != null)
-                                ((ImageView) findViewById(R.id.AlbumGP)).setImageBitmap(bmp);
+                            if(image != null)
+                                image.setImageBitmap(bmp);
                             }
                         });
                 } catch(InterruptedException e) {}
@@ -200,7 +198,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
 
             synchronized (this) {
                 if(PlaylistManager.self.get(0) != null && !song.equals(PlaylistManager.self.get(0).title)) {
-                    if(PlaylistManager.self.get(0).album != "" && PlaylistManager.self.get(0).album != null)
+                    if(PlaylistManager.self.get(0).album.isEmpty() && PlaylistManager.self.get(0).album != null)
                         new Background().execute(0);
                     song = PlaylistManager.self.get(0).title;
                     doThings = true;
@@ -269,7 +267,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
     public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
         if(fromUser && Reproductor.a != -1) {
             float posicion = (progress / 1000f) * (float)Reproductor.reproductor.getDuration();
-            if((float)(progress / 1000f) >= 0.98f)
+            if((progress / 1000f) >= 0.98f)
                 Reproductor.reproductor.seekTo(Math.round(posicion) - 100);
             else
                 Reproductor.reproductor.seekTo(Math.round(posicion));
@@ -304,7 +302,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
             if(album != null && album.equals(PlaylistManager.self.get(0).album))
                 return null;
 
-            album = PlaylistManager.self.get(0).album;Log.d("ReproductorGráfico", "Album diferentes...");
+            album = PlaylistManager.self.get(0).album;Log.d(TAG, "Album diferentes...");
             final Object[] d = new Object[2];
             if(((ImageView) findViewById(R.id.AlbumGP)).getDrawable() != null)
                 h.post(new Runnable() {
@@ -326,7 +324,9 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
                     ColorArt art = new ColorArt(bmp);
                     d[0] = bmp;
                     d[1] = art;
-                } catch(IOException e) {}
+                } catch(IOException e) {
+                    Log.wtf(TAG, "Error al descargar/procesar el álbum.", e);
+                }
             }
 
             h.post(new Runnable() {

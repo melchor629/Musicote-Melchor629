@@ -14,17 +14,17 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:13.0.+'
+    compile 'com.android.support:support-v4:19.+'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.github.chrisbanes.actionbarpulltorefresh:library:0.9+'
     compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abs:0.9+'
-    compile 'com.loopj.android:android-async-http:1.4.4'
+    compile 'com.joanzapata.android:android-iconify:1.+'
     compile files('libs/nineoldandroids-library-2.4.0.jar', 'libs/colorart.jar')
 }
 
 android {
     compileSdkVersion 'android-18'
-    buildToolsVersion '19.0.0'
+    buildToolsVersion '19.0.3'
     sourceSets {
         main {
             manifest {

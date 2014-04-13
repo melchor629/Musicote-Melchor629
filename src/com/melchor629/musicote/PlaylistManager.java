@@ -10,12 +10,8 @@ import android.util.Log;
  * @author melchor9000
  */
 public class PlaylistManager {
-    public static PlaylistManager self;
+    public final static PlaylistManager self = new PlaylistManager();
     private ArrayList<Song> playlist;
-    
-    static {
-        self = new PlaylistManager();
-    }
     
     private PlaylistManager() {
         playlist = new ArrayList<Song>();
@@ -86,10 +82,10 @@ public class PlaylistManager {
      * @author melchor9000
      */
     public class Song {
-        public String title;
-        public String artist;
-        public String album;
-        public String url;
+        public final String title;
+        public final String artist;
+        public final String album;
+        public final String url;
 
         public Song(String title, String artist, String album, String url) {
             this.title = title;

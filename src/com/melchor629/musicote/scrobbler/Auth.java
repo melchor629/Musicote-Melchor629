@@ -59,15 +59,14 @@ public class Auth {
      */
     private static HashMap<String, String> sign() {
         Map<String, String> datos = Peticiones.map("method", "auth.getMobileSession", "username", username, "password", password);
-        HashMap<String, String> request = Peticiones.request(datos);
-        return request;
+        return Peticiones.request(datos);
     }
 
     /**
      * Obtiene el código de la sesión
      *
-     * @param json
-     * @return
+     * @param json JSON String
+     * @return The Session Key
      */
     private static String AuthParser(String json) {
         String SK = null;
@@ -77,10 +76,7 @@ public class Auth {
             String[] sk = new String[auth.length()];
 
             for(int i = 0; i < auth.length(); i++) {
-                JSONObject obj = auth;
-
-                String key = obj.getString("key");
-
+                String key = auth.getString("key");
                 sk[i] = key;
             }
             SK = sk[1];

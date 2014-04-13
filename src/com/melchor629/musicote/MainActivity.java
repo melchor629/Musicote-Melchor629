@@ -70,13 +70,11 @@ import java.util.HashMap;
 public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener,
         uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener {
 
-    public static String Last_String = "";
     public static volatile int response = 0;
     public static String url;
     public static Context appContext;
 
     private NotificationManager nm;
-    private Toast tostado;
     private String oldText = "";
     private PullToRefreshLayout mPullToRefreshAttacher;
 
@@ -124,7 +122,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         //Revisa la base de datos
         DB mDbHelper = new DB(getBaseContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        if(mDbHelper.ifTableExists(db, "canciones") == false || mDbHelper.ifTableExists(db, "acceso") == false) {
+        if(!mDbHelper.ifTableExists(db, "canciones") || !mDbHelper.ifTableExists(db, "acceso")) {
             db.execSQL(DB_entry.CREATE_ACCESO);
             db.execSQL(DB_entry.CREATE_CANCIONES);
             ContentValues values = new ContentValues();
@@ -163,8 +161,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             setListAdapter(adapter);
         } catch (Exception e) {
             Log.e("ServerHostDetector", "Er ordenata de mershor ta apagao... " + e.toString());
-            tostado = Toast.makeText(MainActivity.this, "Ningún servidor activo...", Toast.LENGTH_LONG);
-            tostado.show();
+            Toast.makeText(MainActivity.this, "Ningún servidor activo...", Toast.LENGTH_LONG).show();
         }
 
         // selecting single ListView item
@@ -549,11 +546,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         } catch (CursorIndexOutOfBoundsException e) {
             db.execSQL(DB_entry.DELETE_CANCIONES);
             Log.e("DB", "Mala integridad de la BD");
-            try {
-                this.finalize();
-            } catch (Throwable e1) {
-                Log.e("error", "Error: " + e1.toString());
-            }
         }
         c.close();
         sis();
@@ -568,7 +560,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             //Revisa la base de datos
             DB mDbHelper = new DB(getBaseContext());
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
-            if(mDbHelper.ifTableExists(db, "canciones") == false || mDbHelper.ifTableExists(db, "acceso") == false) {
+            if(!mDbHelper.ifTableExists(db, "canciones") || !mDbHelper.ifTableExists(db, "acceso")) {
                 db.execSQL(DB_entry.CREATE_ACCESO);
                 ContentValues values = new ContentValues();
                 values.put("tabla", "canciones");
