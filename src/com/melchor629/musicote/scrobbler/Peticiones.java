@@ -238,12 +238,14 @@ public class Peticiones {
             md = MessageDigest.getInstance("md5");
         } catch (NoSuchAlgorithmException e) {
             Log.e(TAG, "Error: " + e.toString());
+            return null;
         }
         byte[] bytes = null;
         try {
             bytes = md.digest(c.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Error: " + e.toString());
+            return null;
         }
         StringBuilder d = new StringBuilder(32);
         for(byte aByte : bytes) {

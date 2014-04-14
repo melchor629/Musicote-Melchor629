@@ -86,29 +86,29 @@
         android:gravity="center_horizontal"
         android:paddingBottom="5dp" >
 
-        <ImageButton
+        <IconButton
             android:id="@+id/playpauseActual"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/Play"
-            android:onClick="playpause"
-            android:src="@drawable/ic_stat_name" />
+            android:text="{fa-play}"
+            android:onClick="playpause" />
 
-        <ImageButton
+        <IconButton
             android:id="@+id/stopActual"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/menu_parar"
-            android:onClick="stop"
-            android:src="@drawable/ic_stop" />
+            android:text="{fa-stop}"
+            android:onClick="stop" />
 
-        <ImageButton
+        <IconButton
             android:id="@+id/nextActual"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/next"
-            android:onClick="next"
-            android:src="@drawable/ic_next" />
+            android:text="{fa-step-forward}"
+            android:onClick="next" />
     </LinearLayout>
 
 </LinearLayout>

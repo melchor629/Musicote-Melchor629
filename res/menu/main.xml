@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/ajustesm"
           android:title="@string/menu_settings"
-          android:icon="@drawable/cogwheels" android:showAsAction="ifRoom"/>
+          android:showAsAction="ifRoom" />
     <item android:id="@+id/parar"
           android:title="@string/menu_parar"
-          android:showAsAction="ifRoom" android:icon="@drawable/playlist"/>
+          android:showAsAction="ifRoom" />
 </menu>

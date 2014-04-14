@@ -21,6 +21,8 @@ import android.widget.*;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.joanzapata.android.iconify.IconDrawable;
+import com.joanzapata.android.iconify.Iconify;
 import com.melchor629.musicote.scrobbler.Album;
 
 import java.io.IOException;
@@ -43,7 +45,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
     private TextView durationActual;
     private ImageView image;
     private SeekBar playingUbication;
-    private ImageButton playpauseActual;
+    private IconButton playpauseActual;
 
     private volatile boolean H;
     private Handler h;
@@ -69,7 +71,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
         artistaActual = (TextView) findViewById(R.id.artistaActual);
         albumActual = (TextView) findViewById(R.id.albumActual);
         playingUbication = (SeekBar) findViewById(R.id.playingUbication);
-        playpauseActual = (ImageButton) findViewById(R.id.playpauseActual);
+        playpauseActual = (IconButton) findViewById(R.id.playpauseActual);
         positionActual = (TextView) findViewById(R.id.currentPlayingPosition);
         durationActual = (TextView) findViewById(R.id.currentPlayingDuration);
         image = (ImageView) findViewById(R.id.AlbumGP);
@@ -78,7 +80,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
 
         if(Reproductor.a != -1) {
             setThings();
-            playpauseActual.setImageResource(R.drawable.ic_pause);
+            playpauseActual.setText("{fa-pause}");
             playpauseActual.setTag("pause");
         }
         setBackground(getResources().getDrawable(R.drawable.graphical_player));
@@ -106,10 +108,10 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
     public void playpause(View v) {
         if(Reproductor.a != -1) {
             if(!Reproductor.paused) {
-                playpauseActual.setImageResource(R.drawable.ic_stat_name);
+                playpauseActual.setText("{fa-play}");
                 playpauseActual.setTag("play");
             } else {
-                playpauseActual.setImageResource(R.drawable.ic_pause);
+                playpauseActual.setText("{fa-pause}");
                 playpauseActual.setTag("pause");
             }
 
@@ -120,7 +122,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
     public void stop(View v) {
         if(Reproductor.a != -1) {
             PlaylistManager.self.stopPlaying();
-            playpauseActual.setImageResource(R.drawable.ic_stat_name);
+            playpauseActual.setText("{fa-play}");
             playpauseActual.setTag("play");
         }
     }
@@ -162,7 +164,9 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
                                 image.setImageBitmap(bmp);
                             }
                         });
-                } catch(InterruptedException e) {}
+                } catch(InterruptedException e) {
+                    Log.e(TAG, "", e);
+                }
             }
         }).start();
     }
@@ -235,6 +239,11 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.activity_reproductor_grafico, menu);
+
+        menu.findItem(R.id.settings).setIcon(
+                new IconDrawable(this, Iconify.IconValue.fa_cogs)
+                        .color(Color.WHITE)
+                        .actionBarSize());
         return true;
     }
 

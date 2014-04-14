@@ -11,7 +11,7 @@ import android.util.Log;
  */
 public class PlaylistManager {
     public final static PlaylistManager self = new PlaylistManager();
-    private ArrayList<Song> playlist;
+    private final ArrayList<Song> playlist;
     
     private PlaylistManager() {
         playlist = new ArrayList<Song>();

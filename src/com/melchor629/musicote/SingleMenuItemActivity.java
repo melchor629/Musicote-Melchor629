@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,7 +18,7 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
+import android.widget.IconButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +26,8 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.joanzapata.android.iconify.IconDrawable;
+import com.joanzapata.android.iconify.Iconify;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -118,7 +120,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo.substring(archivo.lastIndexOf("/")+1));
         isDownloaded = file.exists();
         if(isDownloaded)
-            ((ImageButton) findViewById(R.id.stopActual)).setImageResource(R.drawable.delete);
+            ((IconButton) findViewById(R.id.stopActual)).setText("{fa-trash-o}");
         findViewById(R.id.stopActual).setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -134,6 +136,16 @@ public class SingleMenuItemActivity extends SherlockActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.main, menu);
+
+        menu.findItem(R.id.ajustesm).setIcon(
+                new IconDrawable(this, Iconify.IconValue.fa_cogs)
+                        .color(Color.WHITE)
+                        .actionBarSize());
+        menu.findItem(R.id.parar).setIcon(
+                new IconDrawable(this, Iconify.IconValue.fa_music)
+                        .color(Color.WHITE)
+                        .actionBarSize()
+        );
         return true;
     }
 
@@ -166,12 +178,10 @@ public class SingleMenuItemActivity extends SherlockActivity {
     public void PlaySong(final View v) {
         Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
         Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
-        Drawable pause = getResources().getDrawable(R.drawable.ic_pause);
-        Drawable play = getResources().getDrawable(R.drawable.ic_stat_name);
-        ImageButton but = (ImageButton)v.findViewById(R.id.play);
+        IconButton but = (IconButton) v.findViewById(R.id.play);
         if(but.getTag().toString().equals("play")) {
             but.startAnimation(animAlpha);
-            but.setImageDrawable(pause);
+            but.setText("{fa-pause}");
             but.startAnimation(alphaAnim);
             but.setTag("pause");
 
@@ -188,12 +198,12 @@ public class SingleMenuItemActivity extends SherlockActivity {
         } else if(but.getTag().toString().equals("pause")) {
             but.setTag("playpause");
             but.startAnimation(animAlpha);
-            but.setImageDrawable(play);
+            but.setText("{fa-play}");
             but.startAnimation(alphaAnim);
             Reproductor.pause();
         } else if(but.getTag().toString().equals("playpause")) {
             but.startAnimation(animAlpha);
-            but.setImageDrawable(pause);
+            but.setText("{fa-pause}");
             but.startAnimation(alphaAnim);
             but.setTag("pause");
             Reproductor.pause();
@@ -242,7 +252,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
                     .setProgress(100, 0, false);
             mNotifyManager.cancel(2);
             mNotifyManager.notify(2, mBuilder.build());
-            final ImageButton m = ((ImageButton) findViewById(R.id.stopActual));
+            final IconButton m = ((IconButton) findViewById(R.id.stopActual));
     
             new Thread(
                 new Runnable() {
@@ -252,7 +262,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
                         Log.d("SingleMenuItem", "Descargando " + archivo + "...");
                         if(Environment.MEDIA_MOUNTED.equals("mounted")) {
                             //Create music directory if doesn't exist
-                            if(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).isDirectory())
+                            if(!Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).isDirectory())
                                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).mkdirs();
                             try {
                                 URL url = new URL(archivo.replace(" ", "%20"));
@@ -281,7 +291,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
                                 input.close();
 
                                 isDownloaded = true;
-                                new Handler().post(new Runnable() {@Override public void run() {m.setImageResource(R.drawable.delete);}});
+                                new Handler().post(new Runnable() {@Override public void run() {m.setText("{fa-trash-o}");}});
                                 Toast.makeText(getApplicationContext(), "Descarga lista", Toast.LENGTH_LONG).show();
                                 Log.d("SingleMenuItem", "Arhivo " + archivo + " descargado completamente");
                             } catch (MalformedURLException e) {
@@ -342,7 +352,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(file.delete()) {
-                            ((ImageButton) findViewById(R.id.stopActual)).setImageResource(R.drawable.download);
+                            ((IconButton) findViewById(R.id.stopActual)).setText("{fa-download}");
                             Toast.makeText(getApplicationContext(), getString(R.string.done_delete), Toast.LENGTH_LONG).show();
                             isDownloaded = false;
                         } else
@@ -364,11 +374,10 @@ public class SingleMenuItemActivity extends SherlockActivity {
     private void o() {
         Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
         Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
-        Drawable pause = getResources().getDrawable(R.drawable.ic_pause);
-        ImageButton but = (ImageButton)findViewById(R.id.play);
+        IconButton but = (IconButton)findViewById(R.id.play);
         but.setTag("pause");
         but.startAnimation(animAlpha);
-        but.setImageDrawable(pause);
+        but.setText("{fa-pause}");
         but.startAnimation(alphaAnim);
     }
 }

@@ -28,8 +28,6 @@ public class Album {
      * @param album   <i>The album</i>
      */
     public Album(String artista, String album) {
-        if(album == null || artista == null)
-            new Throwable("Falta el álbum (" + album + ") o el artista (" + artista + ")");
         this.artista = artista;
         this.album = album;
         this.albumUrl = null;
@@ -40,7 +38,7 @@ public class Album {
     public String getInfo() {
         HashMap<String, String> sign = sign(artista, album);
         String request = Peticiones.HTTPpost(sign);
-        JSONObject j = null;
+        JSONObject j;
         try {
             j = Peticiones.getJSONObject(request);
 

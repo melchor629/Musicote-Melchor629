@@ -12,6 +12,7 @@ import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -30,6 +31,8 @@ import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.joanzapata.android.iconify.IconDrawable;
+import com.joanzapata.android.iconify.Iconify;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DB_entry;
 
@@ -70,7 +73,6 @@ import java.util.HashMap;
 public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener,
         uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener {
 
-    public static volatile int response = 0;
     public static String url;
     public static Context appContext;
 
@@ -81,6 +83,8 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     // contacts JSONArray
     private static JSONArray contacts = null;
     private ArrayList<HashMap<String, String>> contactList;
+
+    private static volatile int response = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,6 +98,8 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             .theseChildrenArePullable(android.R.id.list)
             .listener(this)
             .setup(mPullToRefreshAttacher);
+
+
 
         // La app prueba en busca de la dirección correcta
         WifiManager mw = (WifiManager)getSystemService(Context.WIFI_SERVICE);
@@ -154,8 +160,8 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
          * */
         ListAdapter adapter = new SimpleAdapter(this, contactList,
                 R.layout.list_item,
-                new String[] {"titulo", "artista", "album"}, new int[] {
-                R.id.name, R.id.email, R.id.mobile});
+                new String[] {"titulo", "artista", "album", "downloaded"}, new int[] {
+                R.id.name, R.id.email, R.id.mobile, R.id.mainStatusSong});
 
         try {
             setListAdapter(adapter);
@@ -274,6 +280,16 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 .setActionView(searchView)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         getSupportMenuInflater().inflate(R.menu.main, menu);
+
+        menu.findItem(R.id.ajustesm).setIcon(
+                new IconDrawable(this, Iconify.IconValue.fa_cogs)
+                .color(Color.WHITE)
+                .actionBarSize());
+        menu.findItem(R.id.parar).setIcon(
+                new IconDrawable(this, Iconify.IconValue.fa_music)
+                .color(Color.WHITE)
+                .actionBarSize()
+        );
         return true;
     }
 
@@ -358,6 +374,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                                 map.put("album", album);
                                 map.put("archivo", "http://" + MainActivity.url + "" + archivo);
                                 map.put("duracion", duracion);
+                                map.put("downloaded", "{fa-mobile}"); //TODO
 
                                 //DB
                                 values.put(DB_entry.COLUMN_NAME_ID, id);
@@ -429,6 +446,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 map.put("album", album);
                 map.put("archivo", "http://" + url + "" + archivo);
                 map.put("duracion", duracion);
+                map.put("downloaded", "{fa-mobile}"); //TODO
 
                 contactList.add(map);
             } while(c.moveToNext());
@@ -540,6 +558,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 map.put("album", album);
                 map.put("archivo", "http://" + MainActivity.url + "" + archivo);
                 map.put("duracion", duracion);
+                map.put("downloaded", "{fa-mobile}"); //TODO
 
                 contactList.add(map);
             } while(c.moveToNext());
