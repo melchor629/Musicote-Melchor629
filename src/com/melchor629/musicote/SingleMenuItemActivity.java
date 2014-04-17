@@ -69,10 +69,9 @@ public class SingleMenuItemActivity extends SherlockActivity {
     private volatile int progress;
     private boolean isDownloaded = false;
 
-    private String url;
-    private String name;
-    private String cost;
-    private String description;
+    private String title;
+    private String artist;
+    private String album;
     private String duracion;
     private String archivo;
 
@@ -87,21 +86,22 @@ public class SingleMenuItemActivity extends SherlockActivity {
 
         // getting intent data
         Intent in = getIntent();
-
-        // Get JSON values from previous intent
-        name = in.getStringExtra(TAG_NAME);
-        cost = in.getStringExtra(TAG_EMAIL);
-        description = in.getStringExtra(TAG_PHONE_MOBILE);
+        title = in.getStringExtra(TAG_NAME);
+        artist = in.getStringExtra(TAG_EMAIL);
+        album = in.getStringExtra(TAG_PHONE_MOBILE);
         duracion = in.getStringExtra(TAG_DURACIONS);
         archivo = in.getStringExtra(TAG_FILE);
+        isDownloaded = in.getBooleanExtra("downloaded", false);
         //If the Activity started from a crash, close the activity, avoiding another crash, and open the Main Activity
-        if(name == null || cost == null || description == null || duracion == null || archivo == null) {
+        if(title == null || artist == null || album == null || duracion == null || archivo == null) {
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
             finish();
         }
 
         //Setting the activity title
-        ab.setTitle(name);
+        ab.setTitle(title);
+        getWindow().getDecorView().setBackgroundColor(android.graphics.Color.rgb(50, 207, 102));
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
         // Displaying all values on the screen
         TextView lblName = (TextView)findViewById(R.id.name_label);
@@ -110,17 +110,15 @@ public class SingleMenuItemActivity extends SherlockActivity {
         TextView lblDura = (TextView)findViewById(R.id.duracionS);
         //TextView lblArch = (TextView) findViewById(R.id.Play); Guardado por si acaso
 
-        lblName.setText(name);
-        lblCost.setText(cost);
-        lblDesc.setText(description);
+        lblName.setText(title);
+        lblCost.setText(artist);
+        lblDesc.setText(album);
         lblDura.setText(duracion);
         //TODO Poner una carátula de álbum
 
-        //Comoprueba si está descargada la canción
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo.substring(archivo.lastIndexOf("/")+1));
-        isDownloaded = file.exists();
         if(isDownloaded)
             ((IconButton) findViewById(R.id.stopActual)).setText("{fa-trash-o}");
+
         findViewById(R.id.stopActual).setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -131,6 +129,10 @@ public class SingleMenuItemActivity extends SherlockActivity {
                 return true;
             }
         });
+
+        PlaylistManager.Song song = PlaylistManager.self.get(PlaylistManager.pos);
+        if(song != null && title.equals(song.title) && artist.equals(song.artist))
+            o();
     }
 
     @Override
@@ -185,16 +187,9 @@ public class SingleMenuItemActivity extends SherlockActivity {
             but.startAnimation(alphaAnim);
             but.setTag("pause");
 
-            url = archivo;
-            String archivo = this.archivo.substring(this.archivo.lastIndexOf("/")+1);
-
-            if(isDownloaded)
-                url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo;
-
-            // Starting new intent
-            PlaylistManager.self.startPlaying(name, cost, description, url);
-
-            Reproductor.a = 0;
+            if(Reproductor.a != -1)
+                PlaylistManager.self.stopPlaying();
+            PlaylistManager.self.startPlaying(title, artist, album, archivo);
         } else if(but.getTag().toString().equals("pause")) {
             but.setTag("playpause");
             but.startAnimation(animAlpha);
@@ -217,7 +212,15 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * @param v view from android
      */
     public void StopSong(View v) {
+        IconButton but = (IconButton) v;
+        Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
+        Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
         PlaylistManager.self.stopPlaying();
+        but.startAnimation(animAlpha);
+        but.setText("{fa-play}");
+        but.startAnimation(alphaAnim);
+        but.setTag("play");
+        Reproductor.pause();
     }
 
     /**
@@ -231,12 +234,18 @@ public class SingleMenuItemActivity extends SherlockActivity {
         if(isDownloaded)
             url = "file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() +
                 "/" + archivo.substring(archivo.lastIndexOf("/")+1);
-        PlaylistManager.self.addSong(name, cost, description, url);
-        Toast.makeText(this, name + " " + this.getResources().getString(R.string.added_to_playlist), Toast.LENGTH_LONG).show();
+        PlaylistManager.self.addSong(title, artist, album, url);
+        Toast.makeText(this, title + " " + this.getResources().getString(R.string.added_to_playlist), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     /**
-     * download
+     * TODO Pasar esto a un servicio a parte para poder descargar cosas everywhere
      * Descarga la canción seleccionada
      *
      * @param v view from android
@@ -245,9 +254,9 @@ public class SingleMenuItemActivity extends SherlockActivity {
         if(!isDownloaded) { //Only if it isn't downloaded
             final NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplication());
-            mBuilder.setContentTitle("Descargando " + name + " de " + cost)
+            mBuilder.setContentTitle("Descargando " + title + " de " + artist)
                     .setContentText("Descargando musicote...")
-                    .setSmallIcon(R.drawable.download)
+                    .setSmallIcon(R.drawable.altavoz)
                     .setOngoing(true)
                     .setProgress(100, 0, false);
             mNotifyManager.cancel(2);

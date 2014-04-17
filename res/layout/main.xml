@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainLayout"
     android:layout_width="fill_parent"
@@ -8,7 +9,7 @@
     tools:context=".MyFirstActivity" >
 
     <LinearLayout
-        android:background="#616A72"
+        android:background="#3E505F"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
@@ -22,8 +23,8 @@
 	        android:paddingLeft="10dp"
 	        android:text="@string/app_name"
 	        android:textColor="#FFF"
-	        android:textColorHint="#FFF"
-	        android:textSize="35sp" />
+	        android:textSize="35sp"
+            />
 
 	    <TextView
 	        android:id="@+id/artistaActual"
@@ -32,7 +33,8 @@
 	        android:text="@string/app_description"
 	        android:textAppearance="?android:attr/textAppearanceSmall"
 	        android:textColor="#F0F0F0"
-	        android:textSize="20sp" />
+	        android:textSize="20sp"
+            android:gravity="center"/>
 
         <ListView
             android:id="@android:id/list"

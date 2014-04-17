@@ -10,6 +10,8 @@ import android.util.Log;
  * @author melchor9000
  */
 public class PlaylistManager {
+    /* Current position of the playlist */
+    public static int pos;
     public final static PlaylistManager self = new PlaylistManager();
     private final ArrayList<Song> playlist;
     
@@ -41,7 +43,14 @@ public class PlaylistManager {
      * @return Tell if there is another song or not
      */
     public boolean isNextSong() {
-        return playlist.size() > 0;
+        return playlist.size() > (pos+1);
+    }
+
+    public void nextSong() {
+        if(Reproductor.a == -1) return;
+        Reproductor.reproductor.stop();
+        Reproductor.reproductor.release();
+        Reproductor.leNext();
     }
 
     /**
@@ -50,7 +59,7 @@ public class PlaylistManager {
      * @return Song info
      */
     public Song get(int i) {
-        if(isNextSong())
+        if(playlist.size() > i)
             return playlist.get(i);
         return null;
     }
@@ -115,8 +124,7 @@ public class PlaylistManager {
             @Override
             public void run() {
                 Log.i("PlaylistManager", "beforeEnd called");
-                if(!isNextSong()) return;
-                //intent(false);
+                //if(!isNextSong()) return;
             }
         };
         Reproductor.onEnd = new callback() {
@@ -125,10 +133,13 @@ public class PlaylistManager {
             public void run() {
                 if(runned) return;
                 Log.i("PlaylistManager", "onEnd called");
-                deleteSong(0);
                 Reproductor.a = -1;
-                if(!isNextSong()) return;
-                //Reproductor.start();
+                if(!isNextSong()) {
+                    pos = 0;
+                    playlist.clear();
+                    return;
+                }
+                pos++;
                 runned = true;
             }
         };

@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
@@ -27,25 +28,25 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.google.gson.internal.LinkedTreeMap;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DB_entry;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Musicote App
@@ -76,15 +77,10 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     public static String url;
     public static Context appContext;
 
-    private NotificationManager nm;
     private String oldText = "";
     private PullToRefreshLayout mPullToRefreshAttacher;
 
-    // contacts JSONArray
-    private static JSONArray contacts = null;
-    private ArrayList<HashMap<String, String>> contactList;
-
-    private static volatile int response = 0;
+    private static ArrayList<LinkedTreeMap<String, String>> contactList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,17 +88,17 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         // The layout file is defined in the project res/layout/main.xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
         appContext = getApplicationContext();
         mPullToRefreshAttacher = (PullToRefreshLayout) findViewById(R.id.mainLayout);
         ActionBarPullToRefresh.from(this)
             .theseChildrenArePullable(android.R.id.list)
             .listener(this)
             .setup(mPullToRefreshAttacher);
-
-
+        getWindow().getDecorView().setBackgroundColor(android.graphics.Color.rgb(50, 178, 207));
 
         // La app prueba en busca de la dirección correcta
-        WifiManager mw = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+        WifiManager mw = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         WifiInfo wi = mw.getConnectionInfo();
         String SSID = wi.getSSID();
         Log.i("MainActivity", "Wifi conectado: " + SSID + " " + (SSID != null ? SSID.equals("Madrigal") : ""));
@@ -117,8 +113,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         }
         Log.i("MainActivity", "url: " + url);
 
-        nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         //Deletes the notification if remains (BUG)
         NotificationManager mn = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if(Reproductor.a == -1)
@@ -134,14 +129,14 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             ContentValues values = new ContentValues();
             values.put("tabla", "canciones");
             values.put("fecha", System.currentTimeMillis());
-            Log.e("newDB", "Dado " + db.insert("acceso", "null", values));
         }
 
         //Actualización de la lista
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        cursordb(db);
-        if(mDbHelper.isNecesaryUpgrade(db, pref) && ParseJSON.HostTest(url) == 200)
+        if(mDbHelper.isNecesaryUpgrade(db, pref) && Utils.HostTest(url) == 200)
             db.execSQL(DB_entry.DELETE_CANCIONES);
+        else
+            cursordb(db);
 
         if(!mDbHelper.ifTableExists(db, "canciones"))
             async();
@@ -180,23 +175,17 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // getting values from selected ListItem
-                HashMap<String, String> datos = null;
-                try {
-                    datos = contactList.get(position);
-                } catch (Exception e) {
-                    Log.e("com.melchor629.musicote", "" + e.toString());
-                    e.printStackTrace();
-                }
-                String name = getString(R.string.vacio);
-                String cost = getString(R.string.vacio);
-                String description = getString(R.string.vacio);
-                String album = "-00:00";
+                LinkedTreeMap<String, String> datos = contactList.get(position);
+                String title = getString(R.string.vacio);
+                String artist = getString(R.string.vacio);
+                String album = getString(R.string.vacio);
+                String descr = "-00:00";
                 String archivo = "http://" + url + "/musica";
                 try {
-                    name = ((TextView)view.findViewById(R.id.name)).getText().toString();
-                    cost = ((TextView)view.findViewById(R.id.email)).getText().toString();
-                    description = ((TextView)view.findViewById(R.id.mobile)).getText().toString();
-                    album = datos.get("duracion");
+                    title = ((TextView)view.findViewById(R.id.name)).getText().toString();
+                    artist = ((TextView)view.findViewById(R.id.email)).getText().toString();
+                    album = ((TextView)view.findViewById(R.id.mobile)).getText().toString();
+                    descr = datos.get("duracion");
                     archivo = datos.get("archivo");
                 } catch (Exception e) {
                     Log.e("MainActivity", e.toString());
@@ -204,11 +193,12 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
                 // Starting new intent
                 Intent in = new Intent(getApplicationContext(), SingleMenuItemActivity.class);
-                in.putExtra("titulo", name);
-                in.putExtra("artista", cost);
-                in.putExtra("album", description);
-                in.putExtra("duracion", album);
-                in.putExtra("archivo", archivo);
+                in.putExtra("titulo", title);
+                in.putExtra("artista", artist);
+                in.putExtra("album", album);
+                in.putExtra("duracion", descr);
+                in.putExtra("archivo", Utils.getUrl(archivo));
+                in.putExtra("downloaded", datos.get("downloaded").equals("{fa-mobile}"));
 
                 startActivity(in);
             }
@@ -218,37 +208,32 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         lv.setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, final View v, final int which, long id) {
-                final File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
-                        contactList.get(which).get("archivo").substring(contactList.get(which).get("archivo").lastIndexOf("/")+1));
+                final boolean isDownloaded = Utils.isDownloaded(contactList.get(which).get("archivo"));
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle(((TextView) v.findViewById(R.id.name)).getText().toString())
-                    .setItems(file.exists() ? R.array.song_options_array2 : R.array.song_options_array, new OnClickListener() {
+                    .setItems(isDownloaded ? R.array.song_options_array2 : R.array.song_options_array,
+                            new OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which2) {
+                            String url = Utils.getUrl(contactList.get(which).get("archivo"));
                             if(which2 == 0) {
                                 if(Reproductor.a == -1) {
-                                    String url = contactList.get(which).get("archivo");
-                                    if(file.exists()) url = file.getAbsolutePath();
                                     PlaylistManager.self.startPlaying(((TextView) v.findViewById(R.id.name)).getText().toString(), 
                                         ((TextView) v.findViewById(R.id.email)).getText().toString(),
                                         ((TextView) v.findViewById(R.id.mobile)).getText().toString(), url);
                                 } else {
-                                    String url = contactList.get(which).get("archivo");
-                                    if(file.exists()) url = file.getAbsolutePath();
                                     PlaylistManager.self.stopPlaying();
                                     PlaylistManager.self.addSong(((TextView) v.findViewById(R.id.name)).getText().toString(),
                                             ((TextView) v.findViewById(R.id.email)).getText().toString(),
                                             ((TextView) v.findViewById(R.id.mobile)).getText().toString(), url);
                                 }
                             } else if(which2 == 1) {
-                                if(file.exists()) {
-                                    
+                                if(isDownloaded) {
+                                    //TODO Servicio que descarge archivos
                                 } else {
                                     
                                 }
                             } else if(which2 == 2) {
-                                String url = contactList.get(which).get("archivo");
-                                if(file.exists()) url = file.getAbsolutePath();
                                 PlaylistManager.self.addSong(((TextView) v.findViewById(R.id.name)).getText().toString(),
                                         ((TextView) v.findViewById(R.id.email)).getText().toString(),
                                         ((TextView) v.findViewById(R.id.mobile)).getText().toString(), url);
@@ -260,11 +245,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             }
         });
 
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -316,106 +296,61 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
      *
      * @author melchor
      */
-    private class JSONParseDialog extends AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> {
+    private class JSONParseDialog extends AsyncTask<Void, Integer, Void> {
         @Override
-        protected ArrayList<HashMap<String, String>> doInBackground(Void... params) {
-            // Hashmap for ListView
-            final ArrayList<HashMap<String, String>> contactList = new ArrayList<HashMap<String, String>>();
-
-            // Creating JSON Parser instance
-            ParseJSON jParser = new ParseJSON();
-
-            synchronized (this) {
-                publishProgress(1);
-
-                publishProgress(2);
-                if(MainActivity.url != null) {
-                    // getting JSON string from URL
-                    response = ParseJSON.HostTest(MainActivity.url);
-
-                    Log.d("MainActivity", "Response code: " + response);
-
-                    publishProgress(25);
-                    if(response == 200) {
-                        JSONObject json = jParser.getJSONFromUrl("http://" + MainActivity.url + "/py/api.py");
-                        publishProgress(30);
-                        try {
-                            // Getting Array of Songs
-                            MainActivity.contacts = json.getJSONArray("canciones");
-                            publishProgress(35);
-
-                            // looping through All Songs
-                            publishProgress(37);
-                            DB dbHelper = new DB(getBaseContext());
-                            SQLiteDatabase db = dbHelper.getWritableDatabase();
-                            if(!dbHelper.ifTableExists(db, "canciones"))
-                                db.execSQL(DB_entry.CREATE_CANCIONES);
-                            for(int i = 0; i < MainActivity.contacts.length(); i++) {
-                                JSONObject c = MainActivity.contacts.getJSONObject(i);
-                                ContentValues values = new ContentValues();
-
-                                int counter = 40 + ((i * 100 / MainActivity.contacts.length()) / 2);
-                                publishProgress(counter);
-                                // Storing each json item in variable
-                                int id = c.getInt("id");
-                                String archivo = c.getString("archivo");
-                                String titulo = c.getString("titulo");
-                                String artista = c.getString("artista");
-                                String album = c.getString("album");
-                                String duracion = c.getString("duracion");
-
-                                // creating new HashMap
-                                HashMap<String, String> map = new HashMap<String, String>();
-
-                                // adding each child node to HashMap key => value
-                                map.put("id", "" + id);
-                                map.put("titulo", titulo);
-                                map.put("artista", artista);
-                                map.put("album", album);
-                                map.put("archivo", "http://" + MainActivity.url + "" + archivo);
-                                map.put("duracion", duracion);
-                                map.put("downloaded", "{fa-mobile}"); //TODO
-
-                                //DB
-                                values.put(DB_entry.COLUMN_NAME_ID, id);
-                                values.put(DB_entry.COLUMN_NAME_ARCHIVO, archivo);
-                                values.put(DB_entry.COLUMN_NAME_TITULO, titulo);
-                                values.put(DB_entry.COLUMN_NAME_ARTISTA, artista);
-                                values.put(DB_entry.COLUMN_NAME_ALBUM, album);
-                                values.put(DB_entry.COLUMN_NAME_DURACION, duracion);
-
-                                // adding HashList to ArrayList
-                                contactList.add(map);
-
-                                //Adding data into DB
-                                db.insert(DB_entry.TABLE_CANCIONES, "null", values);
-                            }
-                            dbHelper.actualizarAcceso(db, "canciones", System.currentTimeMillis());
-                            db.close();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.i("MainActivity", "Excepción encontrada: " + e.toString());
-                        }
-                        publishProgress(90);
-                    }
-
-                    publishProgress(95);
-                    return contactList;
-                } else {
-                    return null;
+        protected Void doInBackground(Void... params) {
+            MainActivity.contactList = Utils.getHashMapFromUrl("http://" + MainActivity.url + "/py/api.py");
+            MainActivity.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    sis(); //Show something to the user
                 }
+            });
+
+            try {
+                // looping through All Songs
+                DB dbHelper = new DB(getBaseContext());
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                if(!dbHelper.ifTableExists(db, "canciones"))
+                    db.execSQL(DB_entry.CREATE_CANCIONES);
+                long time = System.currentTimeMillis();
+
+                for(Object obj : MainActivity.contactList) {
+                    LinkedTreeMap map = (LinkedTreeMap) obj;
+                    ContentValues values = new ContentValues();
+
+                    //Test if the file is downloaded
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+                            ((String) map.get("archivo")).substring(((String) map.get("archivo")).lastIndexOf("/") + 1));
+                    map.put("downloaded", file.exists() ? "{fa-mobile}" : "{fa-cloud}"); //TODO
+
+                    //Putting vaules to be added in DB
+                    values.put(DB_entry.COLUMN_NAME_ID, (String) map.get("id"));
+                    values.put(DB_entry.COLUMN_NAME_ARCHIVO, (String) map.get("archivo"));
+                    values.put(DB_entry.COLUMN_NAME_TITULO, (String) map.get("titulo"));
+                    values.put(DB_entry.COLUMN_NAME_ARTISTA, (String) map.get("artista"));
+                    values.put(DB_entry.COLUMN_NAME_ALBUM, (String) map.get("album"));
+                    values.put(DB_entry.COLUMN_NAME_DURACION, (String) map.get("duracion"));
+                    values.put(DB_entry.COLUMN_NAME_DOWNLOADED, ""+file.exists());
+                    //Adding data into DB
+                    db.insert(DB_entry.TABLE_CANCIONES, "null", values);
+                }
+                dbHelper.actualizarAcceso(db, "canciones", System.currentTimeMillis());
+                db.close();
+                Log.d("MainActivity", String.format("Saved to DB in %dms", System.currentTimeMillis() - time));
+
+                //Update with some changes and OK
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        sis();
+                        if(mPullToRefreshAttacher.isRefreshing())
+                            mPullToRefreshAttacher.setRefreshComplete();
+                    }
+                });
+            } catch(Exception e) {
+                e.printStackTrace();
+                Log.i("MainActivity", "Excepción encontrada: " + e.toString());
             }
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-            super.onProgressUpdate(progress);
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<HashMap<String, String>> result) {
-            super.onPostExecute(result);
-            nm.cancel(3);
+            return null;
         }
     }
 
@@ -425,12 +360,12 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         DB dbs = new DB(this);
         SQLiteDatabase db = dbs.getReadableDatabase();
         Cursor c = dbs.get(db, query);
-        contactList = new ArrayList<HashMap<String, String>>();
+        contactList.clear();
         c.moveToFirst();
         if(c.getCount() > 0) {
             do {
                 // creating new HashMap
-                HashMap<String, String> map = new HashMap<String, String>();
+                LinkedTreeMap<String, String> map = new LinkedTreeMap<String, String>();
 
                 long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ID));
                 String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_TITULO));
@@ -438,15 +373,17 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ALBUM));
                 String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARCHIVO));
                 String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DURACION));
+                String down = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DOWNLOADED));
+                boolean downloaded = down.equalsIgnoreCase("true");
 
                 // adding each child node to HashMap key => value
                 map.put("id", "" + id);
                 map.put("titulo", titulo);
                 map.put("artista", artista);
                 map.put("album", album);
-                map.put("archivo", "http://" + url + "" + archivo);
+                map.put("archivo", archivo);
                 map.put("duracion", duracion);
-                map.put("downloaded", "{fa-mobile}"); //TODO
+                map.put("downloaded", downloaded ? "{fa-mobile}" : "{fa-cloud}"); //TODO
 
                 contactList.add(map);
             } while(c.moveToNext());
@@ -472,42 +409,9 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
     /** Si tiene que hacer la descarga */
     private void async() {
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
-        notification
-                .setSmallIcon(R.drawable.altavoz)
-                .setContentTitle("Musicote")
-                .setContentText("Actualizando base de datos...")
-                .setProgress(100, 0, true)
-                .setOngoing(true);
-        nm.cancel(3);
-        nm.notify(3, notification.build());
-        mPullToRefreshAttacher.setRefreshing(true); //FIXME Comrpobar si va bien
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                try {
-                    AsyncTask<Void, Integer, ArrayList<HashMap<String, String>>> asd = new JSONParseDialog().execute();
-                    contactList = asd.get();
-                } catch (InterruptedException e) {
-                    Log.e("AsyncTask", "AsyncTask not finished: " + e.toString());
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    Log.e("AsyncTask", "AsyncTask not finished: " + e.toString());
-                    e.printStackTrace();
-                }
-                MainActivity.this.runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            sis();
-                            mPullToRefreshAttacher.setRefreshComplete();
-                        }
-                    }
-                );
-                nm.cancel(3);
-            }
-        }).start();
+        if(Build.VERSION.SDK_INT > 10)
+            mPullToRefreshAttacher.setRefreshing(true); //FIXME In 2.3.x android versions this crashes the app
+        new JSONParseDialog().execute();
     }
 
     /** Si solo carga desde la base de datos */
@@ -520,29 +424,32 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 DB_entry.COLUMN_NAME_ARTISTA,
                 DB_entry.COLUMN_NAME_ALBUM,
                 DB_entry.COLUMN_NAME_DURACION,
-                DB_entry.COLUMN_NAME_ARCHIVO
+                DB_entry.COLUMN_NAME_ARCHIVO,
+                DB_entry.COLUMN_NAME_DOWNLOADED
         };
 
         // How you want the results sorted in the resulting Cursor
-        String sortOrder =
-                DB_entry.COLUMN_NAME_ID + " ASC";
+        String sortOrder = DB_entry.COLUMN_NAME_ID + " ASC";
 
         Cursor c = db.query(
-                DB_entry.TABLE_CANCIONES,                 // The table to query
-                projection,                               // The columns to return
-                null,                                     // The columns for the WHERE clause
-                null,                                     // The values for the WHERE clause
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                sortOrder                                 // The sort order
+                DB_entry.TABLE_CANCIONES, // The table to query
+                projection,               // The columns to return
+                null,                     // The columns for the WHERE clause
+                null,                     // The values for the WHERE clause
+                null,                     // don't group the rows
+                null,                     // don't filter by row groups
+                sortOrder                 // The sort order
         );
-        contactList = new ArrayList<HashMap<String, String>>();
+        if(contactList != null)
+            contactList.clear();
+        else
+            contactList = new ArrayList<LinkedTreeMap<String, String>>();
 
         c.moveToFirst();
         try {
             do {
                 // creating new HashMap
-                HashMap<String, String> map = new HashMap<String, String>();
+                LinkedTreeMap<String, String> map = new LinkedTreeMap<String, String>();
 
                 long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ID));
                 String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_TITULO));
@@ -550,15 +457,16 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ALBUM));
                 String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARCHIVO));
                 String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DURACION));
+                String downloaded = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DOWNLOADED));
 
                 // adding each child node to HashMap key => value
                 map.put("id", "" + id);
                 map.put("titulo", titulo);
                 map.put("artista", artista);
                 map.put("album", album);
-                map.put("archivo", "http://" + MainActivity.url + "" + archivo);
+                map.put("archivo", archivo);
                 map.put("duracion", duracion);
-                map.put("downloaded", "{fa-mobile}"); //TODO
+                map.put("downloaded", downloaded.equalsIgnoreCase("true") ? "{fa-mobile}" : "{fa-cloud}"); //TODO
 
                 contactList.add(map);
             } while(c.moveToNext());
@@ -575,7 +483,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
      */
     @Override
     public void onRefreshStarted(View view) {
-        if(ParseJSON.HostTest(MainActivity.url) == 200) {
+        if(Utils.HostTest(MainActivity.url) == 200) {
             //Revisa la base de datos
             DB mDbHelper = new DB(getBaseContext());
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
@@ -584,7 +492,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 ContentValues values = new ContentValues();
                 values.put("tabla", "canciones");
                 values.put("fecha", System.currentTimeMillis());
-                Log.e("newDB", "Dado " + db.insert("acceso", "null", values));
             }
             db.execSQL(DB_entry.DELETE_CANCIONES);
 

@@ -2,11 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#616A72"
+    android:background="#3D5F4F"
     android:orientation="vertical" >
 
   <!-- Titulo de la canción -->
-
   <TextView
       android:id="@+id/name_label"
       android:layout_width="fill_parent"
@@ -19,7 +18,6 @@
       android:textStyle="bold" />
 
   <!-- Artista de la canción -->
-
   <TextView
       android:id="@+id/email_label"
       android:layout_width="fill_parent"
@@ -28,7 +26,6 @@
       android:textColor="#1F893A" />
 
   <!-- Álbum de la cancion -->
-
   <TextView
       android:id="@+id/mobile_label"
       android:layout_width="fill_parent"
@@ -38,7 +35,6 @@
       android:textStyle="bold" />
 
   <!-- Duración de la canción -->
-
   <TextView
       android:id="@+id/duracionS"
       android:layout_width="fill_parent"

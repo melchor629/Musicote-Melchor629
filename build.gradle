@@ -19,7 +19,7 @@ dependencies {
     compile 'com.github.chrisbanes.actionbarpulltorefresh:library:0.9+'
     compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abs:0.9+'
     compile 'com.joanzapata.android:android-iconify:1.+'
-    compile files('libs/nineoldandroids-library-2.4.0.jar', 'libs/colorart.jar')
+    compile files('libs/nineoldandroids-library-2.4.0.jar', 'libs/colorart.jar', 'libs/gson.jar')
 }
 
 android {

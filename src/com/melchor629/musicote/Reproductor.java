@@ -31,7 +31,8 @@ import static com.melchor629.musicote.PlaylistManager.self;
  *
  * @author melchor629
  */
-public class Reproductor extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
+public class Reproductor extends Service implements MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
     /** Static variable for the Media Player */
     static MediaPlayer reproductor = new MediaPlayer();
@@ -41,15 +42,14 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     private NotificationManager nm;
     private volatile boolean True = true;
     private PowerManager.WakeLock wl;
-    private boolean autostart;
     private Song song;
+    private static Reproductor me;
 
     public volatile static double a = -1;
     public volatile static boolean paused;
 
     public int onStartCommand(Intent intent, int flags, int StartID) {
-        autostart = intent.getBooleanExtra("autostart", true);
-
+        me = this;
         initMediaPlayer();
         PowerManager mgr = (PowerManager)getBaseContext().getSystemService(Context.POWER_SERVICE);
         wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Musicote");
@@ -61,11 +61,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * When the service is ready, start playing the song
      */
     private void initMediaPlayer() {
-        if(autostart)
-            song = self.get(0);
-        else
-            song = self.get(1);
-
+        song = self.get(PlaylistManager.pos);
         reproductor = newPlayer();
         notification();
         if(onEnd != null && beforeEnd != null)
@@ -109,17 +105,21 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
                         getResources().getString(R.string.playing_of), song.artist))
                 .setOngoing(true);
 
-        /*if(playlist.size() > 1) {
+        if(self.getPlaylist().size() > 1) {
             NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
-            inbox.setBigContentTitle(getResources().getString(R.string.playing) + " " + tit + " " + getResources().getString(R.string.playing_of) + " " + art);
-            for(int i = 0; i < playlist.size(); i++) {
+            inbox.setBigContentTitle(String.format("%s %s %s %s",
+                    getResources().getString(R.string.playing), song.title, getResources().getString(R.string.playing_of),
+                    song.artist));
+            for(int i = 0; i < self.getPlaylist().size(); i++) {
                 if(i == 0)
                     inbox.addLine(getResources().getString(R.string.and_after));
                 else
-                    inbox.addLine(playlist.get(i)[0] + " " + getResources().getString(R.string.playing_of) + " " + playlist.get(i)[1]);
+                    inbox.addLine(String.format("%s %s %s",
+                            self.getPlaylist().get(i).title, getResources().getString(R.string.playing_of),
+                            self.getPlaylist().get(i).artist));
             }
             notification.setStyle(inbox);
-        }*/
+        }
 
         Intent resultIntent = new Intent(this, ReproductorGrafico.class);
 
@@ -151,8 +151,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         cosa.nm = nm;
         cosa.pref = pref;
         True = true;
-        if(autostart)
-            player.start();
+        player.start();
         cosa.start();
     }
 
@@ -171,15 +170,20 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
+    static void leNext() {
+        me.onCompletion(null);
+    }
+
     @Override
     public void onCompletion(MediaPlayer mp) {
+        boolean isNext = self.isNextSong();
         cosa.interrupt();
         True = false;
         song = null;
         if(onEnd != null)
             onEnd.run();
         reproductor.release();
-        if(self.isNextSong())
+        if(isNext)
             initMediaPlayer();
         else
             this.stopSelf();
@@ -218,7 +222,6 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         song = null;
         beforeEnd = null;
         onEnd = null;
-        Log.i("Reproductor", "onDestroy");
     }
 
     /**
