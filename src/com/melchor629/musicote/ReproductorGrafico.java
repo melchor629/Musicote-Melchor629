@@ -22,6 +22,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melchor629.musicote.scrobbler.Album;
+import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.ObjectAnimator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -139,9 +141,11 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
     private void animateAlbumArt(final Bitmap bmp, final boolean type) {
         int id = type ? R.anim.fade_in : R.anim.fade_out;
         final int time = 300;
-        Animation a = AnimationUtils.loadAnimation(getApplicationContext(), id);
-        a.setDuration(time);
-        image.startAnimation(a);
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(
+                ObjectAnimator.ofFloat(image, "alpha", type?0:1, type?1:0)
+        );
+        set.setDuration(time).start();
         new Thread(new Runnable() {
             public void run() {
                 try {

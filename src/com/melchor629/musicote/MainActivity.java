@@ -338,10 +338,8 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 db.close();
                 Log.d("MainActivity", String.format("Saved to DB in %dms", System.currentTimeMillis() - time));
 
-                //Update with some changes and OK
                 MainActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        sis();
                         if(mPullToRefreshAttacher.isRefreshing())
                             mPullToRefreshAttacher.setRefreshComplete();
                     }

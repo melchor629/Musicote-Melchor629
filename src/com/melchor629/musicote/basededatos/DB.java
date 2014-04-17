@@ -88,14 +88,17 @@ public class DB extends SQLiteOpenHelper {
         super(context, DB_entry.DATABASE_MUSICOTE, null, DB_entry.DATABASE_VERSION);
     }
 
+    @Override
     public void onCreate(SQLiteDatabase db) {
         //db.execSQL(DB_entry.CREATE_CANCIONES); se hace en MainActivity
         db.execSQL(DB_entry.CREATE_ACCESO);
         ContentValues values = new ContentValues();
         values.put("tabla", "canciones");
         values.put("fecha", System.currentTimeMillis());
+        db.insert("acceso", "null", values);
     }
 
+    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
@@ -104,6 +107,7 @@ public class DB extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
