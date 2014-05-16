@@ -12,8 +12,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.*;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -139,7 +137,6 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
     }
 
     private void animateAlbumArt(final Bitmap bmp, final boolean type) {
-        int id = type ? R.anim.fade_in : R.anim.fade_out;
         final int time = 300;
         AnimatorSet set = new AnimatorSet();
         set.playTogether(
@@ -220,7 +217,8 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
 
             synchronized (this) {
                 int p = PlaylistManager.pos;
-                if(PlaylistManager.self.get(p) != null && !song.equals(PlaylistManager.self.get(p).title)) {
+                PlaylistManager.Song a = PlaylistManager.self.get(p);
+                if(a != null && song != null && !song.equals(a.title)) {
                     String alb = PlaylistManager.self.get(p).album;
                     if(alb != null && !alb.isEmpty() && !alb.equals(album))
                         new Background().execute(p);
@@ -346,7 +344,10 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
 
             Album album = new Album(PlaylistManager.self.get(PlaylistManager.pos).artist,
                     PlaylistManager.self.get(PlaylistManager.pos).album);
-            String albumart = album.getInfo();
+            int num = 4, width = getWindow().getDecorView().getWidth();
+            if(width >= 600) num = 5;
+            if(width < 300) num = 3;
+            String albumart = album.getInfo(num);
             InputStream is;
             try {
                 //Download the image content

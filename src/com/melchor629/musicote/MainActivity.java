@@ -19,16 +19,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -43,10 +40,7 @@ import uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefresh
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Musicote App
@@ -113,7 +107,6 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         }
         Log.i("MainActivity", "url: " + url);
 
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         //Deletes the notification if remains (BUG)
         NotificationManager mn = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if(Reproductor.a == -1)
@@ -228,10 +221,22 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                                             ((TextView) v.findViewById(R.id.mobile)).getText().toString(), url);
                                 }
                             } else if(which2 == 1) {
-                                if(isDownloaded) {
-                                    //TODO Servicio que descarge archivos
+                                if(!isDownloaded) {
+                                    Intent inte = new Intent(getApplicationContext(), DownloadManager.class);
+                                    inte.putExtra("file", url);
+                                    startService(inte);
                                 } else {
-                                    
+                                    new File(url).delete();
+                                    DB db = new DB(getApplicationContext());
+                                    SQLiteDatabase d = db.getWritableDatabase();
+                                    if(d == null) return;
+                                    d.execSQL(String.format("UPDATE %s SET %s=\"%b\" WHERE titulo = \"%s\" AND" +
+                                                    " artista = \"%s\" AND album = \"%s\"",
+                                            DB_entry.TABLE_CANCIONES, DB_entry.COLUMN_NAME_DOWNLOADED,
+                                            false, contactList.get(which).get("titulo"),
+                                            contactList.get(which).get("artista"),
+                                            contactList.get(which).get("album")));
+                                    d.close();
                                 }
                             } else if(which2 == 2) {
                                 PlaylistManager.self.addSong(((TextView) v.findViewById(R.id.name)).getText().toString(),
@@ -315,21 +320,21 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 long time = System.currentTimeMillis();
 
                 for(Object obj : MainActivity.contactList) {
-                    LinkedTreeMap map = (LinkedTreeMap) obj;
+                    LinkedTreeMap<String, String> map = (LinkedTreeMap) obj;
                     ContentValues values = new ContentValues();
 
                     //Test if the file is downloaded
                     File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
-                            ((String) map.get("archivo")).substring(((String) map.get("archivo")).lastIndexOf("/") + 1));
+                            (map.get("archivo")).substring((map.get("archivo")).lastIndexOf("/") + 1));
                     map.put("downloaded", file.exists() ? "{fa-mobile}" : "{fa-cloud}"); //TODO
 
                     //Putting vaules to be added in DB
-                    values.put(DB_entry.COLUMN_NAME_ID, (String) map.get("id"));
-                    values.put(DB_entry.COLUMN_NAME_ARCHIVO, (String) map.get("archivo"));
-                    values.put(DB_entry.COLUMN_NAME_TITULO, (String) map.get("titulo"));
-                    values.put(DB_entry.COLUMN_NAME_ARTISTA, (String) map.get("artista"));
-                    values.put(DB_entry.COLUMN_NAME_ALBUM, (String) map.get("album"));
-                    values.put(DB_entry.COLUMN_NAME_DURACION, (String) map.get("duracion"));
+                    values.put(DB_entry.COLUMN_NAME_ID, map.get("id"));
+                    values.put(DB_entry.COLUMN_NAME_ARCHIVO, map.get("archivo"));
+                    values.put(DB_entry.COLUMN_NAME_TITULO, map.get("titulo"));
+                    values.put(DB_entry.COLUMN_NAME_ARTISTA, map.get("artista"));
+                    values.put(DB_entry.COLUMN_NAME_ALBUM, map.get("album"));
+                    values.put(DB_entry.COLUMN_NAME_DURACION, map.get("duracion"));
                     values.put(DB_entry.COLUMN_NAME_DOWNLOADED, ""+file.exists());
                     //Adding data into DB
                     db.insert(DB_entry.TABLE_CANCIONES, "null", values);

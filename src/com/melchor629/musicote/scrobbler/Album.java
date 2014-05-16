@@ -34,8 +34,7 @@ public class Album {
     }
 
     /** Gets info from an album */
-    @SuppressWarnings ("deprecation")
-    public String getInfo() {
+    public String getInfo(int size) {
         HashMap<String, String> sign = sign(artista, album);
         String request = Peticiones.HTTPpost(sign);
         JSONObject j;
@@ -43,12 +42,7 @@ public class Album {
             j = Peticiones.getJSONObject(request);
 
             JSONObject album = j.getJSONObject("album");
-
-            /*JSONArray image = album.getJSONArray("image");
-            JSONObject images = image.getJSONObject(4);
-            albumUrl = images.getString("#text");
-            return albumUrl;*/
-            for(int i = 5; i > 0; i--) {
+            for(int i = size; i > 0; i--) {
                 if(albumUrl == null)
                     albumUrl = getAlbumUrl(album, i);
                 else

@@ -1,18 +1,14 @@
 package com.melchor629.musicote;
 
 import android.app.AlertDialog;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -28,11 +24,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
+import com.melchor629.musicote.basededatos.DB;
+import com.melchor629.musicote.basededatos.DB_entry;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * Musicote App
@@ -66,7 +61,6 @@ public class SingleMenuItemActivity extends SherlockActivity {
     private static final String TAG_DURACIONS = "duracion";
     private static final String TAG_FILE = "archivo";
 
-    private volatile int progress;
     private boolean isDownloaded = false;
 
     private String title;
@@ -251,109 +245,12 @@ public class SingleMenuItemActivity extends SherlockActivity {
      * @param v view from android
      */
     public void download(View v) {
-        if(!isDownloaded) { //Only if it isn't downloaded
-            final NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplication());
-            mBuilder.setContentTitle("Descargando " + title + " de " + artist)
-                    .setContentText("Descargando musicote...")
-                    .setSmallIcon(R.drawable.altavoz)
-                    .setOngoing(true)
-                    .setProgress(100, 0, false);
-            mNotifyManager.cancel(2);
-            mNotifyManager.notify(2, mBuilder.build());
-            final IconButton m = ((IconButton) findViewById(R.id.stopActual));
-    
-            new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        Log.d("SingleMenuItem", "Descargando " + archivo + "...");
-                        if(Environment.MEDIA_MOUNTED.equals("mounted")) {
-                            //Create music directory if doesn't exist
-                            if(!Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).isDirectory())
-                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).mkdirs();
-                            try {
-                                URL url = new URL(archivo.replace(" ", "%20"));
-                                String arch = archivo.substring(archivo.lastIndexOf("/") + 1);
-                                URLConnection connection = url.openConnection();
-                                connection.connect();
-                                // this will be useful so that you can show a typical 0-100% progress bar
-                                int fileLength = connection.getContentLength();
-    
-                                // download the file
-                                InputStream input = new BufferedInputStream(url.openStream());
-                                File songFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), arch);
-                                OutputStream output = new FileOutputStream(songFile);
-    
-                                byte data[] = new byte[1024];
-                                long total = 0;
-                                int count;
-                                while((count = input.read(data)) != -1) {
-                                    total += count;
-                                    progress = (int)(total * 100 / fileLength);
-                                    output.write(data, 0, count);
-                                }
-    
-                                output.flush();
-                                output.close();
-                                input.close();
-
-                                isDownloaded = true;
-                                new Handler().post(new Runnable() {@Override public void run() {m.setText("{fa-trash-o}");}});
-                                Toast.makeText(getApplicationContext(), "Descarga lista", Toast.LENGTH_LONG).show();
-                                Log.d("SingleMenuItem", "Arhivo " + archivo + " descargado completamente");
-                            } catch (MalformedURLException e) {
-                                progress = -1;
-                                Log.e("SingleMenuItem", "Error: " + e.toString());
-                            } catch (FileNotFoundException e) {
-                                progress = -1;
-                                Log.e("SingleMenuItem", "Error: " + e.toString());
-                            } catch (IOException e) {
-                                progress = -1;
-                                Log.e("SingleMenuItem", "Error: " + e.toString());
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), "No hay SD montada", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }
-            ).start();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Looper.prepare();
-                    while(progress < 100 && progress != -1) {
-                        // publishing the progress...
-                        mBuilder.setProgress(100, progress, false);
-                        mNotifyManager.notify(2, mBuilder.build());
-    
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            Log.e("SingleMenuItem", "Error: " + e.toString());
-                        }
-                    }
-
-                    if(progress != -1) {
-                        mBuilder.setContentText("Descarga completa")
-                                // Removes the progress bar
-                                .setProgress(0, 0, false)
-                                //Removes fixed notify, ensure to be deleted by user
-                                .setOngoing(false);
-                        mNotifyManager.notify(2, mBuilder.build());
-                    } else if(progress == -1){
-                        mBuilder.setContentText("Error al descargar")
-                                // Removes the progress bar
-                                .setProgress(0, 0, false)
-                                //Removes fixed notify, ensure to be deleted by user
-                                .setOngoing(false);
-                        mNotifyManager.notify(2, mBuilder.build());
-                    }
-                }
-            }).start();
+        if(!isDownloaded) {
+            Intent inte = new Intent(this, DownloadManager.class);
+            inte.putExtra("file", archivo);
+            startService(inte);
         } else {
-            final File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString() + "/" + archivo.replace("http://" + MainActivity.url + "/musica/", ""));
+            final File file = new File(archivo);Log.e("Æ", file.toString());
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.sure_delete)
                 .setTitle(R.string.sure)
@@ -364,6 +261,15 @@ public class SingleMenuItemActivity extends SherlockActivity {
                             ((IconButton) findViewById(R.id.stopActual)).setText("{fa-download}");
                             Toast.makeText(getApplicationContext(), getString(R.string.done_delete), Toast.LENGTH_LONG).show();
                             isDownloaded = false;
+
+                            DB db = new DB(getApplicationContext());
+                            SQLiteDatabase d = db.getWritableDatabase();
+                            if(d == null) return;
+                            d.execSQL(String.format("UPDATE %s SET %s=\"%b\" WHERE titulo = \"%s\" AND" +
+                                            " artista = \"%s\" AND album = \"%s\"",
+                                    DB_entry.TABLE_CANCIONES, DB_entry.COLUMN_NAME_DOWNLOADED,
+                                    false, title, artist, album));
+                            d.close();
                         } else
                             Toast.makeText(getApplicationContext(), getString(R.string.err_delete), Toast.LENGTH_LONG).show();
                         dialog.dismiss();

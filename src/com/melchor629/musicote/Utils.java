@@ -171,15 +171,15 @@ public class Utils {
 
     public static String getUrl(String archivo) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
-                archivo.substring(archivo.lastIndexOf("/")+1));
+                archivo.substring(archivo.lastIndexOf("/") + 1));
         if(file.exists())
             return file.getAbsolutePath();
-        return String.format("http://%s%s",MainActivity.url, archivo);
+        return String.format("http://%s%s", MainActivity.url, archivo);
     }
 
     public static boolean isDownloaded(String archivo) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
-                archivo.substring(archivo.lastIndexOf("/")+1));
+                archivo.substring(archivo.lastIndexOf("/") + 1));
         return file.exists();
     }
 }
