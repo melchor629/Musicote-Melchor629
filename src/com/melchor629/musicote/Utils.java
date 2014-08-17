@@ -174,7 +174,7 @@ public class Utils {
                 archivo.substring(archivo.lastIndexOf("/") + 1));
         if(file.exists())
             return file.getAbsolutePath();
-        return String.format("http://%s%s", MainActivity.url, archivo);
+        return String.format("http://%s%s%s", MainActivity.HOST, MainActivity.BASE_URL, archivo);
     }
 
     public static boolean isDownloaded(String archivo) {

@@ -55,11 +55,11 @@ public class Album {
     }
 
     /**
-     * Gets the url album image
+     * Gets the HOST album image
      *
      * @param album <i>JSONObject with the album data</i>
      * @param id    <i>ID of the image size [0-5]</i>
-     * @return <i>The url in a String</i>
+     * @return <i>The HOST in a String</i>
      */
     String getAlbumUrl(JSONObject album, int id) {
         if(id > 5 || id < 0)

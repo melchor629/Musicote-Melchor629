@@ -3,28 +3,36 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9+'
+        classpath 'com.android.tools.build:gradle:0.12.+'
     }
 }
 
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:19.+'
-    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
-    compile 'com.github.chrisbanes.actionbarpulltorefresh:library:0.9+'
-    compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abs:0.9+'
-    compile 'com.joanzapata.android:android-iconify:1.+'
+    compile 'com.android.support:support-v4:20.+'
+    compile ('com.actionbarsherlock:actionbarsherlock:4.4.0@aar') {
+        exclude group: 'com.android.support', module: 'support-v4'
+    }
+    compile ('com.github.chrisbanes.actionbarpulltorefresh:library:0.9+') {
+        exclude group: 'com.android.support', module: 'support-v4'
+    }
+    compile ('com.github.chrisbanes.actionbarpulltorefresh:extra-abs:0.9+') {
+        exclude group: 'com.android.support', module: 'support-v4'
+    }
+    compile ('com.joanzapata.android:android-iconify:1.+') {
+        exclude group: 'com.android.support', module: 'support-v4'
+    }
     compile files('libs/nineoldandroids-library-2.4.0.jar', 'libs/colorart.jar', 'libs/gson.jar')
 }
 
 android {
-    compileSdkVersion 'android-18'
-    buildToolsVersion '19.0.3'
+    compileSdkVersion 'android-L'
+    buildToolsVersion '20.0'
     sourceSets {
         main {
             manifest {

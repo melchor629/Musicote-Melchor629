@@ -34,6 +34,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melchor629.musicote.basededatos.DB;
+import com.melchor629.musicote.basededatos.DBArrayList;
 import com.melchor629.musicote.basededatos.DB_entry;
 
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout;
@@ -68,7 +69,7 @@ import java.util.ArrayList;
 public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener,
         uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener {
 
-    public static String url;
+    public static String HOST, BASE_API_URL = ":8000/json", BASE_URL = "/musica";
     public static Context appContext;
 
     private String oldText = "";
@@ -101,11 +102,11 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             Toast.makeText(this, "No está usando WIFI, se recomienda utilizar la app con WIFI", Toast.LENGTH_LONG).show();
         }
         if(SSID.equals("Madrigal") || SSID.contains("Madrigal") || System.getProperty("os.version").equals("3.4.0-gd853d22")) {
-            MainActivity.url = "192.168.1.133";
+            MainActivity.HOST = "192.168.1.133";
         } else {
-            MainActivity.url = "reinoslokos.no-ip.org";
+            MainActivity.HOST = "reinoslokos.no-ip.org";
         }
-        Log.i("MainActivity", "url: " + url);
+        Log.i("MainActivity", "HOST: " + HOST);
 
         //Deletes the notification if remains (BUG)
         NotificationManager mn = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -126,7 +127,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
         //Actualización de la lista
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(mDbHelper.isNecesaryUpgrade(db, pref) && Utils.HostTest(url) == 200)
+        if(mDbHelper.isNecesaryUpgrade(db, pref) && Utils.HostTest(HOST) == 200)
             db.execSQL(DB_entry.DELETE_CANCIONES);
         else
             cursordb(db);
@@ -146,7 +147,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         /**
          * Updating parsed JSON data into ListView
          * */
-        ListAdapter adapter = new SimpleAdapter(this, contactList,
+        ListAdapter adapter = new SimpleAdapter(this, contactList,//new DBArrayList<LinkedTreeMap<String, String>>(),
                 R.layout.list_item,
                 new String[] {"titulo", "artista", "album", "downloaded"}, new int[] {
                 R.id.name, R.id.email, R.id.mobile, R.id.mainStatusSong});
@@ -173,7 +174,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
                 String artist = getString(R.string.vacio);
                 String album = getString(R.string.vacio);
                 String descr = "-00:00";
-                String archivo = "http://" + url + "/musica";
+                String archivo = "http://" + HOST + "/musica";
                 try {
                     title = ((TextView)view.findViewById(R.id.name)).getText().toString();
                     artist = ((TextView)view.findViewById(R.id.email)).getText().toString();
@@ -304,7 +305,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     private class JSONParseDialog extends AsyncTask<Void, Integer, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            MainActivity.contactList = Utils.getHashMapFromUrl("http://" + MainActivity.url + "/py/api.py");
+            MainActivity.contactList = Utils.getHashMapFromUrl("http://" + MainActivity.HOST + MainActivity.BASE_API_URL);
             MainActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
                     sis(); //Show something to the user
@@ -330,7 +331,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
                     //Putting vaules to be added in DB
                     values.put(DB_entry.COLUMN_NAME_ID, map.get("id"));
-                    values.put(DB_entry.COLUMN_NAME_ARCHIVO, map.get("archivo"));
+                    values.put(DB_entry.COLUMN_NAME_ARCHIVO, BASE_URL + map.get("archivo"));
                     values.put(DB_entry.COLUMN_NAME_TITULO, map.get("titulo"));
                     values.put(DB_entry.COLUMN_NAME_ARTISTA, map.get("artista"));
                     values.put(DB_entry.COLUMN_NAME_ALBUM, map.get("album"));
@@ -486,7 +487,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
      */
     @Override
     public void onRefreshStarted(View view) {
-        if(Utils.HostTest(MainActivity.url) == 200) {
+        if(Utils.HostTest(MainActivity.HOST) == 200) {
             //Revisa la base de datos
             DB mDbHelper = new DB(getBaseContext());
             SQLiteDatabase db = mDbHelper.getWritableDatabase();

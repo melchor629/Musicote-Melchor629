@@ -28,23 +28,26 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class DownloadManager extends Service {
-    private String file;
     private final static File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
     private NotificationManager nm;
+    private NotificationCompat.Builder notif;
     private int progress;
+    private static int mID = 2;//TODO no se muestran xD
 
     public DownloadManager() { }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int StartID) {
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        file = intent.getStringExtra("file");
+        notif = new NotificationCompat.Builder(this);
+        String file = intent.getStringExtra("file");
+        if(file == null) stopSelf(); //Cerrar servicio si no tenemos FILE
         dir.mkdir();
         if(isSDMounted()) {
             if(isDownloaded(file)) {
                 Toast.makeText(getApplicationContext(), "El arshivo a sio descagao", Toast.LENGTH_LONG).show();
             } else {
-                startForeground(4, notification("Descargando musicote...", file, true));
+                notification("Descargando musicote...", file, true);
                 downloadFile(file);
             }
         } else {
@@ -64,28 +67,26 @@ public class DownloadManager extends Service {
     }
 
     public Notification notification(String title, String body, boolean ongoing) {
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
-        notification
-                //.setSmallIcon() TODO
+        notif
+                .setSmallIcon(R.drawable.altavoz) //TODO Cambiar
                 .setContentTitle(title)
                 .setContentText(body)
-                .setOngoing(ongoing);
-        nm.cancel(4 + (ongoing ? 0 : 1));
-        Notification n = notification.build();
-        nm.notify(4 + (ongoing ? 0 : 1), n);
+                .setOngoing(ongoing)
+                .setAutoCancel(true)
+                .setProgress(0, 0, false);
+        Notification n = notif.build();
+        nm.notify(mID, n);
         return n;
-    }
+    }//TODO Clase extends HashMap que con #get(Object) obtenga directamente de la DB
 
     private void notifprog(String title, String body, int progress) {
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
-        notification
-                //.setSmallIcon() TODO
+        notif
+                .setSmallIcon(R.drawable.altavoz) //TODO Cambiar
                 .setContentTitle(title)
                 .setContentText(body)
                 .setProgress(100, progress, progress == 0)
-                .setOngoing(true);
-        nm.cancel(4);
-        nm.notify(4, notification.build());
+                ;//.setOngoing(true);
+        nm.notify(mID, notif.build());
     }
 
     public void downloadFile(final String file) {
@@ -101,6 +102,7 @@ public class DownloadManager extends Service {
                         while(loop) {
                             notifprog("Descargando musicote...", file, progress);
                             try { Thread.sleep(1000); } catch(Exception e) {loop = false;}
+                            if(progress == -1) loop = false;
                         }
                     }
                 }, "DownloadManager Notification");
@@ -140,19 +142,22 @@ public class DownloadManager extends Service {
                 } catch(MalformedURLException e) {
                     progress = -1;
                     Log.e("DownloadManager", "Error: " + e.toString());
+                    notification("Error al descargar el archivo", "Error interno", false);
                 } catch(FileNotFoundException e) {
                     progress = -1;
                     Log.e("DownloadManager", "Error: " + e.toString());
+                    notification("Error al descargar el archivo", "El archivo no existe, o el servidor está cerrado", false);
                 } catch(IOException e) {
                     progress = -1;
                     Log.e("DownloadManager", "Error: " + e.toString());
+                    notification("Error al descargar el archivo", "Se cortó la conexión", false);
                 }
             }
         }, "DownloadManager Downloader").start();
     }
 
     private void changeSQL(String bef, boolean a) {
-        bef = bef.replace("http://" + MainActivity.url, "");
+        bef = bef.replace("http://" + MainActivity.HOST, "");
         DB db = new DB(getApplicationContext());
         SQLiteDatabase d = db.getWritableDatabase();
         if(d == null) return;
