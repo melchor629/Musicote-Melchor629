@@ -14,7 +14,7 @@ before_install:
   - echo yes | android update sdk --filter platform-tools --no-ui --force
   - echo yes | android update sdk --filter extra-android-support --no-ui --force
   - echo yes | android update sdk --filter extra-android-m2repository --no-ui --force
-  - echo yes | android update sdk --filter android-20 --force --no-ui
+  - echo yes | android update sdk --filter android-L --force --no-ui
   - echo yes | android update sdk --filter android-18 --force --no-ui
   - echo yes | android update sdk --filter android-14 --force --no-ui
   - echo yes | android update sdk --filter build-tools-20.0.0 --force --no-ui
