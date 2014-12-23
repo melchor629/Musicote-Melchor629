@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="#00FDFDFD"
     android:orientation="vertical" >
 
 		<TextView
@@ -12,7 +11,7 @@
 		    android:paddingBottom="2dip"
 		    android:paddingLeft="10dp"
 		    android:paddingTop="6dip"
-		    android:textColor="#43bd00"
+		    android:textColor="@color/colorPrimaryDark"
 		    android:textSize="16sp"
 		    android:textStyle="bold"
             android:singleLine="true"
@@ -24,7 +23,7 @@
 		    android:layout_height="wrap_content"
 		    android:paddingBottom="2dip"
 		    android:paddingLeft="20dp"
-		    android:textColor="#D28F2B" />
+		    android:textColor="@color/colorPrimary" />
 
 		<LinearLayout
 		android:layout_width="match_parent"
@@ -37,7 +36,7 @@
 			    android:layout_height="wrap_content"
                 android:paddingTop="3dp"
 			    android:paddingLeft="20dp"
-			    android:textColor="#D28F2B"
+			    android:textColor="@color/colorGrey600"
 			    android:textStyle="bold"
                 android:ellipsize="end"
                 android:singleLine="true"/>
@@ -46,7 +45,7 @@
                 android:id="@+id/mainStatusSong"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFF"
+                android:textColor="@color/colorGrey600"
                 android:textStyle="bold"
                 android:gravity="right"
                 android:paddingRight="3dp"/>

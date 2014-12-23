@@ -5,8 +5,8 @@ before_install:
   - sudo apt-get update -qq
   - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch >/dev/null; fi
   # Download the latest android sdk and unzip it
-  - wget http://dl.google.com/android/android-sdk_r23.0.2-linux.tgz
-  - tar xzf android-sdk_r23.0.2-linux.tgz
+  - wget http://dl.google.com/android/android-sdk_r24.0.2-linux.tgz
+  - tar xzf android-sdk_r24.0.2-linux.tgz
   # Setup ANDROID_HOME and PATH environment variables
   - export ANDROID_HOME=$PWD/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
@@ -14,11 +14,8 @@ before_install:
   - echo yes | android update sdk --filter platform-tools --no-ui --force
   - echo yes | android update sdk --filter extra-android-support --no-ui --force
   - echo yes | android update sdk --filter extra-android-m2repository --no-ui --force
-  - echo yes | android update sdk --filter android-L --force --no-ui
-  - echo yes | android update sdk --filter android-18 --force --no-ui
-  - echo yes | android update sdk --filter android-14 --force --no-ui
-  - echo yes | android update sdk --filter build-tools-20.0.0 --force --no-ui
-  - echo yes | android update sdk --filter sysimg-18 --force --no-ui
+  - echo yes | android update sdk --filter android-21 --force --no-ui
+  - echo yes | android update sdk --filter build-tools-21.1.2 --force --no-ui
 
 after_success:
   - curl "http://reinoslokos.no-ip.org/index.php?title=Travis.ci&description=Build%20$TRAVIS_BUILD_NUMBER%20($TRAVIS_BUILD_ID)%20completado%20correctamente" >/dev/null

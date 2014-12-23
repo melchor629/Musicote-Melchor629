@@ -1,5 +1,7 @@
 package com.melchor629.musicote;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +12,8 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
@@ -18,10 +22,6 @@ import android.widget.IconButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melchor629.musicote.basededatos.DB;
@@ -52,7 +52,7 @@ import java.io.*;
  * Crea la actividad de cuando seleccionas una cancion, SOLO UNA
  * @author Melchor
  */
-public class SingleMenuItemActivity extends SherlockActivity {
+public class SingleMenuItemActivity extends Activity {
 
     // JSON node keys
     private static final String TAG_NAME = "titulo";
@@ -75,7 +75,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
         setContentView(R.layout.single_list_item);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        ActionBar ab = getSupportActionBar();
+        ActionBar ab = getActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
         // getting intent data
@@ -95,7 +95,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
         //Setting the activity title
         ab.setTitle(title);
         getWindow().getDecorView().setBackgroundColor(android.graphics.Color.rgb(50, 207, 102));
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        //overridePendingTransition(R.anim.fade_in, R.anim.fade_out); TODO
 
         // Displaying all values on the screen
         TextView lblName = (TextView)findViewById(R.id.name_label);
@@ -131,7 +131,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
 
         menu.findItem(R.id.ajustesm).setIcon(
                 new IconDrawable(this, Iconify.IconValue.fa_cogs)
@@ -235,7 +235,7 @@ public class SingleMenuItemActivity extends SherlockActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        //overridePendingTransition(R.anim.fade_in, R.anim.fade_out); TODO
     }
 
     /**

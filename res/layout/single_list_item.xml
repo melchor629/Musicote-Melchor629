@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3D5F4F"
+    android:background="@color/colorWhite"
     android:orientation="vertical" >
 
   <!-- Titulo de la canción -->
@@ -13,7 +13,7 @@
       android:paddingBottom="10dip"
       android:paddingLeft="10dp"
       android:paddingTop="10dip"
-      android:textColor="#F9B840"
+      android:textColor="@color/colorPrimaryDark"
       android:textSize="25sp"
       android:textStyle="bold" />
 
@@ -23,7 +23,7 @@
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:paddingLeft="20dp"
-      android:textColor="#1F893A" />
+      android:textColor="@color/colorPrimary" />
 
   <!-- Álbum de la cancion -->
   <TextView
@@ -31,7 +31,7 @@
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:paddingLeft="20dp"
-      android:textColor="#5F891F"
+      android:textColor="@color/colorGrey600"
       android:textStyle="bold" />
 
   <!-- Duración de la canción -->
@@ -40,7 +40,7 @@
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:paddingLeft="20dp"
-      android:textColor="#299F9B"
+      android:textColor="@color/colorGrey600"
       android:textStyle="italic" />
 
   <TextView
@@ -54,7 +54,7 @@
       android:paddingLeft="10dp"
       android:text="@string/Play"
       android:textColor="#F0A61C"
-      android:textColorHighlight="#555555"
+      android:textColorHighlight="@color/colorAccent"
       android:textStyle="bold" />
 
   <LinearLayout

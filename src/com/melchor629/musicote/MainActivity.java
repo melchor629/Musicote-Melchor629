@@ -1,6 +1,7 @@
 package com.melchor629.musicote;
 
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -20,25 +21,20 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
-import com.actionbarsherlock.app.SherlockListActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.SearchView;
 import com.google.gson.internal.LinkedTreeMap;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melchor629.musicote.basededatos.DB;
-import com.melchor629.musicote.basededatos.DBArrayList;
 import com.melchor629.musicote.basededatos.DB_entry;
-
-import uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout;
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -66,14 +62,14 @@ import java.util.ArrayList;
  * Actividad principal de la App, hace muchas cosas<br><i>tag:^(?!.*(EGL_emulation|dalvik)).*$</i>
  * @author melchor
  */
-public class MainActivity extends SherlockListActivity implements SearchView.OnQueryTextListener,
-        uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener {
+public class MainActivity extends ListActivity implements SearchView.OnQueryTextListener,
+        SwipeRefreshLayout.OnRefreshListener {
 
     public static String HOST, BASE_API_URL = ":8000/json", BASE_URL = "/musica";
     public static Context appContext;
 
     private String oldText = "";
-    private PullToRefreshLayout mPullToRefreshAttacher;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private static ArrayList<LinkedTreeMap<String, String>> contactList;
 
@@ -83,14 +79,32 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         // The layout file is defined in the project res/layout/main.xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
         appContext = getApplicationContext();
-        mPullToRefreshAttacher = (PullToRefreshLayout) findViewById(R.id.mainLayout);
-        ActionBarPullToRefresh.from(this)
-            .theseChildrenArePullable(android.R.id.list)
-            .listener(this)
-            .setup(mPullToRefreshAttacher);
-        getWindow().getDecorView().setBackgroundColor(android.graphics.Color.rgb(50, 178, 207));
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.mainLayout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimaryDark, R.color.colorGrey600);
+        final ListView list = (ListView) findViewById(android.R.id.list);
+        list.setOnScrollListener(new ListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) { }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                boolean enable = false;
+                if(list != null && list.getChildCount() > 0) {
+                    // check if the first item of the list is visible
+                    boolean firstItemVisible = list.getFirstVisiblePosition() == 0;
+                    // check if the top of the first item is visible
+                    boolean topOfFirstItemVisible = list.getChildAt(0).getTop() == 0;
+                    // enabling or disabling the refresh layout
+                    enable = firstItemVisible && topOfFirstItemVisible;
+                }
+                swipeRefreshLayout.setEnabled(enable);
+            }
+        });
+        getActionBar().setIcon(R.drawable.ic_launcher);
+        getActionBar().setDisplayUseLogoEnabled(true);
 
         // La app prueba en busca de la dirección correcta
         WifiManager mw = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -101,7 +115,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             SSID = "";
             Toast.makeText(this, "No está usando WIFI, se recomienda utilizar la app con WIFI", Toast.LENGTH_LONG).show();
         }
-        if(SSID.equals("Madrigal") || SSID.contains("Madrigal") || System.getProperty("os.version").equals("3.4.0-gd853d22")) {
+        if(SSID.equals("Madrigal") || SSID.contains("Madrigal") || System.getProperty("os.version").equals("3.4.67+")) {
             MainActivity.HOST = "192.168.1.133";
         } else {
             MainActivity.HOST = "reinoslokos.no-ip.org";
@@ -257,15 +271,15 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
     public boolean onCreateOptionsMenu(Menu menu) {
         //TODO mirar porque solo salen dos iconos
         //Create the search view
-        SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
+        SearchView searchView = new SearchView(getActionBar().getThemedContext());
         searchView.setQueryHint(getResources().getString(R.string.menu_search));
         searchView.setOnQueryTextListener(this);
 
         menu.add("Search")
-                .setIcon(R.drawable.abs__ic_search)
+                .setIcon(android.R.drawable.ic_menu_search)
                 .setActionView(searchView)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-        getSupportMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
 
         menu.findItem(R.id.ajustesm).setIcon(
                 new IconDrawable(this, Iconify.IconValue.fa_cogs)
@@ -331,7 +345,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
                     //Putting vaules to be added in DB
                     values.put(DB_entry.COLUMN_NAME_ID, map.get("id"));
-                    values.put(DB_entry.COLUMN_NAME_ARCHIVO, BASE_URL + map.get("archivo"));
+                    values.put(DB_entry.COLUMN_NAME_ARCHIVO, map.get("archivo"));
                     values.put(DB_entry.COLUMN_NAME_TITULO, map.get("titulo"));
                     values.put(DB_entry.COLUMN_NAME_ARTISTA, map.get("artista"));
                     values.put(DB_entry.COLUMN_NAME_ALBUM, map.get("album"));
@@ -346,8 +360,8 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
                 MainActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        if(mPullToRefreshAttacher.isRefreshing())
-                            mPullToRefreshAttacher.setRefreshComplete();
+                        if(swipeRefreshLayout.isRefreshing())
+                            swipeRefreshLayout.setRefreshing(false);
                     }
                 });
             } catch(Exception e) {
@@ -413,8 +427,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
 
     /** Si tiene que hacer la descarga */
     private void async() {
-        if(Build.VERSION.SDK_INT > 10)
-            mPullToRefreshAttacher.setRefreshing(true); //FIXME In 2.3.x android versions this crashes the app
+        swipeRefreshLayout.setRefreshing(true);
         new JSONParseDialog().execute();
     }
 
@@ -482,11 +495,8 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
         sis();
     }
 
-    /* (non-Javadoc)
-     * @see uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener#onRefreshStarted(android.view.View)
-     */
     @Override
-    public void onRefreshStarted(View view) {
+    public void onRefresh() {
         if(Utils.HostTest(MainActivity.HOST) == 200) {
             //Revisa la base de datos
             DB mDbHelper = new DB(getBaseContext());
@@ -502,7 +512,7 @@ public class MainActivity extends SherlockListActivity implements SearchView.OnQ
             db.close();
             async();
         } else {
-            mPullToRefreshAttacher.setRefreshComplete();
+            swipeRefreshLayout.setRefreshing(false);
             Toast.makeText(MainActivity.this, "No se ha podido conectar con el servidor", Toast.LENGTH_LONG).show();
         }
     }

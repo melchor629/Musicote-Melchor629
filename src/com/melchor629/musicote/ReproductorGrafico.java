@@ -1,9 +1,9 @@
 package com.melchor629.musicote;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.AsyncTask;
@@ -11,21 +11,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melchor629.musicote.scrobbler.Album;
-import com.nineoldandroids.animation.AnimatorSet;
-import com.nineoldandroids.animation.ObjectAnimator;
+import com.squareup.picasso.Picasso;
+
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 import org.michaelevans.colorart.library.ColorArt;
 
@@ -33,7 +32,8 @@ import org.michaelevans.colorart.library.ColorArt;
  * El reproductor, en modo gráfico para que pueda el usuario controlarlo mejor
  * @author melchor9000
  */
-public class ReproductorGrafico extends SherlockActivity implements Runnable, SeekBar.OnSeekBarChangeListener {
+public class ReproductorGrafico extends Activity implements Runnable, SeekBar.OnSeekBarChangeListener,
+        AlbumArtDownloader.AlbumArtDownloaderListener {
 
     //Importing all the layout stuff into Java code for use it easely
     private TextView tituloActual;
@@ -61,7 +61,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
         setContentView(R.layout.activity_reproductor_grafico);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         button = getIntent().getBooleanExtra("button", false);
 
         //Starting layout variables
@@ -221,7 +221,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
                 if(a != null && song != null && !song.equals(a.title)) {
                     String alb = PlaylistManager.self.get(p).album;
                     if(alb != null && !alb.isEmpty() && !alb.equals(album))
-                        new Background().execute(p);
+                        new AlbumArtDownloader().setListener(this).execute(PlaylistManager.self.get(PlaylistManager.pos));
                     song = PlaylistManager.self.get(p).title;
                     doThings = true;
                 } else if(PlaylistManager.self.get(p) == null && song != null) {
@@ -233,10 +233,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
                             albumActual.setText("");
                             positionActual.setText("0:00");
                             durationActual.setText("0:00");
-                            positionActual.setTextColor(Color.WHITE);
-                            durationActual.setTextColor(Color.WHITE);
-                            animateAlbumArt(null, false);
-                            animateBackground(Color.BLACK);
+                            onPreExecute();
                         }
                     });
                 }
@@ -257,7 +254,7 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.activity_reproductor_grafico, menu);
+        getMenuInflater().inflate(R.menu.activity_reproductor_grafico, menu);
 
         menu.findItem(R.id.settings).setIcon(
                 new IconDrawable(this, Iconify.IconValue.fa_cogs)
@@ -288,6 +285,11 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
         return true;
     }
 
+    /**
+     * -------------
+     *  Seek events
+     * -------------
+     */
     /* (non-Javadoc)
      * @see android.widget.SeekBar.OnSeekBarChangeListener#onProgressChanged(android.widget.SeekBar, int, boolean)
      */
@@ -321,64 +323,38 @@ public class ReproductorGrafico extends SherlockActivity implements Runnable, Se
         isSeeking = false;
     }
 
-    private class Background extends AsyncTask<Integer, Void, Void> {
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(Params[])
-         */
-        @Override
-        protected Void doInBackground(Integer... params) {
-            album = PlaylistManager.self.get(PlaylistManager.pos).album;
-            final Object[] d = new Object[2];
-            if(((ImageView) findViewById(R.id.AlbumGP)).getDrawable() != null)
-                h.post(new Runnable() {
-                   public void run() {
-                       animateAlbumArt(null, false);
-                       animateBackground(Color.BLACK);
-                       tituloActual.setTextColor(Color.WHITE);
-                       artistaActual.setTextColor(Color.WHITE);
-                       albumActual.setTextColor(Color.WHITE);
-                       positionActual.setTextColor(Color.WHITE);
-                       durationActual.setTextColor(Color.WHITE);
-                   }
-                });
+    /**
+     * ----------------------
+     *  Album Art Downloader
+     * ----------------------
+     */
+    @Override
+    public void onPreExecute() {
+        animateAlbumArt(null, false);
+        animateBackground(Color.BLACK);
+        tituloActual.setTextColor(Color.WHITE);
+        artistaActual.setTextColor(Color.WHITE);
+        albumActual.setTextColor(Color.WHITE);
+        positionActual.setTextColor(Color.WHITE);
+        durationActual.setTextColor(Color.WHITE);
+    }
 
-            Album album = new Album(PlaylistManager.self.get(PlaylistManager.pos).artist,
-                    PlaylistManager.self.get(PlaylistManager.pos).album);
-            int num = 4, width = getWindow().getDecorView().getWidth();
-            if(width >= 600) num = 5;
-            if(width < 300) num = 3;
-            String albumart = album.getInfo(num);
-            InputStream is;
-            try {
-                //Download the image content
-                is = (InputStream) new URL(albumart).getContent();
-                BitmapFactory.Options opt = new BitmapFactory.Options();
-                opt.inSampleSize = 1;
-                Bitmap bmp = BitmapFactory.decodeStream(is, null, opt);
-                ColorArt art = new ColorArt(bmp);
-                d[0] = bmp;
-                d[1] = art;
-            } catch(IOException e) {
-                Log.wtf(TAG, "Error al descargar/procesar el álbum.", e);
-            }
+    @Override
+    public void onProgressUpdate(int progress) { /* DOES NOTHING */}
 
-            h.post(new Runnable() {
-                @Override
-                public void run() {
-                    animateAlbumArt((Bitmap) d[0], true);
-                    if(d[1] != null) {
-                        ColorArt colors = (ColorArt) d[1];
-                        tituloActual.setTextColor(colors.getPrimaryColor());
-                        artistaActual.setTextColor(colors.getSecondaryColor());
-                        albumActual.setTextColor(colors.getDetailColor());
-                        positionActual.setTextColor(colors.getDetailColor());
-                        durationActual.setTextColor(colors.getDetailColor());
-                        //findViewById(R.id.activityReproductorGrafico).setBackgroundColor(colors.getBackgroundColor());
-                        animateBackground(colors.getBackgroundColor());
-                    }
-                }
-            });
-            return null;
+    @Override
+    public void onPostExecute(Bitmap bitmap) {
+        if(bitmap != null) {
+            ColorArt colors = new ColorArt(bitmap);
+            animateAlbumArt(bitmap, true);
+            tituloActual.setTextColor(colors.getPrimaryColor());
+            artistaActual.setTextColor(colors.getSecondaryColor());
+            albumActual.setTextColor(colors.getDetailColor());
+            positionActual.setTextColor(colors.getDetailColor());
+            durationActual.setTextColor(colors.getDetailColor());
+            //findViewById(R.id.activityReproductorGrafico).setBackgroundColor(colors.getBackgroundColor());
+            animateBackground(colors.getBackgroundColor());
         }
     }
+
 }
