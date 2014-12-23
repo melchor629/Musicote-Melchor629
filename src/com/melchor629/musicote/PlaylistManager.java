@@ -16,7 +16,7 @@ public class PlaylistManager {
     private final ArrayList<Song> playlist;
     
     private PlaylistManager() {
-        playlist = new ArrayList<Song>();
+        playlist = new ArrayList<>();
     }
 
     /**
@@ -100,7 +100,7 @@ public class PlaylistManager {
             this.title = title;
             this.artist = artist;
             this.album = album;
-            this.url = url;
+            this.url = Utils.getUrl(url);
         }
     }
 

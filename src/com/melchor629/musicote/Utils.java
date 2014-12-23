@@ -1,18 +1,18 @@
 package com.melchor629.musicote;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.melchor629.musicote.basededatos.DB;
+import com.melchor629.musicote.basededatos.DB_entry;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -46,70 +46,9 @@ import java.util.HashMap;
  */
 public class Utils {
 
-    /**
-     * JSONObject
-     * Descarga y carga un JSON a JSONObject
-     * Download & load a JSON to JSONObetct
-     *
-     * @param url Url with a JSON object
-     * @return JSONObject jObj
-     */
-    public static JSONObject getJSONFromUrl(String url) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        InputStream is = null;
-        String json = "{}";
-        JSONObject jObj = null;
-        // Making HTTP request
-        try {
-            // defaultHttpClient
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpGet httpPost = new HttpGet(url);
-
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            is = httpEntity.getContent();
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            Log.e("com.melchor629.musicote", "UnsupportedEncodingException " + e.toString());
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            Log.e("com.melchor629.musicote", "ClientProtocolException " + e.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("com.melchor629.musicote", "IOException " + e.toString());
-        }
-
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    is, "UTF8"), 8192);
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while((line = reader.readLine()) != null) {
-                sb.append(line);
-                sb.append('\n');
-            }
-            is.close();
-            json = sb.toString();
-        } catch (Exception e) {
-            Log.e("Buffer Error", "Error converting result " + e.toString());
-        }
-
-        // try parse the string to a JSON object
-        try {
-            jObj = new JSONObject(json);
-        } catch (JSONException e) {
-            Log.e("JSON Parser", "Error parsing data " + e.toString());
-        }
-
-        // return JSON String
-        return jObj;
-    }
-
     public static ArrayList getHashMapFromUrl(String url) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        //StrictMode.setThreadPolicy(policy);
         HashMap map = new HashMap();
         try {
             long time = System.currentTimeMillis();
@@ -181,5 +120,16 @@ public class Utils {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                 archivo.substring(archivo.lastIndexOf("/") + 1));
         return file.exists();
+    }
+
+    public static void setFileAsDownloaded(int pos, boolean a) {
+        DB db = new DB(MainActivity.appContext);
+        SQLiteDatabase d = db.getWritableDatabase();
+        if(d == null) return;
+        d.execSQL(String.format("UPDATE %s SET %s=\"%b\" WHERE id = \"%s\"",
+                DB_entry.TABLE_CANCIONES, DB_entry.COLUMN_CANCIONES_DOWNLOADED,
+                a, pos));
+        d.close();
+        MainActivity.songList.get(pos).put("downloaded", a ? "{fa-mobile}" : "{fa-cloud}");
     }
 }

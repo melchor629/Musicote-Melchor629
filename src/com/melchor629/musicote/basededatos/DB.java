@@ -1,12 +1,9 @@
 package com.melchor629.musicote.basededatos;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 /**
  * A data base class for the app.<br>
@@ -90,12 +87,8 @@ public class DB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //db.execSQL(DB_entry.CREATE_CANCIONES); se hace en MainActivity
-        db.execSQL(DB_entry.CREATE_ACCESO);
-        ContentValues values = new ContentValues();
-        values.put("tabla", "canciones");
-        values.put("fecha", System.currentTimeMillis());
-        db.insert("acceso", "null", values);
+        db.execSQL(DB_entry.CREATE_CANCIONES);//(no deberia) se hace en MainActivity
+        db.execSQL(DB_entry.CREATE_ARTISTAS);
     }
 
     @Override
@@ -103,7 +96,8 @@ public class DB extends SQLiteOpenHelper {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
         db.execSQL(DB_entry.DELETE_CANCIONES);
-        db.execSQL(DB_entry.DELETE_ACCESO);
+        db.execSQL(DB_entry.DELETE_ARTISTAS);
+        db.execSQL("DROP TABLE IF EXISTS acceso"); //TODO delete for the next update
         onCreate(db);
     }
 
@@ -123,31 +117,19 @@ public class DB extends SQLiteOpenHelper {
         return count > 0;
     }
 
-    public void actualizarAcceso(SQLiteDatabase db, String tabla, long time) {
-        db.execSQL(DB_entry.CREATE_ACCESO);
-        ContentValues values = new ContentValues();
-        values.put("fecha", time);
-        db.update("acceso", values, "tabla = ?", new String[] {tabla});
-    }
-
-    public long obtenerAcceso(SQLiteDatabase db, String tabla) {
-        Cursor c = db.query("acceso", new String[] {"fecha"}, "tabla = ?", new String[] {tabla}, null, null, null);
+    public boolean isNecesaryUpgrade(SQLiteDatabase db) {
+        if(!ifTableExists(db, DB_entry.TABLE_CANCIONES))
+            return true;
+        Cursor c = db.rawQuery(String.format("SELECT COUNT(*) FROM %s", DB_entry.TABLE_CANCIONES), new String[] {});
         c.moveToFirst();
-        return c.getLong(c.getColumnIndexOrThrow("fecha"));
-    }
-
-    public boolean isNecesaryUpgrade(SQLiteDatabase db, SharedPreferences pref) {
-        long ultimo = obtenerAcceso(db, "canciones");
-        long ahora = System.currentTimeMillis();
-        long diff = Long.parseLong(pref.getString("updateTime", "15"), 10) * 60l * 1000l;
-        Log.d("DB", "Is necesary upgrade table contents? "
-                + (((ahora - ultimo) > diff) ? "True" : "False, will be in " + ((ahora - ultimo) / 60l / 1000l)) + " of " + diff / 60l / 1000l + " minutes.");
-        return (ahora - ultimo) > diff;
+        long count = c.getLong(0);
+        c.close();
+        return count == 0;
     }
 
     public Cursor get(SQLiteDatabase db, String query) {
-        String sortOrder = DB_entry.COLUMN_NAME_ID + " ASC";
-        String which = DB_entry.COLUMN_NAME_TITULO + " LIKE ? OR " + DB_entry.COLUMN_NAME_ARTISTA + " LIKE ? OR " + DB_entry.COLUMN_NAME_ALBUM + " LIKE ?";
+        String sortOrder = DB_entry.COLUMN_CANCIONES_ID + " ASC";
+        String which = DB_entry.COLUMN_CANCIONES_TITULO + " LIKE ? OR " + DB_entry.COLUMN_CANCIONES_ARTISTA + " LIKE ? OR " + DB_entry.COLUMN_CANCIONES_ALBUM + " LIKE ?";
         String[] where = {"%" + query + "%", "%" + query + "%", "%" + query + "%"};
 
         return db.query(

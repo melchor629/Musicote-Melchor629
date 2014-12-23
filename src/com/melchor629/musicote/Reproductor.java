@@ -80,7 +80,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             else
                 reproductor.setDataSource(getApplicationContext(), Uri.parse(url));
         } catch (Exception e) {
-            Log.e("Reproductor", "Error al descargar: " + e.toString());
+            Log.e("Reproductor", "Error al descargar: " + url, e);
             if(e.toString().equals("(1, -1004"))
                 Toast.makeText(this, "No se ha podido descargar la canción", Toast.LENGTH_LONG).show();
             stopSelf();

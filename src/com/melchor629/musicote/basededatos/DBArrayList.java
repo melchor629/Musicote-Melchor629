@@ -37,13 +37,13 @@ public class DBArrayList<E> extends ArrayList<LinkedTreeMap<String, String>> {
 
         c.moveToPosition(pos);
         try {
-            long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ID));
-            String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_TITULO));
-            String artista = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARTISTA));
-            String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ALBUM));
-            String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_ARCHIVO));
-            String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DURACION));
-            String downloaded = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_NAME_DOWNLOADED));
+            long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ID));
+            String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_TITULO));
+            String artista = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ARTISTA));
+            String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ALBUM));
+            String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ARCHIVO));
+            String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_DURACION));
+            String downloaded = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_DOWNLOADED));
 
             obj.put("id", "" + id);
             obj.put("titulo", titulo);
@@ -62,16 +62,16 @@ public class DBArrayList<E> extends ArrayList<LinkedTreeMap<String, String>> {
     private Cursor getCursor() {
         if(c != null) return c;
         String[] projection = {
-                DB_entry.COLUMN_NAME_ID,
-                DB_entry.COLUMN_NAME_TITULO,
-                DB_entry.COLUMN_NAME_ARTISTA,
-                DB_entry.COLUMN_NAME_ALBUM,
-                DB_entry.COLUMN_NAME_DURACION,
-                DB_entry.COLUMN_NAME_ARCHIVO,
-                DB_entry.COLUMN_NAME_DOWNLOADED
+                DB_entry.COLUMN_CANCIONES_ID,
+                DB_entry.COLUMN_CANCIONES_TITULO,
+                DB_entry.COLUMN_CANCIONES_ARTISTA,
+                DB_entry.COLUMN_CANCIONES_ALBUM,
+                DB_entry.COLUMN_CANCIONES_DURACION,
+                DB_entry.COLUMN_CANCIONES_ARCHIVO,
+                DB_entry.COLUMN_CANCIONES_DOWNLOADED
         };
 
-        String sortOrder = DB_entry.COLUMN_NAME_ID + " ASC";
+        String sortOrder = DB_entry.COLUMN_CANCIONES_ID + " ASC";
 
         c =  db.query(
                 DB_entry.TABLE_CANCIONES, // The table to query

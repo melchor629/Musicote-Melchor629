@@ -5,16 +5,12 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.melchor629.musicote.basededatos.DB;
-import com.melchor629.musicote.basededatos.DB_entry;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -32,7 +28,8 @@ public class DownloadManager extends Service {
     private NotificationManager nm;
     private NotificationCompat.Builder notif;
     private int progress;
-    private static int mID = 2;//TODO no se muestran xD
+    private static int mID = 2;
+    private int i;
 
     public DownloadManager() { }
 
@@ -40,12 +37,15 @@ public class DownloadManager extends Service {
     public int onStartCommand(Intent intent, int flags, int StartID) {
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notif = new NotificationCompat.Builder(this);
+        i = intent.getIntExtra("id", 0);
         String file = intent.getStringExtra("file");
+        file = String.format("http://%s%s%s", MainActivity.HOST, MainActivity.BASE_URL, file);
         if(file == null) stopSelf(); //Cerrar servicio si no tenemos FILE
         dir.mkdir();
         if(isSDMounted()) {
             if(isDownloaded(file)) {
                 Toast.makeText(getApplicationContext(), "El arshivo a sio descagao", Toast.LENGTH_LONG).show();
+                Utils.setFileAsDownloaded(i, true);
             } else {
                 notification("Descargando musicote...", file, true);
                 downloadFile(file);
@@ -77,7 +77,7 @@ public class DownloadManager extends Service {
         Notification n = notif.build();
         nm.notify(mID, n);
         return n;
-    }//TODO Clase extends HashMap que con #get(Object) obtenga directamente de la DB
+    }
 
     private void notifprog(String title, String body, int progress) {
         notif
@@ -137,7 +137,8 @@ public class DownloadManager extends Service {
                     Looper.prepare();
                     th.interrupt();
                     notification("Archivo descargado", songFile.getAbsolutePath(), false);
-                    changeSQL(file, true);
+
+                    Utils.setFileAsDownloaded(i, true);
                     Log.d("DownloadManager", "Archivo " + songFile.getAbsolutePath() + " descargado completamente");
                 } catch(MalformedURLException e) {
                     progress = -1;
@@ -154,16 +155,6 @@ public class DownloadManager extends Service {
                 }
             }
         }, "DownloadManager Downloader").start();
-    }
-
-    private void changeSQL(String bef, boolean a) {
-        bef = bef.replace("http://" + MainActivity.HOST, "");
-        DB db = new DB(getApplicationContext());
-        SQLiteDatabase d = db.getWritableDatabase();
-        if(d == null) return;
-        d.execSQL(String.format("UPDATE %s SET %s=\"%b\" WHERE archivo = \"%s\"", DB_entry.TABLE_CANCIONES,
-                DB_entry.COLUMN_NAME_DOWNLOADED, a, bef));
-        d.close();
     }
 
     @Override

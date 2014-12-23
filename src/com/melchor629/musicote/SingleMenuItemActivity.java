@@ -6,12 +6,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,10 +22,9 @@ import android.widget.Toast;
 
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
-import com.melchor629.musicote.basededatos.DB;
-import com.melchor629.musicote.basededatos.DB_entry;
 
 import java.io.*;
+import java.util.HashMap;
 
 /**
  * Musicote App
@@ -53,21 +50,13 @@ import java.io.*;
  * @author Melchor
  */
 public class SingleMenuItemActivity extends Activity {
-
-    // JSON node keys
-    private static final String TAG_NAME = "titulo";
-    private static final String TAG_EMAIL = "artista";
-    private static final String TAG_PHONE_MOBILE = "album";
-    private static final String TAG_DURACIONS = "duracion";
-    private static final String TAG_FILE = "archivo";
-
     private boolean isDownloaded = false;
 
     private String title;
     private String artist;
     private String album;
-    private String duracion;
     private String archivo;
+    private HashMap<String, String> obj;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,33 +69,34 @@ public class SingleMenuItemActivity extends Activity {
 
         // getting intent data
         Intent in = getIntent();
-        title = in.getStringExtra(TAG_NAME);
-        artist = in.getStringExtra(TAG_EMAIL);
-        album = in.getStringExtra(TAG_PHONE_MOBILE);
-        duracion = in.getStringExtra(TAG_DURACIONS);
-        archivo = in.getStringExtra(TAG_FILE);
-        isDownloaded = in.getBooleanExtra("downloaded", false);
+        obj = (HashMap<String, String>) in.getSerializableExtra("obj");
+        title = artist = album = "";
+        title = obj.get("titulo");
+        artist = obj.get("artista");
+        album = obj.get("album");
+ String duracion = obj.get("duracion");
+        archivo = obj.get("archivo");
+        isDownloaded = obj.get("downloaded").equals("{fa-mobile}");//in.getBooleanExtra("downloaded", false);
+
         //If the Activity started from a crash, close the activity, avoiding another crash, and open the Main Activity
-        if(title == null || artist == null || album == null || duracion == null || archivo == null) {
+        if(obj == null) {
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
             finish();
         }
 
         //Setting the activity title
         ab.setTitle(title);
-        getWindow().getDecorView().setBackgroundColor(android.graphics.Color.rgb(50, 207, 102));
         //overridePendingTransition(R.anim.fade_in, R.anim.fade_out); TODO
 
         // Displaying all values on the screen
-        TextView lblName = (TextView)findViewById(R.id.name_label);
-        TextView lblCost = (TextView)findViewById(R.id.email_label);
-        TextView lblDesc = (TextView)findViewById(R.id.mobile_label);
-        TextView lblDura = (TextView)findViewById(R.id.duracionS);
-        //TextView lblArch = (TextView) findViewById(R.id.Play); Guardado por si acaso
+        TextView lblTitulo = (TextView) findViewById(R.id.name_label);
+        TextView lblArtista = (TextView) findViewById(R.id.email_label);
+        TextView lblAlbum = (TextView) findViewById(R.id.mobile_label);
+        TextView lblDura = (TextView) findViewById(R.id.duracionS);
 
-        lblName.setText(title);
-        lblCost.setText(artist);
-        lblDesc.setText(album);
+        lblTitulo.setText(title);
+        lblArtista.setText(artist);
+        lblAlbum.setText(album);
         lblDura.setText(duracion);
         //TODO Poner una carátula de álbum
 
@@ -206,7 +196,7 @@ public class SingleMenuItemActivity extends Activity {
      * @param v view from android
      */
     public void StopSong(View v) {
-        IconButton but = (IconButton) v;
+        IconButton but = (IconButton) findViewById(R.id.play);
         Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
         Animation alphaAnim = AnimationUtils.loadAnimation(this, R.anim.from_alpha);
         PlaylistManager.self.stopPlaying();
@@ -248,9 +238,10 @@ public class SingleMenuItemActivity extends Activity {
         if(!isDownloaded) {
             Intent inte = new Intent(this, DownloadManager.class);
             inte.putExtra("file", archivo);
+            inte.putExtra("id", new Integer(obj.get("id")));
             startService(inte);
         } else {
-            final File file = new File(archivo);Log.e("Æ", file.toString());
+            final File file = new File(archivo);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.sure_delete)
                 .setTitle(R.string.sure)
@@ -262,14 +253,7 @@ public class SingleMenuItemActivity extends Activity {
                             Toast.makeText(getApplicationContext(), getString(R.string.done_delete), Toast.LENGTH_LONG).show();
                             isDownloaded = false;
 
-                            DB db = new DB(getApplicationContext());
-                            SQLiteDatabase d = db.getWritableDatabase();
-                            if(d == null) return;
-                            d.execSQL(String.format("UPDATE %s SET %s=\"%b\" WHERE titulo = \"%s\" AND" +
-                                            " artista = \"%s\" AND album = \"%s\"",
-                                    DB_entry.TABLE_CANCIONES, DB_entry.COLUMN_NAME_DOWNLOADED,
-                                    false, title, artist, album));
-                            d.close();
+                            Utils.setFileAsDownloaded(new Integer(obj.get("id")), false);
                         } else
                             Toast.makeText(getApplicationContext(), getString(R.string.err_delete), Toast.LENGTH_LONG).show();
                         dialog.dismiss();
