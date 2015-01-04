@@ -31,8 +31,6 @@ public class DownloadManager extends Service {
     private static int mID = 2;
     private int i;
 
-    public DownloadManager() { }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int StartID) {
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -47,7 +45,7 @@ public class DownloadManager extends Service {
                 Toast.makeText(getApplicationContext(), "El arshivo a sio descagao", Toast.LENGTH_LONG).show();
                 Utils.setFileAsDownloaded(i, true);
             } else {
-                notification("Descargando musicote...", file, true);
+                notification(getString(R.string.downloading), file, true);
                 downloadFile(file);
             }
         } else {

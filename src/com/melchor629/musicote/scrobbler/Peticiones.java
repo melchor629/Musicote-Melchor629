@@ -55,7 +55,7 @@ public class Peticiones {
     /**
      * Envia una petición a Last.FM por HTTPS y POST
      *
-     * @param params Petición creada a través de {@link request(HashMap<String, String>)}
+     * @param params Petición creada a través de {@link #request(HashMap<String, String>)}
      * @return out String con el xml/json de la petición
      */
     public static String HTTPSpost(HashMap<String, String> params) {
@@ -116,8 +116,6 @@ public class Peticiones {
                 Log.e(TAG, "Last.FM: is a venido vacio (null)");
                 out = "nulo";
             }
-        } catch (MalformedURLException e) {
-            Log.e(TAG, "Error autenticando: " + e.toString());
         } catch (IOException e) {
             Log.e(TAG, "Error autenticando: " + e.toString());
         } finally {
@@ -140,7 +138,7 @@ public class Peticiones {
      * }<br>
      * });</code>
      *
-     * @param params Petición creada a través de {@link sign}
+     * @param params Petición creada a través de {@link #sign()}
      * @return out String con el xml/json de la petición
      */
     public static String HTTPpost(final HashMap<String, String> params) {
@@ -233,14 +231,14 @@ public class Peticiones {
         }
         b.append(Secret);
         String c = b.toString();
-        MessageDigest md = null;
+        MessageDigest md;
         try {
             md = MessageDigest.getInstance("md5");
         } catch (NoSuchAlgorithmException e) {
             Log.e(TAG, "Error: " + e.toString());
             return null;
         }
-        byte[] bytes = null;
+        byte[] bytes;
         try {
             bytes = md.digest(c.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {

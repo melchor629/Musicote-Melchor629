@@ -6,7 +6,6 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,13 +17,9 @@ import android.widget.*;
 
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
-import com.melchor629.musicote.scrobbler.Album;
-import com.squareup.picasso.Picasso;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-
-import java.io.IOException;
 
 import org.michaelevans.colorart.library.ColorArt;
 

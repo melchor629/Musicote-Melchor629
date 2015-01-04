@@ -20,4 +20,5 @@
     <string name="done_delete">Successfully deleted</string>
     <string name="err_delete">Cannot delete song</string>
     <string name="delete_info">Delete this song from mobile</string>
+    <string name="downloading">Downloading song</string>
 </resources>

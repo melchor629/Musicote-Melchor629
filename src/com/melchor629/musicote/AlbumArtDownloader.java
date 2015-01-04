@@ -11,6 +11,7 @@ import java.io.IOException;
 
 /**
  * Descarga la carátula del álbum si es posible
+ * TODO solo pedir last.fm si no esta en la base de datos
  */
 public class AlbumArtDownloader extends AsyncTask<PlaylistManager.Song, Integer, Bitmap> {
     protected AlbumArtDownloaderListener listener;

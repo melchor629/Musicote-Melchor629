@@ -10,7 +10,7 @@ import java.util.Map;
  * Autentificador de Last.FM para el musicote
  *
  * @author melchor
- * @TODO <code>username</code> y <code>password</code> cojerlos de los datos de la app
+ * TODO <code>username</code> y <code>password</code> cojerlos de los datos de la app
  */
 public class Auth {
 

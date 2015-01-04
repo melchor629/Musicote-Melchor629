@@ -31,7 +31,7 @@ public class DBArrayList<E> extends ArrayList<LinkedTreeMap<String, String>> {
 
     @Override
     public LinkedTreeMap<String, String> get(int pos) {
-        LinkedTreeMap<String, String> obj = new LinkedTreeMap<String, String>();
+        LinkedTreeMap<String, String> obj = new LinkedTreeMap<>();
 
         Cursor c = getCursor();
 

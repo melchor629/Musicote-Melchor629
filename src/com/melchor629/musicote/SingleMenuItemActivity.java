@@ -238,7 +238,7 @@ public class SingleMenuItemActivity extends Activity {
         if(!isDownloaded) {
             Intent inte = new Intent(this, DownloadManager.class);
             inte.putExtra("file", archivo);
-            inte.putExtra("id", new Integer(obj.get("id")));
+            inte.putExtra("id", Integer.valueOf(obj.get("id")));
             startService(inte);
         } else {
             final File file = new File(archivo);
@@ -253,7 +253,7 @@ public class SingleMenuItemActivity extends Activity {
                             Toast.makeText(getApplicationContext(), getString(R.string.done_delete), Toast.LENGTH_LONG).show();
                             isDownloaded = false;
 
-                            Utils.setFileAsDownloaded(new Integer(obj.get("id")), false);
+                            Utils.setFileAsDownloaded(Integer.valueOf(obj.get("id")), false);
                         } else
                             Toast.makeText(getApplicationContext(), getString(R.string.err_delete), Toast.LENGTH_LONG).show();
                         dialog.dismiss();

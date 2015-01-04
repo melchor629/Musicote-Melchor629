@@ -198,8 +198,11 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
                                     inte.putExtra("id", which);
                                     startService(inte);
                                 } else {
-                                    new File(Utils.getUrl(url)).delete();
-                                    Utils.setFileAsDownloaded(which, false);
+                                    if(new File(Utils.getUrl(url)).delete()) {
+                                        Utils.setFileAsDownloaded(which, false);
+                                        Toast.makeText(MainActivity.this, getString(R.string.done_delete), Toast.LENGTH_LONG).show();
+                                    } else
+                                        Toast.makeText(MainActivity.this, getString(R.string.err_delete), Toast.LENGTH_LONG).show();
                                 }
                             } else if(which2 == 2) {
                                 PlaylistManager.self.addSong(obj.get("titulo"),
