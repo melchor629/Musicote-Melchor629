@@ -17,11 +17,15 @@ import android.widget.*;
 
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
+import com.melchor629.musicote.scrobbler.Album;
+import com.squareup.picasso.Picasso;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 
 import org.michaelevans.colorart.library.ColorArt;
+
+import java.io.IOException;
 
 /**
  * El reproductor, en modo gráfico para que pueda el usuario controlarlo mejor
@@ -48,6 +52,7 @@ public class ReproductorGrafico extends Activity implements Runnable, SeekBar.On
     private boolean button;
     private volatile int backColor = Color.BLACK;
     private final String TAG = "Reproductor Gráfico";
+    private Bitmap oldBitmap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -200,11 +205,11 @@ public class ReproductorGrafico extends Activity implements Runnable, SeekBar.On
                             int duration = Reproductor.reproductor.getDuration() / 1000;
                             int position = Reproductor.reproductor.getCurrentPosition() / 1000;
                             int minutes = position / 60;
-                            float seconds = ((position / 60f) - (float) minutes) * 60f;
-                            positionActual.setText(minutes + ":" + (seconds < 10 ? "0" : "") + (int) seconds);
+                            int seconds = position % 60;
+                            positionActual.setText(minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
                             minutes = duration / 60;
-                            seconds = ((duration / 60f) - (float) minutes) * 60f;
-                            durationActual.setText(minutes + ":" + (seconds < 10 ? "0" : "") + (int) seconds);
+                            seconds = duration % 60;
+                            durationActual.setText(minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
                         }
                     }
                 }
@@ -218,6 +223,7 @@ public class ReproductorGrafico extends Activity implements Runnable, SeekBar.On
                     if(alb != null && !alb.isEmpty() && !alb.equals(album))
                         new AlbumArtDownloader().setListener(this).execute(PlaylistManager.self.get(PlaylistManager.pos));
                     song = PlaylistManager.self.get(p).title;
+                    album = alb;
                     doThings = true;
                 } else if(PlaylistManager.self.get(p) == null && song != null) {
                     song = null;
@@ -245,6 +251,8 @@ public class ReproductorGrafico extends Activity implements Runnable, SeekBar.On
     public void onDestroy() {
         super.onDestroy();
         H = false;
+        oldBitmap.recycle();
+        System.gc();
     }
 
     @Override
@@ -347,8 +355,9 @@ public class ReproductorGrafico extends Activity implements Runnable, SeekBar.On
             albumActual.setTextColor(colors.getDetailColor());
             positionActual.setTextColor(colors.getDetailColor());
             durationActual.setTextColor(colors.getDetailColor());
-            //findViewById(R.id.activityReproductorGrafico).setBackgroundColor(colors.getBackgroundColor());
             animateBackground(colors.getBackgroundColor());
+            if(oldBitmap != null) oldBitmap.recycle();
+            oldBitmap = bitmap;
         }
     }
 

@@ -14,12 +14,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -74,6 +77,13 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         appContext = getApplicationContext();
+
+        if(Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        }
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.mainLayout);
         swipeRefreshLayout.setOnRefreshListener(this);

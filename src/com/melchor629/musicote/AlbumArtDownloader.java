@@ -58,8 +58,8 @@ public class AlbumArtDownloader extends AsyncTask<PlaylistManager.Song, Integer,
     }
 
     public interface AlbumArtDownloaderListener {
-        public void onPreExecute();
-        public void onProgressUpdate(int progress);
-        public void onPostExecute(Bitmap bitmap);
+        void onPreExecute();
+        void onProgressUpdate(int progress);
+        void onPostExecute(Bitmap bitmap);
     }
 }

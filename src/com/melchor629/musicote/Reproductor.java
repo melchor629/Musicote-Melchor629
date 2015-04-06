@@ -135,7 +135,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
     /** Se llama cuando el reproductor está listo */
     public void onPrepared(final MediaPlayer player) {
-        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences pref = Ajustes.getPreferences();
         new Thread(new Runnable() {
             public void run() {
                 if(pref.getBoolean("lastact", false)) {
