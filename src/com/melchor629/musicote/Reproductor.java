@@ -110,7 +110,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
             inbox.setBigContentTitle(String.format("%s %s %s %s",
                     getResources().getString(R.string.playing), song.title, getResources().getString(R.string.playing_of),
                     song.artist));
-            for(int i = 0; i < self.getPlaylist().size(); i++) {
+            for(int i = 0; i < self.getPlaylist().size() || i == 5; i++) {
                 if(i == 0)
                     inbox.addLine(getResources().getString(R.string.and_after));
                 else

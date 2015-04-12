@@ -12,7 +12,7 @@ import android.provider.BaseColumns;
  */
 public abstract class DB_entry implements BaseColumns {
 
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_MUSICOTE = "musicote.db";
 
     //TABLA canciones
@@ -40,6 +40,16 @@ public abstract class DB_entry implements BaseColumns {
     public static final String CREATE_ARTISTAS = String.format("CREATE TABLE IF NOT EXISTS %s " +
             "(%s INTEGER PRIMARY KEY ASC, %s)", TABLE_ARTISTAS, COLUMN_ARTISTAS_ID, COLUMN_ARTISTAS_ARTISTA);
     public static final String DELETE_ARTISTAS = "DROP TABLE IF EXISTS " + TABLE_ARTISTAS;
+
+    //TABLA caráctulas
+    public static final String TABLE_CARATULAS = "caratulas";
+    public static final String COLUMN_CARATULAS_ALBUM = "album";
+    public static final String COLUMN_CARATULAS_ARTISTA = "artista";
+    public static final String COLUMN_CARATULAS_URL = "url";
+
+    public static String CREATE_CARATULAS = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s)",
+            TABLE_CARATULAS, COLUMN_CARATULAS_ALBUM, COLUMN_CARATULAS_ARTISTA, COLUMN_CARATULAS_URL);
+    public static final String DELETE_CARATULAS = "DROP TABLE IF EXISTS " + TABLE_CARATULAS;
 
     /** No constructor for DB */
     private DB_entry() { }

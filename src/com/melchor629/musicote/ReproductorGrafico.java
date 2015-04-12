@@ -17,15 +17,11 @@ import android.widget.*;
 
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
-import com.melchor629.musicote.scrobbler.Album;
-import com.squareup.picasso.Picasso;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 
 import org.michaelevans.colorart.library.ColorArt;
-
-import java.io.IOException;
 
 /**
  * El reproductor, en modo gráfico para que pueda el usuario controlarlo mejor
@@ -179,7 +175,7 @@ public class ReproductorGrafico extends Activity implements Runnable, SeekBar.On
                         }
                     });
                     time += 1000/30;
-                    try {Thread.sleep(1000/30);}catch(Exception e){}
+                    try {Thread.sleep(1000/30);}catch(Exception ignore){}
                 }
                 backColor = color;
             }
@@ -251,8 +247,10 @@ public class ReproductorGrafico extends Activity implements Runnable, SeekBar.On
     public void onDestroy() {
         super.onDestroy();
         H = false;
-        oldBitmap.recycle();
-        System.gc();
+        if(oldBitmap != null) {
+            oldBitmap.recycle();
+            System.gc();
+        }
     }
 
     @Override

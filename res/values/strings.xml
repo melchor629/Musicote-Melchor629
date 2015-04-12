@@ -1,9 +1,21 @@
 <resources>
 
     <string name="app_name">Musicote</string>
-    <string name="version">1.0.6</string>
+    <string name="version" translatable="false">1.0.6</string>
     <string name="app_description">Music everywhere</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="icon_play" translatable="false">{fa-play}</string>
+    <string name="icon_stop" translatable="false">{fa-stop}</string>
+    <string name="icon_step_forward" translatable="false">{fa-step-forward}</string>
+    <string name="had_been_downloaded">The song had been downloaded before</string>
+    <string name="no_external_storage">There\'s no external storage</string>
+    <string name="done_downloading">Successfully downloaded</string>
+    <string name="err_download">Could not download the song</string>
+    <string name="err_download_intern">Intern Java error</string>
+    <string name="err_download_web">File doesn\'t exists or server is down</string>
+    <string name="err_download_io">Network connection error</string>
+    <string name="no_wifi">You are not using WiFi, it is recommended to use it to save data</string>
+    <string name="err_server_conn">Cannot connect to the server</string>
 
 </resources>

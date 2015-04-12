@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.melchor629.musicote.basededatos.DB;
@@ -78,6 +79,8 @@ public class Utils {
             return (ArrayList) map.get("canciones");
         } catch(IOException e) {
             e.printStackTrace();
+        } catch(IllegalStateException e) {
+            Log.e("Utils", "El archivo recibido no es json");
         }
         return null;
     }

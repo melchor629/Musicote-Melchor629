@@ -4,7 +4,7 @@
     <string name="infor">Mensaje recibido:</string>
     <string name="vacio">Nada</string>
     <string name="menu_settings">Ajustes</string>
-    <string name="menu_parar">Canción Actual</string>
+    <string name="menu_parar">Canción actual</string>
     <string name="playing">Reproduciendo</string>
     <string name="playing_of">de</string>
     <string name="playing_no">No reproduce nada</string>
@@ -14,9 +14,8 @@
     <string name="next">Siguiente canción</string>
     <string name="download">Descargar</string>
     <string name="download_info">Descarga la canción al dispositivo</string>
-    <string name="add_to_playlist">{fa-plus-square}</string>
     <string name="sure">¿Estas seguro&#8230;?</string>
-    <string name="sure_delete">¿Estas seguro de que quieres eliminar esta canción?</string>
+    <string name="sure_delete">¿Estas seguro que quieres eliminar esta canción?</string>
     <string name="done_delete">Canción eliminada</string>
     <string name="err_delete">No se ha podido eliminar</string>
     <string name="delete_info">Elimina la canción del dispositivo</string>

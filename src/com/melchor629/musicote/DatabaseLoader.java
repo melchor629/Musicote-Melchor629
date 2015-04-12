@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.internal.LinkedTreeMap;
 import com.melchor629.musicote.basededatos.DB;
@@ -25,6 +26,10 @@ public class DatabaseLoader extends AsyncTask<Void, Void, Void> {
         ArrayList list = Utils.getHashMapFromUrl("http://" + MainActivity.HOST + MainActivity.BASE_API_URL);
         ArrayList<String> artists = new ArrayList<>();
 
+        if(list == null) {
+            Toast.makeText(MainActivity.appContext, MainActivity.appContext.getString(R.string.err_server_conn), Toast.LENGTH_LONG).show();
+            return null;
+        }
         try {
             DB dbHelper = new DB(MainActivity.appContext);
             SQLiteDatabase db = dbHelper.getWritableDatabase();

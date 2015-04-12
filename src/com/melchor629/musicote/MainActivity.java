@@ -14,15 +14,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -62,7 +59,7 @@ import java.util.ArrayList;
 public class MainActivity extends ListActivity implements SearchView.OnQueryTextListener,
         SwipeRefreshLayout.OnRefreshListener, DatabaseLoader.DatabaseLoaderListener {
 
-    public static String HOST, BASE_API_URL = ":8000/json", BASE_URL = "/musica";
+    public static String HOST, BASE_API_URL = "/musicote/json", BASE_URL = "/musica";
     public static Context appContext;
 
     private String oldText = "";
@@ -77,13 +74,6 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         appContext = getApplicationContext();
-
-        if(Build.VERSION.SDK_INT >= 21) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-        }
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.mainLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -117,7 +107,7 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
         Log.i("MainActivity", "Wifi conectado: " + SSID + " " + (SSID != null ? SSID.equals("Madrigal") : ""));
         if(SSID == null) {
             SSID = "";
-            Toast.makeText(this, "No está usando WIFI, se recomienda utilizar la app con WIFI", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.no_wifi), Toast.LENGTH_LONG).show();
         }
         if(SSID.equals("Madrigal") || SSID.contains("Madrigal") || System.getProperty("os.version").equals("3.4.67+")) {
             MainActivity.HOST = "192.168.1.133";
@@ -229,7 +219,6 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //TODO mirar porque solo salen dos iconos
         //Create the search view
         SearchView searchView = new SearchView(getActionBar().getThemedContext());
         searchView.setQueryHint(getResources().getString(R.string.menu_search));
@@ -416,7 +405,7 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
             async();
         } else {
             swipeRefreshLayout.setRefreshing(false);
-            Toast.makeText(MainActivity.this, "No se ha podido conectar con el servidor", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, getString(R.string.err_server_conn), Toast.LENGTH_LONG).show();
         }
     }
 }

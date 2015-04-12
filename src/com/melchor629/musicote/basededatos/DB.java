@@ -89,6 +89,7 @@ public class DB extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DB_entry.CREATE_CANCIONES);//(no deberia) se hace en MainActivity
         db.execSQL(DB_entry.CREATE_ARTISTAS);
+        db.execSQL(DB_entry.CREATE_CARATULAS);
     }
 
     @Override
@@ -97,7 +98,7 @@ public class DB extends SQLiteOpenHelper {
         // to simply to discard the data and start over
         db.execSQL(DB_entry.DELETE_CANCIONES);
         db.execSQL(DB_entry.DELETE_ARTISTAS);
-        db.execSQL("DROP TABLE IF EXISTS acceso"); //TODO delete for the next update
+        db.execSQL(DB_entry.DELETE_CARATULAS);
         onCreate(db);
     }
 

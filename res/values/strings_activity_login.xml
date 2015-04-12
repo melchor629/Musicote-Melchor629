@@ -2,14 +2,6 @@
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in_register"><b>Log in</b> or register</string>
-    <string name="action_sign_in_short">Log in</string>
-    <string name="menu_forgot_password">Recover the password</string>
-    <string name="login_progress_signing_in">Loging in&#8230;</string>
-    <string name="error_invalid_email">Wrong email</string>
-    <string name="error_invalid_password">The password is too short</string>
     <string name="error_incorrect_password">Wrong password</string>
-    <string name="error_field_required">Required field</string>
 
 </resources>

@@ -42,15 +42,15 @@ public class DownloadManager extends Service {
         dir.mkdir();
         if(isSDMounted()) {
             if(isDownloaded(file)) {
-                Toast.makeText(getApplicationContext(), "El arshivo a sio descagao", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.had_been_downloaded), Toast.LENGTH_LONG).show();
                 Utils.setFileAsDownloaded(i, true);
             } else {
                 notification(getString(R.string.downloading), file, true);
                 downloadFile(file);
             }
         } else {
-            Toast.makeText(getApplicationContext(), "No hay SD conectada", Toast.LENGTH_SHORT).show();
-            notification("No hay SD", "Para descargar el archivo, se requiere que haya una SD montada", false);
+            Toast.makeText(getApplicationContext(), getString(R.string.no_external_storage), Toast.LENGTH_SHORT).show();
+            notification(getString(R.string.err_download), getString(R.string.no_external_storage), false);
         }
         return START_STICKY;
     }
@@ -98,7 +98,7 @@ public class DownloadManager extends Service {
                         Looper.prepare();
                         boolean loop = true;
                         while(loop) {
-                            notifprog("Descargando musicote...", file, progress);
+                            notifprog(getString(R.string.downloading), file, progress);
                             try { Thread.sleep(1000); } catch(Exception e) {loop = false;}
                             if(progress == -1) loop = false;
                         }
@@ -106,9 +106,11 @@ public class DownloadManager extends Service {
                 }, "DownloadManager Notification");
                 th.start();
 
+                File songFile;
+                String arch = file.substring(file.lastIndexOf("/") + 1);
+                songFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), arch);
                 try {
                     URL url = new URL(file.replace(" ", "%20"));
-                    String arch = file.substring(file.lastIndexOf("/") + 1);
                     URLConnection connection = url.openConnection();
                     connection.connect();
                     // this will be useful so that you can show a typical 0-100% progress bar
@@ -116,7 +118,6 @@ public class DownloadManager extends Service {
 
                     // download the file
                     InputStream input = new BufferedInputStream(url.openStream());
-                    File songFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), arch);
                     OutputStream output = new FileOutputStream(songFile);
 
                     byte data[] = new byte[8192];
@@ -134,22 +135,28 @@ public class DownloadManager extends Service {
 
                     Looper.prepare();
                     th.interrupt();
-                    notification("Archivo descargado", songFile.getAbsolutePath(), false);
+                    notification(getString(R.string.done_downloading), songFile.getAbsolutePath(), false);
 
                     Utils.setFileAsDownloaded(i, true);
                     Log.d("DownloadManager", "Archivo " + songFile.getAbsolutePath() + " descargado completamente");
-                } catch(MalformedURLException e) {
-                    progress = -1;
-                    Log.e("DownloadManager", "Error: " + e.toString());
-                    notification("Error al descargar el archivo", "Error interno", false);
                 } catch(FileNotFoundException e) {
                     progress = -1;
                     Log.e("DownloadManager", "Error: " + e.toString());
-                    notification("Error al descargar el archivo", "El archivo no existe, o el servidor está cerrado", false);
+                    notification(getString(R.string.err_download), getString(R.string.err_download_web), false);
+                    Utils.setFileAsDownloaded(i, false);
+                    songFile.delete();
                 } catch(IOException e) {
                     progress = -1;
                     Log.e("DownloadManager", "Error: " + e.toString());
-                    notification("Error al descargar el archivo", "Se cortó la conexión", false);
+                    notification(getString(R.string.err_download), getString(R.string.err_download_io), false);
+                    Utils.setFileAsDownloaded(i, false);
+                    songFile.delete();
+                } catch(Exception e) {
+                    progress = -1;
+                    Log.e("DownloadManager", "Error: " + e.toString());
+                    notification(getString(R.string.err_download), getString(R.string.err_download_intern), false);
+                    Utils.setFileAsDownloaded(i, false);
+                    songFile.delete();
                 }
             }
         }, "DownloadManager Downloader").start();
