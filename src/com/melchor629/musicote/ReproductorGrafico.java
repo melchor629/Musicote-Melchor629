@@ -117,11 +117,11 @@ public class ReproductorGrafico extends Activity implements Runnable, SeekBar.On
     }
 
     public void stop(View v) {
-        if(Reproductor.a != -1) {
+        //if(Reproductor.a != -1) {
             PlaylistManager.self.stopPlaying();
             playpauseActual.setText("{fa-play}");
             playpauseActual.setTag("play");
-        }
+        //}
     }
 
     public void next(View v) {
@@ -129,6 +129,16 @@ public class ReproductorGrafico extends Activity implements Runnable, SeekBar.On
             PlaylistManager.self.nextSong();
         } else {
             Toast.makeText(this, "No hay siguiente canción", Toast.LENGTH_LONG).show();
+            //TODO hacer que no se pueda apretar si no hay siguiente canción
+        }
+    }
+
+    public void previous(View v) {
+        if(PlaylistManager.self.isPreviousSong()) {
+            PlaylistManager.self.previousSong();
+        } else {
+            Toast.makeText(this, "No hay anterior canción", Toast.LENGTH_LONG).show();
+            //TODO hacer que no se pueda apretar si no hay anterior canción
         }
     }
 

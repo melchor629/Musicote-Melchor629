@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.0'
+        classpath 'com.android.tools.build:gradle:1.2.3'
     }
 }
 
@@ -16,8 +16,8 @@ repositories {
 dependencies {
     compile 'com.android.support:support-v4:22.0.0'
     compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.squareup.picasso:picasso:2.4.0'
-    compile 'com.joanzapata.android:android-iconify:1.0.8'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.joanzapata.android:android-iconify:1.0.9'
     compile files('libs/colorart.jar', 'libs/gson.jar')
 }
 

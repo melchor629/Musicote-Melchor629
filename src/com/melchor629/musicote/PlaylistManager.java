@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * Manages playlist and the player cicle
+ * Manages playlist and the player cycle
  * @author melchor9000
  */
 public class PlaylistManager {
@@ -14,6 +14,7 @@ public class PlaylistManager {
     public static int pos;
     public final static PlaylistManager self = new PlaylistManager();
     private final ArrayList<Song> playlist;
+    private boolean adelante = true;
     
     private PlaylistManager() {
         playlist = new ArrayList<>();
@@ -46,11 +47,28 @@ public class PlaylistManager {
         return playlist.size() > (pos+1);
     }
 
+    /**
+     * @return Tell if there is a previous song or not
+     */
+    public boolean isPreviousSong() {
+        return pos > 0;
+    }
+
     public void nextSong() {
         if(Reproductor.a == -1) return;
+        adelante = true;
         Reproductor.reproductor.stop();
         Reproductor.reproductor.release();
         Reproductor.leNext();
+    }
+
+    public void previousSong() {
+        if(Reproductor.a != -1) {
+            adelante = false;
+            Reproductor.reproductor.stop();
+            Reproductor.reproductor.release();
+            Reproductor.leNext();
+        }
     }
 
     /**
@@ -105,7 +123,7 @@ public class PlaylistManager {
     }
 
     public interface callback {
-        public void run();
+        void run();
     }
 
     ArrayList<Song> getPlaylist() {
@@ -128,10 +146,10 @@ public class PlaylistManager {
             }
         };
         Reproductor.onEnd = new callback() {
-            public boolean runned = false;
+            public boolean runed = false;
             @Override
             public void run() {
-                if(runned) return;
+                if(runed) return;
                 Log.i("PlaylistManager", "onEnd called");
                 Reproductor.a = -1;
                 if(!isNextSong()) {
@@ -139,8 +157,12 @@ public class PlaylistManager {
                     playlist.clear();
                     return;
                 }
-                pos++;
-                runned = true;
+                if(adelante) pos++;
+                else {
+                    pos--;
+                    adelante = true;
+                }
+                runed = true;
             }
         };
     }
