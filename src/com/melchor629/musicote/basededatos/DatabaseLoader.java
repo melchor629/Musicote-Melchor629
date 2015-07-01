@@ -1,6 +1,8 @@
-package com.melchor629.musicote;
+package com.melchor629.musicote.basededatos;
 
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -8,11 +10,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.internal.LinkedTreeMap;
-import com.melchor629.musicote.basededatos.DB;
-import com.melchor629.musicote.basededatos.DB_entry;
+import com.melchor629.musicote.MainActivity;
+import com.melchor629.musicote.R;
+import com.melchor629.musicote.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 /**
  * Carga la base de datos del servidor y lo guarda en la base de
@@ -24,7 +28,7 @@ public class DatabaseLoader extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         ArrayList list = Utils.getHashMapFromUrl("http://" + MainActivity.HOST + MainActivity.BASE_API_URL);
-        ArrayList<String> artists = new ArrayList<>();
+        TreeSet<String> artists = new TreeSet<>();
 
         if(list == null) {
             Toast.makeText(MainActivity.appContext, MainActivity.appContext.getString(R.string.err_server_conn), Toast.LENGTH_LONG).show();
@@ -60,9 +64,7 @@ public class DatabaseLoader extends AsyncTask<Void, Void, Void> {
                 values.put(DB_entry.COLUMN_CANCIONES_DURACION, map.get("duracion"));
                 values.put(DB_entry.COLUMN_CANCIONES_DOWNLOADED, ""+file.exists());
 
-                if(!artists.contains(map.get("artista"))) {
-                    artists.add(map.get("artista"));
-                }
+                artists.add(map.get("artista"));
 
                 //Adding data into DB
                 db.insert(DB_entry.TABLE_CANCIONES, "null", values);
@@ -95,7 +97,52 @@ public class DatabaseLoader extends AsyncTask<Void, Void, Void> {
             listener.onLoaded();
     }
 
+    /**
+     * Obtains a List representation of the song table from the Database
+     * @param db an SQLite connexion to database
+     * @return List with songs
+     */
+    public static ArrayList<SongRow> getSongsMap(SQLiteDatabase db) {
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                DB_entry.COLUMN_CANCIONES_ID,
+                DB_entry.COLUMN_CANCIONES_TITULO,
+                DB_entry.COLUMN_CANCIONES_ARTISTA,
+                DB_entry.COLUMN_CANCIONES_ALBUM,
+                DB_entry.COLUMN_CANCIONES_DURACION,
+                DB_entry.COLUMN_CANCIONES_ARCHIVO,
+                DB_entry.COLUMN_CANCIONES_DOWNLOADED
+        };
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder = DB_entry.COLUMN_CANCIONES_ID + " ASC";
+
+        Cursor c = db.query(
+                DB_entry.TABLE_CANCIONES, // The table to query
+                projection,               // The columns to return
+                null,                     // The columns for the WHERE clause
+                null,                     // The values for the WHERE clause
+                null,                     // don't group the rows
+                null,                     // don't filter by row groups
+                sortOrder                 // The sort order
+        );
+        ArrayList<SongRow> songList = new ArrayList<>();
+
+        c.moveToFirst();
+        try {
+            do {
+                songList.add(new SongRow(c));
+            } while(c.moveToNext());
+        } catch (CursorIndexOutOfBoundsException e) {
+            db.execSQL(DB_entry.DELETE_CANCIONES);
+            Log.e("DB", "Mala integridad de la BD");
+        }
+        c.close();
+        return songList;
+    }
+
     public interface DatabaseLoaderListener {
-        public void onLoaded();
+        void onLoaded();
     }
 }

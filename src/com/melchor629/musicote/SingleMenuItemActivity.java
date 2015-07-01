@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
+import com.melchor629.musicote.basededatos.SongRow;
 
 import java.io.*;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class SingleMenuItemActivity extends Activity {
     private String artist;
     private String album;
     private String archivo;
-    private HashMap<String, String> obj;
+    private SongRow obj;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,7 @@ public class SingleMenuItemActivity extends Activity {
 
         // getting intent data
         Intent in = getIntent();
-        obj = (HashMap<String, String>) in.getSerializableExtra("obj");
+        obj = new SongRow(in.getStringExtra("obj"));
         title = artist = album = "";
         title = obj.get("titulo");
         artist = obj.get("artista");

@@ -27,8 +27,8 @@ public class Scrobble {
     /**
      * Constructor for the class <i>Scrobble</i>
      *
-     * @param Titulo  <i>Song title</i>
-     * @param Artista <i>Song artist</i>
+     * @param Titulo  <i>SongRow title</i>
+     * @param Artista <i>SongRow artist</i>
      */
     public Scrobble(String Titulo, String Artista) {
         titulo = Titulo;

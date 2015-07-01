@@ -104,7 +104,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/next"
-            android:text="@string/icon_step_forward"
+            android:text="@string/icon_step_backward"
             android:onClick="previous" />
 
         <IconButton

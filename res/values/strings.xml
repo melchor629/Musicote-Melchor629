@@ -17,5 +17,6 @@
     <string name="err_download_io">Network connection error</string>
     <string name="no_wifi">You are not using WiFi, it is recommended to use it to save data</string>
     <string name="err_server_conn">Cannot connect to the server</string>
+    <string name="icon_step_backward" translatable="false">{fa-step-backward}</string>
 
 </resources>

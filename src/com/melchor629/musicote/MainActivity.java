@@ -9,7 +9,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.wifi.WifiInfo;
@@ -24,37 +23,18 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
-import com.google.gson.internal.LinkedTreeMap;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.melchor629.musicote.basededatos.DB;
-import com.melchor629.musicote.basededatos.DB_entry;
+import com.melchor629.musicote.basededatos.DatabaseLoader;
+import com.melchor629.musicote.basededatos.SongRow;
 
 import java.io.File;
 import java.util.ArrayList;
 
 /**
- * Musicote App
- * Melchor629 2013
- *
- *    Copyright 2013 Melchor629
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- **/
-
-/**
- * Actividad principal de la App, hace muchas cosas<br><i>tag:^(?!.*(EGL_emulation|dalvik)).*$</i>
- * @author melchor
+ * Actividad principal de la App, hace muchas cosas
+ * @author melchor9000
  */
 public class MainActivity extends ListActivity implements SearchView.OnQueryTextListener,
         SwipeRefreshLayout.OnRefreshListener, DatabaseLoader.DatabaseLoaderListener {
@@ -65,7 +45,7 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
     private String oldText = "";
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    static ArrayList<LinkedTreeMap<String, String>> songList;
+    static ArrayList<SongRow> songList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -112,7 +92,7 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
         if(SSID.equals("Madrigal") || SSID.contains("Madrigal") || System.getProperty("os.version").equals("3.4.67+")) {
             MainActivity.HOST = "192.168.1.133";
         } else {
-            MainActivity.HOST = "reinoslokos.no-ip.org";
+            MainActivity.HOST = "95.17.216.65";//"reinoslokos.no-ip.org";
         }
         Log.i("MainActivity", "HOST: " + HOST);
 
@@ -160,11 +140,11 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // getting values from selected ListItem
-                LinkedTreeMap<String, String> datos = songList.get(position);
+                SongRow datos = songList.get(position);
 
                 // Starting new intent
                 Intent in = new Intent(getApplicationContext(), SingleMenuItemActivity.class);
-                in.putExtra("obj", datos);
+                in.putExtra("obj", datos.toString());
 
                 startActivity(in);
             }
@@ -180,16 +160,16 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
                     .setItems(isDownloaded ? R.array.song_options_array2 : R.array.song_options_array, new OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which2) {
-                            LinkedTreeMap<String, String> obj = songList.get(which);
-                            String url = obj.get("archivo");
+                            SongRow obj = songList.get(which);
+                            String url = obj.getArchivo();
                             if(which2 == 0) {
                                 if(Reproductor.a == -1) {
-                                    PlaylistManager.self.startPlaying(obj.get("titulo"),
-                                        obj.get("artista"), obj.get("album"), url);
+                                    PlaylistManager.self.startPlaying(obj.getTitulo(),
+                                        obj.getArtista(), obj.getAlbum(), url);
                                 } else {
                                     PlaylistManager.self.stopPlaying();
-                                    PlaylistManager.self.addSong(obj.get("titulo"),
-                                            obj.get("artista"), obj.get("album"), url);
+                                    PlaylistManager.self.addSong(obj.getTitulo(),
+                                            obj.getArtista(), obj.getAlbum(), url);
                                 }
                             } else if(which2 == 1) {
                                 if(!isDownloaded) {
@@ -205,8 +185,8 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
                                         Toast.makeText(MainActivity.this, getString(R.string.err_delete), Toast.LENGTH_LONG).show();
                                 }
                             } else if(which2 == 2) {
-                                PlaylistManager.self.addSong(obj.get("titulo"),
-                                        obj.get("artista"), obj.get("album"), url);
+                                PlaylistManager.self.addSong(obj.getTitulo(),
+                                        obj.getArtista(), obj.getAlbum(), url);
                             }
                         }
                     })
@@ -227,7 +207,7 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
         menu.add("Search")
                 .setIcon(new IconDrawable(this, Iconify.IconValue.fa_search)
                         .color(Color.WHITE)
-                        .actionBarSize())//android.R.drawable.ic_menu_search)
+                        .actionBarSize())
                 .setActionView(searchView)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         getMenuInflater().inflate(R.menu.main, menu);
@@ -282,28 +262,7 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
         c.moveToFirst();
         if(c.getCount() > 0) {
             do {
-                // creating new HashMap
-                LinkedTreeMap<String, String> map = new LinkedTreeMap<>();
-
-                long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ID));
-                String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_TITULO));
-                String artista = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ARTISTA));
-                String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ALBUM));
-                String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ARCHIVO));
-                String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_DURACION));
-                String down = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_DOWNLOADED));
-                boolean downloaded = down.equalsIgnoreCase("true");
-
-                // adding each child node to HashMap key => value
-                map.put("id", "" + id);
-                map.put("titulo", titulo);
-                map.put("artista", artista);
-                map.put("album", album);
-                map.put("archivo", archivo);
-                map.put("duracion", duracion);
-                map.put("downloaded", downloaded ? "{fa-mobile}" : "{fa-cloud}"); //TODO
-
-                songList.add(map);
+                songList.add(new SongRow(c));
             } while(c.moveToNext());
         }
         sis();
@@ -333,65 +292,11 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
 
     /** Carga desde la base de datos */
     private void cursordb(SQLiteDatabase db) {
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                DB_entry.COLUMN_CANCIONES_ID,
-                DB_entry.COLUMN_CANCIONES_TITULO,
-                DB_entry.COLUMN_CANCIONES_ARTISTA,
-                DB_entry.COLUMN_CANCIONES_ALBUM,
-                DB_entry.COLUMN_CANCIONES_DURACION,
-                DB_entry.COLUMN_CANCIONES_ARCHIVO,
-                DB_entry.COLUMN_CANCIONES_DOWNLOADED
-        };
-
-        // How you want the results sorted in the resulting Cursor
-        String sortOrder = DB_entry.COLUMN_CANCIONES_ID + " ASC";
-
-        Cursor c = db.query(
-                DB_entry.TABLE_CANCIONES, // The table to query
-                projection,               // The columns to return
-                null,                     // The columns for the WHERE clause
-                null,                     // The values for the WHERE clause
-                null,                     // don't group the rows
-                null,                     // don't filter by row groups
-                sortOrder                 // The sort order
-        );
-        if(songList != null)
-            songList.clear();
-        else
+        if(songList == null)
             songList = new ArrayList<>();
-
-        c.moveToFirst();
-        try {
-            do {
-                // creating new HashMap
-                LinkedTreeMap<String, String> map = new LinkedTreeMap<>();
-
-                long id = c.getLong(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ID));
-                String titulo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_TITULO));
-                String artista = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ARTISTA));
-                String album = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ALBUM));
-                String archivo = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_ARCHIVO));
-                String duracion = c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_DURACION));
-                String downloaded = "false";//c.getString(c.getColumnIndexOrThrow(DB_entry.COLUMN_CANCIONES_DOWNLOADED));
-
-                // adding each child node to HashMap key => value
-                map.put("id", "" + id);
-                map.put("titulo", titulo);
-                map.put("artista", artista);
-                map.put("album", album);
-                map.put("archivo", archivo);
-                map.put("duracion", duracion);
-                map.put("downloaded", downloaded.equalsIgnoreCase("true") ? "{fa-mobile}" : "{fa-cloud}"); //TODO
-
-                songList.add(map);
-            } while(c.moveToNext());
-        } catch (CursorIndexOutOfBoundsException e) {
-            db.execSQL(DB_entry.DELETE_CANCIONES);
-            Log.e("DB", "Mala integridad de la BD");
-        }
-        c.close();
+        else
+            songList.clear();
+        songList.addAll(DatabaseLoader.getSongsMap(db));
         sis();
     }
 
