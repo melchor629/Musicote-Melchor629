@@ -1,9 +1,9 @@
-buildscript {
+ buildscript {
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.android.tools.build:gradle:2.0.0'
     }
 }
 
@@ -14,23 +14,33 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:22.0.0'
-    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.android.support:support-v4:23.3.0'
+    compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.joanzapata.android:android-iconify:1.0.9'
-    compile files('libs/colorart.jar', 'libs/gson.jar')
+    compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.1.1'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.2'
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+        debug {
+            debuggable true
+        }
+    }
+
     sourceSets {
         main {
             manifest {
-                srcFile 'AndroidManifest.xml'
+                srcFile 'src/main/AndroidManifest.xml'
             }
             java {
-                srcDir 'src'
+                srcDir 'src/main'
             }
             res {
                 srcDir 'res'
@@ -39,7 +49,7 @@ android {
                 srcDir 'assets'
             }
             resources {
-                srcDir 'src'
+                srcDir 'src/res'
             }
         }
     }

@@ -15,5 +15,6 @@
     <string name="err_download_io">Error de conexión</string>
     <string name="no_wifi">No estás usando WiFi, se recomienda usarlo para ahorrar datos</string>
     <string name="err_server_conn">No se ha podido conectar con el servidor</string>
+    <string name="prompt_email">Email</string>
 
 </resources>

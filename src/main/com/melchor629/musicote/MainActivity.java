@@ -23,8 +23,10 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
-import com.joanzapata.android.iconify.IconDrawable;
-import com.joanzapata.android.iconify.Iconify;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DatabaseLoader;
 import com.melchor629.musicote.basededatos.SongRow;
@@ -39,7 +41,7 @@ import java.util.ArrayList;
 public class MainActivity extends ListActivity implements SearchView.OnQueryTextListener,
         SwipeRefreshLayout.OnRefreshListener, DatabaseLoader.DatabaseLoaderListener {
 
-    public static String HOST, BASE_API_URL = "/musicote/json", BASE_URL = "/musica";
+    public static String HOST, BASE_API_URL = "/json", BASE_URL = "/";
     public static Context appContext;
 
     private String oldText = "";
@@ -54,6 +56,7 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         appContext = getApplicationContext();
+        Iconify.with(new FontAwesomeModule());
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.mainLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -89,8 +92,8 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
             SSID = "";
             Toast.makeText(this, getString(R.string.no_wifi), Toast.LENGTH_LONG).show();
         }
-        if(SSID.equals("Madrigal") || SSID.contains("Madrigal") || System.getProperty("os.version").equals("3.4.67+")) {
-            MainActivity.HOST = "192.168.1.133";
+        if(SSID.contains("Madrigal") || SSID.contains("Golfo")) {
+            MainActivity.HOST = "192.168.2.101:8000";
         } else {
             MainActivity.HOST = "95.17.216.65";//"reinoslokos.no-ip.org";
         }
@@ -205,7 +208,7 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
         searchView.setOnQueryTextListener(this);
 
         menu.add("Search")
-                .setIcon(new IconDrawable(this, Iconify.IconValue.fa_search)
+                .setIcon(new IconDrawable(this, FontAwesomeIcons.fa_search)
                         .color(Color.WHITE)
                         .actionBarSize())
                 .setActionView(searchView)
@@ -213,12 +216,12 @@ public class MainActivity extends ListActivity implements SearchView.OnQueryText
         getMenuInflater().inflate(R.menu.main, menu);
 
         menu.findItem(R.id.ajustesm).setIcon(
-                new IconDrawable(this, Iconify.IconValue.fa_cogs)
+                new IconDrawable(this, FontAwesomeIcons.fa_cogs)
                 .color(Color.WHITE)
                 .actionBarSize());
 
         menu.findItem(R.id.parar).setIcon(
-                new IconDrawable(this, Iconify.IconValue.fa_music)
+                new IconDrawable(this, FontAwesomeIcons.fa_music)
                 .color(Color.WHITE)
                 .actionBarSize()
         );

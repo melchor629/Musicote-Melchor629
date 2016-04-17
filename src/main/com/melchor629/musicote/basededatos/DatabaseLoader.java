@@ -15,6 +15,7 @@ import com.melchor629.musicote.R;
 import com.melchor629.musicote.Utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
@@ -24,14 +25,22 @@ import java.util.TreeSet;
  */
 public class DatabaseLoader extends AsyncTask<Void, Void, Void> {
     protected DatabaseLoaderListener listener;
+    private String error = null;
 
     @Override
     protected Void doInBackground(Void... params) {
-        ArrayList list = Utils.getHashMapFromUrl("http://" + MainActivity.HOST + MainActivity.BASE_API_URL);
+        ArrayList list;
+
+        try {
+            list = Utils.getHashMapFromUrl("http://" + MainActivity.HOST + MainActivity.BASE_API_URL);
+        } catch(IOException e) {
+            error = MainActivity.appContext.getString(R.string.err_server_conn);
+            return null;
+        }
         TreeSet<String> artists = new TreeSet<>();
 
         if(list == null) {
-            Toast.makeText(MainActivity.appContext, MainActivity.appContext.getString(R.string.err_server_conn), Toast.LENGTH_LONG).show();
+            error = MainActivity.appContext.getString(R.string.err_server_conn);
             return null;
         }
         try {
@@ -93,7 +102,9 @@ public class DatabaseLoader extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void na) {
-        if(listener != null)
+        if(error != null) {
+            Toast.makeText(MainActivity.appContext, error, Toast.LENGTH_LONG).show();
+        } else if(listener != null)
             listener.onLoaded();
     }
 

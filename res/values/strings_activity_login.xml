@@ -1,7 +1,0 @@
-<resources>
-
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="error_incorrect_password">Wrong password</string>
-
-</resources>

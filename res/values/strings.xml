@@ -18,5 +18,7 @@
     <string name="no_wifi">You are not using WiFi, it is recommended to use it to save data</string>
     <string name="err_server_conn">Cannot connect to the server</string>
     <string name="icon_step_backward" translatable="false">{fa-step-backward}</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="prompt_email">Email</string>
 
 </resources>

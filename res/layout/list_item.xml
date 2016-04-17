@@ -41,7 +41,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"/>
 
-            <IconTextView
+            <com.joanzapata.iconify.widget.IconTextView
                 android:id="@+id/mainStatusSong"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

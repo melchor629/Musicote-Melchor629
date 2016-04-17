@@ -16,16 +16,15 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.IconButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.joanzapata.android.iconify.IconDrawable;
-import com.joanzapata.android.iconify.Iconify;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+import com.joanzapata.iconify.widget.IconButton;
 import com.melchor629.musicote.basededatos.SongRow;
 
 import java.io.*;
-import java.util.HashMap;
 
 /**
  * Musicote App
@@ -75,9 +74,9 @@ public class SingleMenuItemActivity extends Activity {
         title = obj.get("titulo");
         artist = obj.get("artista");
         album = obj.get("album");
- String duracion = obj.get("duracion");
+        String duracion = obj.get("duracion");
         archivo = obj.get("archivo");
-        isDownloaded = obj.get("downloaded").equals("{fa-mobile}");//in.getBooleanExtra("downloaded", false);
+        isDownloaded = obj.isDownloaded();
 
         //If the Activity started from a crash, close the activity, avoiding another crash, and open the Main Activity
         if(obj == null) {
@@ -125,11 +124,11 @@ public class SingleMenuItemActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
 
         menu.findItem(R.id.ajustesm).setIcon(
-                new IconDrawable(this, Iconify.IconValue.fa_cogs)
+                new IconDrawable(this, FontAwesomeIcons.fa_cogs)
                         .color(Color.WHITE)
                         .actionBarSize());
         menu.findItem(R.id.parar).setIcon(
-                new IconDrawable(this, Iconify.IconValue.fa_music)
+                new IconDrawable(this, FontAwesomeIcons.fa_music)
                         .color(Color.WHITE)
                         .actionBarSize()
         );

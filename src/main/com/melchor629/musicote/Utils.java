@@ -3,23 +3,20 @@ package com.melchor629.musicote;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.melchor629.musicote.basededatos.DB;
 import com.melchor629.musicote.basededatos.DB_entry;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Musicote App
@@ -47,42 +44,46 @@ import java.util.HashMap;
  */
 public class Utils {
 
-    public static ArrayList getHashMapFromUrl(String url) {
-        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        //StrictMode.setThreadPolicy(policy);
-        HashMap map = new HashMap();
+    public static String apiUrl(String apiUrl) {
+        return String.format("http://%s%s%s", MainActivity.HOST, MainActivity.BASE_URL, apiUrl);
+    }
+
+    public static ArrayList getHashMapFromUrl(String url) throws IOException {
         try {
-            long time = System.currentTimeMillis();
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpGet httpPost = new HttpGet(url);
-
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            InputStream is = httpEntity.getContent();
-
-            //BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF8"), 8192);
-            StringBuilder sb = new StringBuilder();
-            byte[] buff = new byte[256];
-            int length = is.read(buff);
-            sb.append(new String(buff, 0, length));
-            while((length = is.read(buff)) != -1) {
-                sb.append(new String(buff, 0, length));
-            }
-            is.close();
-            Log.d("MainActivity", String.format("JSON Downloaded in %dms", System.currentTimeMillis() - time));
-
-            time = System.currentTimeMillis();
-            Gson gson = new Gson();
-            String s = sb.toString();
-            map = gson.fromJson(s, map.getClass());
-            Log.d("MainActivity", String.format("JSON parsed in %dms", System.currentTimeMillis() - time));
-            return (ArrayList) map.get("canciones");
-        } catch(IOException e) {
-            e.printStackTrace();
+            return (ArrayList) getJsonFromUrl(url).get("canciones");
         } catch(IllegalStateException e) {
             Log.e("Utils", "El archivo recibido no es json");
         }
         return null;
+    }
+
+    public static Map getJsonFromUrl(String url) throws IOException {
+        Gson gson = new Gson();
+        return gson.fromJson(getStringFromUrl(url), HashMap.class);
+    }
+
+    public static String getStringFromUrl(String url) throws IOException {
+        URL urlObj = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
+        String ret = null;
+
+        try {
+            InputStream is = new BufferedInputStream(conn.getInputStream());
+            StringBuilder sb = new StringBuilder();
+            byte[] buff = new byte[512];
+            int length = is.read(buff);
+
+            sb.append(new String(buff, 0, length));
+            while((length = is.read(buff)) != -1) {
+                sb.append(new String(buff, 0, length));
+            }
+
+            ret = sb.toString();
+        } finally {
+            conn.disconnect();
+        }
+
+        return ret;
     }
 
     /**
@@ -134,5 +135,20 @@ public class Utils {
                 a, pos));
         d.close();
         MainActivity.songList.get(pos).put("downloaded", a ? "{fa-mobile}" : "{fa-cloud}");
+    }
+
+    public static String toBase64(String str) {
+        return Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
+    }
+
+    public static String fromBase64(String b64) {
+        return new String(Base64.decode(b64, Base64.DEFAULT));
+    }
+
+    public static String urlEncode(String enc) {
+        try {
+            return URLEncoder.encode(enc, "UTF-8");
+        } catch(Exception ignore) {}
+        return null;
     }
 }

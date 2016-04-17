@@ -6,7 +6,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    tools:context=".MyFirstActivity" >
+    tools:context=".MainActivity" >
 
     <LinearLayout
         android:background="#FFFFFF"

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="song_options_array">
+        <item>Reproduir</item>
+        <item>Descarregar</item>
+        <item>Afegir a la playlist</item>
+    </string-array>
+    <string-array name="song_options_array2">
+        <item>Reproduir</item>
+        <item>Eliminar del dispositiu</item>
+        <item>Afegir a la playlist</item>
+    </string-array>
+</resources>

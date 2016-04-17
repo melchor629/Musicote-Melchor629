@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -44,6 +43,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
     private PowerManager.WakeLock wl;
     private Song song;
     private static Reproductor me;
+    private static String sessionKey = null;
 
     public volatile static double a = -1;
     public volatile static boolean paused;
@@ -61,6 +61,13 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
      * When the service is ready, start playing the song
      */
     private void initMediaPlayer() {
+        try {
+            //TODO Obtener información en una clase MusicoteAPI que cargue todo
+            if (sessionKey == null)
+                sessionKey = (String) Utils.getJsonFromUrl(Utils.apiUrl("music?method=getSessionKey")).get("SK");
+            sessionKey = Utils.toBase64(sessionKey);
+        } catch(Exception ignore) {}
+
         song = self.get(PlaylistManager.pos);
         reproductor = newPlayer();
         notification();
@@ -74,7 +81,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         MediaPlayer reproductor = new MediaPlayer(); // initialize it here
         reproductor.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            url = url.replace(" ", "%20");
+            url = url.replace(" ", "%20") + "?SK=" + Utils.urlEncode(sessionKey);
             if(url.startsWith("http"))
                 reproductor.setDataSource(url);
             else
@@ -214,7 +221,7 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
         super.onDestroy();
         wl.release();
         if(cosa != null)
-            cosa.interrupt();
+            True = false;
         if(reproductor != null)
             reproductor.release();
         nm.cancelAll();
@@ -260,14 +267,12 @@ public class Reproductor extends Service implements MediaPlayer.OnPreparedListen
 
                         Thread.sleep(100);
                     } catch (Exception e) {
-                        //if(!(e instanceof IllegalStateException)) e.printStackTrace();
                         True = false;
                     }
                 }
             } catch (IllegalStateException e) {
                 nm.cancelAll();
                 a = -1;
-                this.interrupt();
                 Log.d("Reproductor", "Se ha detectado que el reproductor se ha cerrado, esto tambien se cierra");
             } catch (Exception e) {
                 Log.e("Reproductor", "Ha habido un error en el \"coso\": " + e.toString());

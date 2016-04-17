@@ -15,8 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 
-import com.joanzapata.android.iconify.IconDrawable;
-import com.joanzapata.android.iconify.Iconify;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+import com.joanzapata.iconify.widget.IconButton;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -268,7 +270,7 @@ public class ReproductorGrafico extends Activity implements Runnable, SeekBar.On
         getMenuInflater().inflate(R.menu.activity_reproductor_grafico, menu);
 
         menu.findItem(R.id.settings).setIcon(
-                new IconDrawable(this, Iconify.IconValue.fa_cogs)
+                new IconDrawable(this, FontAwesomeIcons.fa_cogs)
                         .color(Color.WHITE)
                         .actionBarSize());
         return true;
